@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "project-init",
+  "metadata": {
+    "description": "Claude Code plugins for project initialization and documentation management",
+    "version": "1.0.0"
+  },
+  "description": "Claude Code plugins for project initialization and documentation management",
+  "owner": {
+    "name": "whchoi98",
+    "email": "noreply@example.com"
+  },
+  "plugins": [
+    {
+      "name": "project-init",
+      "description": "Initialize and maintain Claude Code project structures with adaptive project detection, CLAUDE.md quality scoring, and auto-sync documentation workflows",
+      "version": "2.0.0",
+      "author": {
+        "name": "whchoi98",
+        "email": "noreply@example.com"
+      },
+      "source": ".",
+      "category": "productivity"
+    }
+  ]
+}
