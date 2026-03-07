@@ -19,7 +19,7 @@
         "name": "whchoi98",
         "email": "noreply@example.com"
       },
-      "source": ".",
+      "source": "./plugins/project-init",
       "category": "productivity"
     }
   ]
