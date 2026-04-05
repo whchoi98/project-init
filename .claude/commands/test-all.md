@@ -1,43 +1,45 @@
 ---
-description: Validate plugin structure and run project health checks
-allowed-tools: Read, Bash(find:*), Bash(python3:*), Glob, Grep
+description: Run the full test suite and validate plugin structure
+allowed-tools: Read, Bash(bash tests/*), Bash(find:*), Bash(python3:*), Glob, Grep
 ---
 
 # Test All
 
-Validate the plugin structure and project health for this Claude Code plugin marketplace.
+Run the automated test suite and validate plugin health.
 
-## Step 1: Validate Plugin Manifest
+## Step 1: Run Test Suite
 
-Check `plugins/project-init/.claude-plugin/plugin.json`:
-- Valid JSON
-- Required fields present (name, description, version)
+Execute the harness test suite:
 
-Check `.claude-plugin/marketplace.json`:
-- Valid JSON
-- Plugin references resolve to valid paths
+```bash
+bash tests/run-all.sh
+```
 
-## Step 2: Validate Commands
+This runs 113 tests across 3 categories:
+- **Hook tests** (27): Syntax, permissions, registration, behavior
+- **Secret pattern tests** (22): True positive detection, false positive rejection
+- **Structure tests** (64): Manifests, version sync, file existence, CLAUDE.md content
 
-For each `.md` file in `plugins/project-init/commands/`:
-- Has valid frontmatter (if applicable)
-- References to template files resolve correctly
+## Step 2: Analyze Results
 
-## Step 3: Validate Skills
+If tests fail:
+- Read the failure messages for exact file paths and expected values
+- Hook failures: Check `.claude/hooks/*.sh` syntax and permissions
+- Pattern failures: Check regex in `secret-scan.sh` against test fixtures in `tests/fixtures/`
+- Structure failures: Check file existence and JSON validity
 
-For each skill in `plugins/project-init/skills/`:
-- `SKILL.md` exists
-- Referenced files in `references/` exist
+## Step 3: Run Targeted Tests (if needed)
 
-## Step 4: Validate Hooks
+```bash
+# Run only specific test category
+bash tests/run-all.sh hooks        # Hook tests only
+bash tests/run-all.sh secret       # Secret pattern tests only
+bash tests/run-all.sh structure    # Structure tests only
+```
 
-For each `.sh` file in `.claude/hooks/`:
-- File is executable
-- Bash syntax is valid: `bash -n <file>`
-
-## Step 5: Report
+## Step 4: Report
 
 Present:
-- Total checks run, passed, failed
-- Failed check details with file paths
-- Suggest fixes for any failures
+- Total tests run, passed, failed, skipped
+- Failed test details with file paths and fix suggestions
+- If all pass, confirm project health is verified

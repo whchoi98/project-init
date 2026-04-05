@@ -7,9 +7,19 @@ FILE_PATH="${1:-}"
 [ -z "$FILE_PATH" ] && exit 0
 
 # Detect missing CLAUDE.md in plugins/ subdirectories
+# Checks current directory and walks up to plugins/ root
 if [[ "$FILE_PATH" == plugins/* ]]; then
     DIR=$(dirname "$FILE_PATH")
-    if [ ! -f "$DIR/CLAUDE.md" ] && [ "$DIR" != "plugins" ]; then
+    FOUND_CLAUDE=false
+    CHECK_DIR="$DIR"
+    while [ "$CHECK_DIR" != "plugins" ] && [ "$CHECK_DIR" != "." ]; do
+        if [ -f "$CHECK_DIR/CLAUDE.md" ]; then
+            FOUND_CLAUDE=true
+            break
+        fi
+        CHECK_DIR=$(dirname "$CHECK_DIR")
+    done
+    if ! $FOUND_CLAUDE && [ "$DIR" != "plugins" ]; then
         echo "[doc-sync] $DIR/CLAUDE.md is missing. Create module documentation."
     fi
 fi
