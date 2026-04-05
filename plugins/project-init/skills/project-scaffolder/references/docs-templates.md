@@ -8,24 +8,158 @@ Templates for `docs/` files.
 
 Path: `docs/architecture.md`
 
+This template generates a production-grade bilingual architecture document with ASCII diagrams, layer-based component descriptions, and infrastructure tables.
+
+### Generation Rules
+
+When generating `docs/architecture.md`, Claude should:
+
+1. **Detect** the project's actual components, tech stack, and directory layout
+2. **Organize** components into architectural layers (see Layer Categories below)
+3. **Draw** an ASCII box diagram showing component connections using `┌─┐│└─┘▶▼` characters
+4. **Create** a one-line Data Flow Summary with arrows
+5. **List** infrastructure resources in tables if IaC files are detected
+6. **Record** key design decisions explaining WHY, not just WHAT
+7. **Include** both Korean and English sections with identical content
+
+### Template Structure
+
 ```markdown
 # Architecture
 
+<p align="center">
+  <a href="#-한국어"><kbd>한국어</kbd></a>&nbsp;&nbsp;&nbsp;
+  <a href="#-english"><kbd>English</kbd></a>
+</p>
+
+---
+
+# 한국어
+
 ## System Overview
-<!-- Describe the overall system architecture -->
+
+<project_name>은(는) <brief_architecture_description>.
+<key_technology_summary>.
+<primary_data_flow_summary>.
 
 ## Components
-<!-- List major components and their roles -->
 
-## Data Flow
-<!-- Describe how data flows through the system -->
+### <Layer Name> Layer
+- **<directory/>** -- <description>. <key detail>.
+- **<directory/>** -- <description>. <key detail>.
+
+<!-- Repeat for each layer -->
+
+## Full Architecture Diagram
+
+<!-- ASCII box diagram using ┌─┐│└─┘▶▼ characters -->
+<!-- Group related components in labeled boxes -->
+<!-- Show data flow direction with arrows -->
+
+## Data Flow Summary
+
+<!-- One-line arrow flow showing the critical path -->
+<!-- Example: SDK -> API GW -> Lambda -> Firehose -> S3 -> Athena -> Dashboard -->
 
 ## Infrastructure
-<!-- Describe infrastructure setup -->
+
+### Deployment Region
+- <region> (<location>)
+
+### Modules / Resources
+| Module | Resources | Description |
+|--------|-----------|-------------|
+| <module> | <resources> | <description> |
+
+### Deployed Resources
+- <endpoint_name>: `<url_pattern>`
+
+## Key Design Decisions
+
+- <Decision> -- <Why this choice was made>
+- <Decision> -- <Why this choice was made>
 
 ## Operations
-<!-- Link to relevant runbooks in docs/runbooks/ -->
+- Deployment: see [docs/runbooks/deploy-production.md](runbooks/deploy-production.md)
+- Incident Response: see [docs/runbooks/incident-response.md](runbooks/incident-response.md)
+
+---
+
+# English
+
+<!-- Same structure as Korean section, in English -->
 ```
+
+### Layer Categories
+
+Organize components into these standard layers (use only the layers that apply):
+
+| Layer | Purpose | Example Components |
+|-------|---------|-------------------|
+| Ingestion Layer | Data entry points | SDKs, API Gateway, Lambda handlers, message queues |
+| Storage Layer | Data persistence | S3, RDS, DynamoDB, Firehose, cache |
+| Processing Layer | Data transformation | ETL Lambdas, Step Functions, batch jobs |
+| Query Layer | Data access | Athena, Glue, search indices |
+| Presentation Layer | User interfaces | Frontend apps, dashboards, Grafana |
+| Observability Layer | Monitoring | CloudWatch, alarms, logging |
+| Security Layer | Auth and protection | WAF, IAM, Cognito, secrets management |
+| AI/ML Layer | Intelligence | Bedrock, SageMaker, agent systems |
+
+### ASCII Diagram Style Guide
+
+Use Unicode box-drawing characters for professional diagrams:
+
+```
+┌─────────────────────────────────────────────┐
+│                 Layer Name                   │
+│                                             │
+│  ┌──────────┐    ┌──────────┐               │
+│  │Component │───▶│Component │               │
+│  │  A       │    │  B       │               │
+│  └──────────┘    └────┬─────┘               │
+│                       │                     │
+└───────────────────────┼─────────────────────┘
+                        ▼
+┌─────────────────────────────────────────────┐
+│                 Next Layer                   │
+│  ┌──────────┐                               │
+│  │Component │                               │
+│  │  C       │                               │
+│  └──────────┘                               │
+└─────────────────────────────────────────────┘
+```
+
+Rules:
+- Each layer gets its own labeled box
+- Components within a layer are nested boxes
+- Arrows (`───▶`, `▼`) show data flow direction
+- Include key details inside component boxes (ports, protocols, formats)
+- Maximum width: ~80 characters for readability
+
+### Data Flow Summary Style
+
+Use a single-line arrow chain showing the critical path:
+
+```
+Client -> WAF -> API GW -> Auth -> Handler -> Queue -> Storage
+                                                          |
+                                     ┌────────────────────┘
+                                     ▼
+                                  Catalog <- Scheduler
+                                     |
+                        ┌────────────┼────────────┐
+                        ▼            ▼            ▼
+                    Dashboard   Monitoring     Agent
+```
+
+### Key Design Decisions Style
+
+Each decision should explain WHY, not WHAT:
+
+- Good: "Use Firehose as buffer to support high throughput without Lambda throttling"
+- Bad: "Use Kinesis Firehose"
+
+Format: `<What was decided> -- <Why this choice was made over alternatives>`
 
 ---
 

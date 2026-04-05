@@ -32,8 +32,14 @@ For each directory, check if `CLAUDE.md` exists.
 
 ### 3. Check Architecture Doc Freshness
 
-- Read `docs/architecture.md` and compare component list against actual source directories
-- Flag components mentioned in docs but missing from code (or vice versa)
+Read `docs/architecture.md` and perform multi-level freshness check:
+
+- **Component Sync**: Compare components listed in the document against actual source directories. Flag components mentioned in docs but missing from code, or new directories not mentioned in docs.
+- **Diagram Accuracy**: If an ASCII architecture diagram exists, verify that component names in the diagram match actual directory/module names. Flag outdated diagram elements.
+- **Layer Coverage**: Check if all major source directories are categorized under an architectural layer.
+- **Infrastructure Tables**: If IaC files exist (terraform/, cdk/), compare module/construct tables against actual IaC directories.
+- **Design Decisions**: Cross-reference Key Design Decisions with current ADRs in `docs/decisions/`. Flag decisions that reference deprecated technologies.
+- **Bilingual Consistency**: If both Korean and English sections exist, verify they contain the same components and structure.
 
 ### 4. Check ADR Coverage
 

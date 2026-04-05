@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.env.example` template with security rules (no real secrets)
 - `scripts/setup.sh` and `scripts/install-hooks.sh` templates for generated projects
 - `tests/` directory structure generation (unit, integration) with CLAUDE.md
+- Production-grade architecture.md template with bilingual language switcher, layer-based components, ASCII box diagrams, data flow summaries, infrastructure tables, and key design decisions
+- Architecture diagram style guide using Unicode box-drawing characters (`┌─┐│└─┘▶▼`)
+- Multi-level architecture doc freshness check (component sync, diagram accuracy, layer coverage, IaC tables, bilingual consistency)
 - CLAUDE.md anti-pattern detection in `doc-sync-checker` (500+ lines, vague instructions, secrets, stale deps)
 - Runbook coverage check in `doc-sync-checker` agent (recommends runbooks based on project characteristics)
 - ADR freshness check in `doc-sync-checker` agent (flags stale or proposed ADRs)
@@ -107,6 +110,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.env.example` 템플릿 추가: 보안 규칙 적용 (실제 시크릿 미포함)
 - `scripts/setup.sh`, `scripts/install-hooks.sh` 템플릿 추가
 - `tests/` 디렉토리 구조 생성 (unit, integration) 및 CLAUDE.md 포함
+- 이중 언어 전환기, 레이어 기반 컴포넌트, ASCII 박스 다이어그램, 데이터 플로우 요약, 인프라 테이블, 핵심 설계 결정을 포함하는 프로덕션 수준 architecture.md 템플릿 추가
+- Unicode 박스 그리기 문자(`┌─┐│└─┘▶▼`)를 사용하는 아키텍처 다이어그램 스타일 가이드 추가
+- 다중 레벨 아키텍처 문서 최신성 검사 추가 (컴포넌트 동기화, 다이어그램 정확성, 레이어 커버리지, IaC 테이블, 이중 언어 일관성)
 - `doc-sync-checker`에 CLAUDE.md 안티패턴 감지 추가 (500줄 초과, 모호한 지시, 시크릿, 오래된 의존성)
 - `doc-sync-checker` 에이전트에 런북 커버리지 검사 추가 (프로젝트 특성에 따라 런북 추천)
 - `doc-sync-checker` 에이전트에 ADR 최신성 검사 추가 (오래된 Proposed 상태 ADR 감지)

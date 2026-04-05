@@ -81,11 +81,17 @@ Verify commands are copy-paste ready by checking they reference actual scripts/f
 
 ## Phase 3: Architecture Doc Sync
 
-Read `docs/architecture.md` and update:
-- **System Overview** - Reflect current system design
-- **Components** - Add new components, remove deleted ones
-- **Data Flow** - Update if data flow changed
-- **Infrastructure** - Update if infra changed
+Read `docs/architecture.md` and update all sections:
+
+- **System Overview** - Reflect current system design and tech stack
+- **Components (by Layer)** - Add new components, remove deleted ones. Organize by architectural layers (Ingestion, Storage, Processing, Query, Presentation, Observability, Security, AI/ML). Detect layers from source directories and IaC files.
+- **Full Architecture Diagram** - Regenerate ASCII box diagram if components changed. Use `┌─┐│└─┘▶▼` characters. Verify all components in the diagram still exist in code.
+- **Data Flow Summary** - Update the arrow-chain flow if data path changed
+- **Infrastructure Tables** - If IaC files exist (terraform/, cdk/), update module/construct tables
+- **Key Design Decisions** - Add new decisions from recent ADRs, flag decisions that may be outdated
+- **Operations** - Update runbook cross-references
+
+If `docs/architecture.md` uses bilingual format (Korean/English), update both sections consistently.
 
 ## Phase 4: Module CLAUDE.md Audit
 

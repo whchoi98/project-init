@@ -144,10 +144,29 @@ Read [references/agents-templates.md](../skills/project-scaffolder/references/ag
 ## Step 9: Generate Docs
 
 Read [references/docs-templates.md](../skills/project-scaffolder/references/docs-templates.md) and create:
-- `docs/architecture.md` - For existing projects, pre-fill Components section based on detected directories
-- `docs/decisions/.template.md`
-- `docs/runbooks/.template.md`
-- `docs/onboarding.md` - For existing projects, pre-fill prerequisites and setup steps
+
+### architecture.md (Production-Grade)
+
+Generate `docs/architecture.md` following the Architecture Document template with:
+
+1. **Language Switcher**: HTML `<p align="center">` with `<kbd>` links to `#한국어` and `#english`
+2. **System Overview**: 2-3 sentence summary of the project architecture
+3. **Components by Layer**: Group into Ingestion/Storage/Processing/Query/Presentation/Observability/Security layers. Only include layers that apply.
+   - **For existing projects**: Read source directories, IaC files (terraform/, cdk/), Dockerfiles, and dependency files to auto-detect components
+   - **For new projects**: Use user input from Plan mode or interactive questions
+4. **Full Architecture Diagram**: ASCII box diagram using `┌─┐│└─┘▶▼` characters showing all components and data flow
+5. **Data Flow Summary**: One-line arrow chain showing the critical path
+6. **Infrastructure Tables**: If IaC files (terraform/, cdk/, cloudformation/) are detected, list modules/constructs in a table
+7. **Key Design Decisions**: List architectural choices with WHY explanations (from Plan mode context if available)
+8. **Operations**: Cross-reference to runbooks in `docs/runbooks/`
+
+Both Korean and English sections must have identical structure and content.
+
+### Other Docs
+
+- `docs/decisions/.template.md` - ADR template
+- `docs/runbooks/.template.md` - Runbook template
+- `docs/onboarding.md` - For existing projects, pre-fill prerequisites and setup steps from detected build system
 - `docs/api-reference.md` - Only if project has API endpoints (detected from routes, handlers, controllers)
 
 ## Step 10: Generate Module CLAUDE.md Files
