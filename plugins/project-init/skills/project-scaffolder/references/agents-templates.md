@@ -14,6 +14,21 @@ description: Review code changes for bugs, security issues, and guideline violat
 tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
 model: sonnet
 color: green
+
+# Output Schema — agent MUST use this Markdown structure:
+#
+# ## Code Review Report
+# **Scope:** <files or git ref> | **Files reviewed:** <N> | **Issues found:** <N> (filtered from <M>)
+#
+# #### [CRITICAL|IMPORTANT] <title> (confidence: <75-100>)
+# **File:** `<path>:<line>` | **Issue:** <desc> | **Fix:** <code suggestion>
+#
+# ### Summary
+# | Severity | Count |
+# |----------|-------|
+# | Critical (90-100) | <N> |
+# | Important (75-89) | <N> |
+# **Verdict:** PASS | WARN | FAIL
 ```
 
 ### Agent Behavior
@@ -61,6 +76,25 @@ description: Audit codebase for security vulnerabilities, secret exposure, depen
 tools: Read, Glob, Grep, Bash(find:*), Bash(git log:*), Bash(npm audit:*), Bash(pip audit:*)
 model: sonnet
 color: red
+
+# Output Schema — agent MUST use this Markdown structure:
+#
+# ## Security Audit Report
+# **Scope:** <dirs audited> | **Scan date:** <YYYY-MM-DD>
+#
+# ### Critical Issues
+# - **[SECRET|VULN]** <description> — `<file>:<line>`
+#
+# ### Warnings
+# - **[DEP|CONFIG]** <description>
+#
+# ### Passed Checks
+# - [x] .env in .gitignore | - [x] No secrets in CLAUDE.md | - [ ] <failed check>
+#
+# ### Summary
+# | Category | Critical | Warning | Info |
+# |----------|----------|---------|------|
+# **Verdict:** PASS | WARN | FAIL
 ```
 
 ### Agent Behavior

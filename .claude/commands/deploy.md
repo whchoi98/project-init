@@ -77,6 +77,60 @@ claude plugin marketplace add ./project-init
 claude plugin install project-init
 ```
 
+## Error Recovery
+
+### If version validation fails (Step 2)
+Update both files to the same version:
+```bash
+# Edit both files to matching version, then:
+git add .claude-plugin/marketplace.json plugins/project-init/.claude-plugin/plugin.json
+git commit -m "fix: sync marketplace and plugin versions to X.Y.Z"
+```
+Restart from Step 2.
+
+### If push fails (Step 4)
+```bash
+# Check remote status
+git remote -v
+git fetch origin
+
+# If rejected due to diverged history
+git pull --rebase origin main
+git push origin main
+```
+
+### If tag was created but push failed (Step 4)
+```bash
+# Delete the local tag and retry
+VERSION=$(python3 -c "import json; print(json.load(open('plugins/project-init/.claude-plugin/plugin.json'))['version'])")
+git tag -d "v$VERSION"
+# Fix the issue, then recreate and push
+git tag -a "v$VERSION" -m "Release v$VERSION"
+git push origin main && git push origin "v$VERSION"
+```
+
+### If a bad release was published — full rollback
+```bash
+# Get the version to rollback
+VERSION=$(python3 -c "import json; print(json.load(open('plugins/project-init/.claude-plugin/plugin.json'))['version'])")
+
+# Delete remote and local tag
+git push origin ":refs/tags/v$VERSION"
+git tag -d "v$VERSION"
+
+# Revert the release commit if needed
+git revert HEAD
+git push origin main
+```
+
+### If GitHub Push Protection blocks the push
+Secrets detected in staged files. Review the flagged files, remove or rotate the secrets, then amend the commit:
+```bash
+git add <fixed-files>
+git commit --amend --no-edit
+git push origin main
+```
+
 ## Step 6: Summary
 
 Display:

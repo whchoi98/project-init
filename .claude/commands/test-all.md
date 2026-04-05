@@ -43,3 +43,34 @@ Present:
 - Total tests run, passed, failed, skipped
 - Failed test details with file paths and fix suggestions
 - If all pass, confirm project health is verified
+
+## Error Recovery
+
+### If test runner itself fails
+```bash
+# Check bash syntax of test runner
+bash -n tests/run-all.sh
+
+# Check if test files are executable
+ls -la tests/hooks/test-*.sh tests/structure/test-*.sh
+
+# Fix permissions if needed
+chmod +x tests/**/*.sh
+```
+
+### Common failure categories and fixes
+
+| Failure Pattern | Likely Cause | Fix |
+|---|---|---|
+| "file not found" | Missing file after restructure | Create the file or update the test |
+| "invalid JSON" | Malformed manifest | `python3 -m json.tool <file>` to find syntax error |
+| "Version mismatch" | marketplace.json ≠ plugin.json | Update both to same version |
+| "not executable" | Permission reset by git | `chmod +x .claude/hooks/*.sh scripts/*.sh` |
+| "bash syntax error" | Bad edit in hook script | `bash -n <file>` to locate error line |
+| "pattern did not match" | Regex changed in secret-scan.sh | Update test patterns to match or fix the regex |
+
+### If many tests fail at once
+Likely a structural change broke multiple assumptions. Check:
+1. `git log -1` — what was the last change?
+2. `git diff HEAD~1` — what specifically changed?
+3. Fix the root cause, not individual tests
