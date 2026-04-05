@@ -1,6 +1,6 @@
 ---
 description: Validate entire project setup - files, hooks, permissions, CLAUDE.md quality, and configuration
-allowed-tools: Read, Glob, Grep, Bash(find:*), Bash(ls:*), Bash(cat:*), Bash(git log:*), Bash(wc:*)
+allowed-tools: Read, Glob, Grep, Bash(find:*), Bash(ls:*), Bash(git log:*), Bash(wc:*), Bash(bash -n:*), Bash(python3 -m json.tool:*)
 ---
 
 # Health Check

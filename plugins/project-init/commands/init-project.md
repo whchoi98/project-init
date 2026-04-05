@@ -1,6 +1,6 @@
 ---
 description: Initialize a Claude Code project structure with CLAUDE.md, docs, hooks, skills, agents, and MCP config. Adapts to existing projects by detecting language/framework.
-allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(ls:*), Bash(find:*), Bash(cat:*), Bash(cp:*), Glob, Grep
+allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(ls:*), Bash(find:*), Bash(bash scripts/*), Glob, Grep
 argument-hint: Optional project directory path (defaults to current directory)
 ---
 

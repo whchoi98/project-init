@@ -1,6 +1,6 @@
 ---
 description: Build and publish the plugin to the marketplace
-allowed-tools: Read, Bash(git tag:*), Bash(git push:*), Bash(git status:*), Bash(git log:*), Bash(git diff:*), Bash(python3:*), Glob, Grep
+allowed-tools: Read, Bash(git tag:*), Bash(git push:*), Bash(git status:*), Bash(git log:*), Bash(git diff:*), Bash(git branch:*), Bash(git describe:*), Bash(git remote:*), Bash(git pull:*), Bash(git revert:*), Bash(python3 -c:*), Glob, Grep
 ---
 
 # Deploy

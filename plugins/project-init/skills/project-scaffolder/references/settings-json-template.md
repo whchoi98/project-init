@@ -10,7 +10,17 @@ Use this template for `.claude/settings.json`.
 {
   "permissions": {
     "allow": [],
-    "deny": []
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -r:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git clean -f:*)",
+      "Bash(chmod 777:*)",
+      "Bash(curl:* | bash)",
+      "Bash(wget:* | bash)",
+      "Bash(eval:*)"
+    ]
   },
   "hooks": {
     "SessionStart": [

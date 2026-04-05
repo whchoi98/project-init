@@ -1,6 +1,6 @@
 ---
 description: Run the full test suite and validate plugin structure
-allowed-tools: Read, Bash(bash tests/*), Bash(find:*), Bash(python3:*), Glob, Grep
+allowed-tools: Read, Bash(bash tests/*), Bash(bash -n:*), Bash(find:*), Bash(python3 -m json.tool:*), Bash(chmod:*), Bash(ls:*), Glob, Grep
 ---
 
 # Test All
