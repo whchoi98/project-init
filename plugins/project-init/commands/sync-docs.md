@@ -1,6 +1,6 @@
 ---
 description: Synchronize all project documentation with current code state
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(find:*), Bash(git log:*), Bash(ls:*), Bash(tree:*), Agent
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(find:*), Bash(git log:*), Bash(ls:*), Agent
 ---
 
 # Sync Docs
@@ -123,14 +123,39 @@ Check if significant decisions are documented:
 If undocumented decisions found, suggest creating new ADRs. Determine the next ADR number:
 
 ```bash
-find docs/decisions -name 'ADR-*.md' 2>/dev/null | sort -t'-' -k2 -n | tail -1
+find docs/decisions -name 'ADR-*.md' -not -name '.template.md' 2>/dev/null | sort -t'-' -k2 -n | tail -1
 ```
 
-## Phase 6: README.md Sync
+Review existing ADRs for freshness:
+- Flag ADRs in "Proposed" status older than 30 days -> suggest accepting or withdrawing
+- Flag ADRs referencing technologies no longer in use -> suggest deprecating
+- Score: count of current ADRs vs estimated decisions from git history
+
+## Phase 6: Runbook Audit
+
+Check runbook coverage against project characteristics:
+
+```bash
+ls docs/runbooks/*.md 2>/dev/null
+find docs/runbooks -name '*.md' -not -name '.template.md' 2>/dev/null
+```
+
+Assess operational coverage:
+- **Deployment**: Does the project have deployment config (Dockerfile, CDK, SAM, Terraform, CI/CD)? If yes, check for a deployment runbook.
+- **Database**: Does the project have migrations or database config? If yes, check for a database migration runbook.
+- **Incident Response**: Does the project have monitoring/alerting? If yes, check for an incident response runbook.
+- **Environment Setup**: Does the project have multiple environments? If yes, check for environment setup runbook.
+
+For each existing runbook:
+- Verify commands are still copy-paste ready (check referenced scripts/paths exist)
+- Check last modified date vs recent code changes
+- Flag runbooks referencing removed files or changed paths
+
+## Phase 7: README.md Sync
 
 Update `README.md` project structure section to match actual directory layout.
 
-## Phase 7: Report
+## Phase 8: Report
 
 Present a comprehensive summary:
 

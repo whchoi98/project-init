@@ -51,18 +51,13 @@ Rate each issue 0-100:
 ## Output Format
 
 For each issue:
-```
 ### [CRITICAL|IMPORTANT] <issue title> (confidence: XX)
 **File:** `path/to/file.ext:line`
 **Issue:** Clear description of the problem
 **Guideline:** Reference to CLAUDE.md rule or security standard
 **Fix:** Concrete code suggestion
-```
 
 If no high-confidence issues found, confirm code meets standards with brief summary.
-
-## Usage
-Run with `/code-review` command
 ```
 
 ---
@@ -104,9 +99,6 @@ Present the refactoring plan to the user:
 - Confirm all existing tests pass
 - Verify no behavior changes
 - Check that the refactoring achieved its goal
-
-## Usage
-Run with `/refactor` command
 ```
 
 ---
@@ -148,9 +140,6 @@ Automate the release process with validation checks.
 - Display version bump
 - List key changes
 - Show next steps (push tag, deploy, etc.)
-
-## Usage
-Run with `/release` command
 ```
 
 ---
@@ -175,6 +164,13 @@ Score each CLAUDE.md file (0-100) across:
 - Currency (15 pts)
 - Actionability (15 pts)
 
+Apply anti-pattern deductions:
+- Over 500 lines (-15)
+- Vague instructions (-10)
+- Duplicated docs (-10)
+- No test guidance (-10)
+- Contains secrets (-20)
+
 Output quality report with grades (A-F) before making changes.
 
 ### 2. Root CLAUDE.md Sync
@@ -191,16 +187,168 @@ Output quality report with grades (A-F) before making changes.
 - Update existing module CLAUDE.md files if out of date
 - Score each module CLAUDE.md
 
-### 5. ADR Audit
-- Check recent commits (git log --oneline -20)
-- Suggest new ADRs for undocumented architectural decisions
+### 5. ADR and Runbook Audit
+- Check recent commits for undocumented architectural decisions
+- Verify runbook coverage against project characteristics
+- Flag stale ADRs and outdated runbooks
 
 ### 6. README.md Sync
 - Update project structure section to match actual directory layout
 
 ### 7. Report
-Output before/after quality scores and list of all changes.
+Output before/after quality scores, anti-patterns detected, and list of all changes.
+```
 
-## Usage
-Run with `/sync-docs` command
+---
+
+## Common Slash Command Templates
+
+These are slash commands generated in `.claude/commands/` by `/init-project`.
+
+---
+
+### Review Command
+
+Path: `.claude/commands/review.md`
+
+```markdown
+---
+description: Run code review on current changes with confidence-based filtering
+allowed-tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
+---
+
+# Code Review
+
+Review the current code changes using confidence-based scoring.
+
+## Step 1: Get Changes
+
+Determine the scope of review:
+
+- If $ARGUMENTS specifies files, review those files
+- Otherwise, review unstaged changes: `git diff`
+- If no unstaged changes, review staged changes: `git diff --cached`
+
+## Step 2: Review
+
+For each changed file, apply the code-review skill criteria:
+- Project guidelines compliance (from CLAUDE.md)
+- Bug detection (logic errors, security, performance)
+- Code quality (duplication, complexity, test coverage)
+
+## Step 3: Score and Filter
+
+Rate each issue 0-100. Only report issues with confidence >= 75.
+
+## Step 4: Output
+
+Present findings in structured format with file paths, line numbers, and fix suggestions.
+If no high-confidence issues, confirm code meets standards.
+```
+
+---
+
+### Test All Command
+
+Path: `.claude/commands/test-all.md`
+
+```markdown
+---
+description: Execute the full test suite and report results
+allowed-tools: Read, Bash(npm test:*), Bash(npm run test:*), Bash(pytest:*), Bash(go test:*), Bash(cargo test:*), Bash(mvn test:*), Bash(gradle test:*), Glob
+---
+
+# Test All
+
+Execute the full test suite for this project.
+
+## Step 1: Detect Test Framework
+
+Read project files to determine the test framework:
+- `package.json` -> look for test script (jest, vitest, mocha)
+- `pyproject.toml` / `setup.cfg` -> pytest
+- `go.mod` -> go test
+- `Cargo.toml` -> cargo test
+- `pom.xml` -> mvn test
+- `build.gradle` -> gradle test
+
+## Step 2: Run Tests
+
+Execute the appropriate test command:
+
+```bash
+# Node.js
+npm test
+
+# Python
+pytest -v
+
+# Go
+go test ./...
+
+# Rust
+cargo test
+
+# Java (Maven)
+mvn test
+
+# Java (Gradle)
+gradle test
+```
+
+## Step 3: Report
+
+Present:
+- Total tests run, passed, failed, skipped
+- Failed test details with file paths and error messages
+- Suggest fixes for failing tests if the cause is apparent
+```
+
+---
+
+### Deploy Command
+
+Path: `.claude/commands/deploy.md`
+
+```markdown
+---
+description: Build and deploy the application following project runbooks
+allowed-tools: Read, Bash(npm run build:*), Bash(npm run deploy:*), Bash(docker build:*), Bash(sam build:*), Bash(sam deploy:*), Bash(cdk deploy:*), Glob
+---
+
+# Deploy
+
+Build and deploy the application.
+
+## Step 1: Pre-Deploy Checks
+
+1. Verify working tree is clean: `git status`
+2. Verify current branch (warn if not main/production)
+3. Run tests to ensure nothing is broken
+4. Check if a deployment runbook exists: `ls docs/runbooks/deploy-*.md`
+
+## Step 2: Follow Runbook
+
+If a deployment runbook exists in `docs/runbooks/`, follow its steps.
+
+If no runbook exists, detect the deployment method:
+- `Dockerfile` -> docker build and push
+- `template.yaml` / `samconfig.toml` -> SAM build and deploy
+- `cdk.json` -> CDK deploy
+- `package.json` scripts -> npm run deploy / npm run build
+
+## Step 3: Verify
+
+After deployment:
+- Check deployment status
+- Verify health endpoint if available
+- Report deployment result
+
+## Step 4: Summary
+
+Display:
+- What was deployed and where
+- Deployment method used
+- Verification results
+- Suggest creating a deployment runbook if none exists
 ```

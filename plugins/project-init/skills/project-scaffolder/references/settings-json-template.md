@@ -4,6 +4,76 @@ Use this template for `.claude/settings.json`.
 
 ---
 
+## Full Template (All Hooks)
+
+```json
+{
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/session-context.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PreCommit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/notify.sh \"$EVENT\" \"$MESSAGE\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Hook Explanation
+
+| Event | Hook Script | Purpose |
+|-------|-------------|---------|
+| `SessionStart` | `session-context.sh` | Load project context (type, branch, recent activity) at session start |
+| `PreCommit` | `secret-scan.sh` | Scan staged files for secrets and API keys before commit |
+| `PostToolUse` (Write/Edit) | `check-doc-sync.sh` | Detect missing CLAUDE.md, ADRs, and runbooks after file changes |
+| `Notification` | `notify.sh` | Send webhook notifications on significant events |
+
+## Minimal Template (Documentation Sync Only)
+
+For projects that only need documentation sync:
+
 ```json
 {
   "permissions": {
@@ -26,14 +96,6 @@ Use this template for `.claude/settings.json`.
 }
 ```
 
-## Hook Explanation
-
-| Field | Value | Purpose |
-|-------|-------|---------|
-| `matcher` | `Write\|Edit` | Triggers on file write or edit operations |
-| `command` | `check-doc-sync.sh` | Checks if documentation sync is needed |
-| `2>/dev/null \|\| true` | Error suppression | Prevents hook failures from blocking work |
-
 ## Customization
 
 Add permissions as needed:
@@ -43,10 +105,14 @@ Add permissions as needed:
   "permissions": {
     "allow": [
       "Bash(npm test:*)",
-      "Bash(npm run lint:*)"
+      "Bash(npm run lint:*)",
+      "Bash(pytest:*)",
+      "Bash(go test:*)"
     ],
     "deny": [
-      "Bash(rm -rf:*)"
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(drop database:*)"
     ]
   }
 }

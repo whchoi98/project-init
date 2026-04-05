@@ -1,6 +1,6 @@
 ---
-description: Initialize a Claude Code project structure with CLAUDE.md, docs, hooks, and skills. Adapts to existing projects by detecting language/framework.
-allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(ls:*), Bash(find:*), Bash(cat:*), Glob, Grep
+description: Initialize a Claude Code project structure with CLAUDE.md, docs, hooks, skills, agents, and MCP config. Adapts to existing projects by detecting language/framework.
+allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(ls:*), Bash(find:*), Bash(cat:*), Bash(cp:*), Glob, Grep
 argument-hint: Optional project directory path (defaults to current directory)
 ---
 
@@ -70,7 +70,9 @@ mkdir -p .claude/skills/code-review
 mkdir -p .claude/skills/refactor
 mkdir -p .claude/skills/release
 mkdir -p .claude/skills/sync-docs
-mkdir -p tools/scripts
+mkdir -p .claude/commands
+mkdir -p .claude/agents
+mkdir -p scripts
 mkdir -p tools/prompts
 ```
 
@@ -78,6 +80,8 @@ mkdir -p tools/prompts
 ```bash
 mkdir -p src/api
 mkdir -p src/persistence
+mkdir -p tests/unit
+mkdir -p tests/integration
 ```
 
 ## Step 4: Generate CLAUDE.md
@@ -96,14 +100,20 @@ Read the template from [references/claude-md-template.md](../skills/project-scaf
 
 Always include Auto-Sync Rules section.
 
-## Step 5: Generate .claude/settings.json and Hook
+## Step 5: Generate .claude/settings.json and All Hooks
 
-Read [references/settings-json-template.md](../skills/project-scaffolder/references/settings-json-template.md) and create `.claude/settings.json`.
+Read [references/settings-json-template.md](../skills/project-scaffolder/references/settings-json-template.md) and create `.claude/settings.json` with all hook registrations (SessionStart, PreCommit, PostToolUse, Notification).
 
-Read [references/hook-scripts.md](../skills/project-scaffolder/references/hook-scripts.md) and create `.claude/hooks/check-doc-sync.sh`. Make it executable:
+Read [references/hook-scripts.md](../skills/project-scaffolder/references/hook-scripts.md) and create:
+- `.claude/hooks/check-doc-sync.sh` - PostToolUse documentation sync
+- `.claude/hooks/secret-scan.sh` - PreCommit secret scanning
+- `.claude/hooks/session-context.sh` - SessionStart context loading
+- `.claude/hooks/notify.sh` - Notification webhook
+
+Make all hooks executable:
 
 ```bash
-chmod +x .claude/hooks/check-doc-sync.sh
+chmod +x .claude/hooks/*.sh
 ```
 
 **For existing projects**: Adapt `check-doc-sync.sh` to use the actual source directory path instead of hardcoded `src/`.
@@ -116,33 +126,77 @@ Read [references/skills-templates.md](../skills/project-scaffolder/references/sk
 - `.claude/skills/release/SKILL.md`
 - `.claude/skills/sync-docs/SKILL.md`
 
-## Step 7: Generate Docs
+## Step 7: Generate Slash Commands
+
+Read [references/skills-templates.md](../skills/project-scaffolder/references/skills-templates.md) (Common Slash Command Templates section) and create:
+- `.claude/commands/review.md` - Code review on diff
+- `.claude/commands/test-all.md` - Execute full test suite
+- `.claude/commands/deploy.md` - Build and deploy
+
+**For existing projects**: Adapt test and deploy commands to match the detected framework.
+
+## Step 8: Generate Agents
+
+Read [references/agents-templates.md](../skills/project-scaffolder/references/agents-templates.md) and create:
+- `.claude/agents/code-reviewer.yml` - Parallel code review agent
+- `.claude/agents/security-auditor.yml` - Security audit agent
+
+## Step 9: Generate Docs
 
 Read [references/docs-templates.md](../skills/project-scaffolder/references/docs-templates.md) and create:
 - `docs/architecture.md` - For existing projects, pre-fill Components section based on detected directories
 - `docs/decisions/.template.md`
 - `docs/runbooks/.template.md`
+- `docs/onboarding.md` - For existing projects, pre-fill prerequisites and setup steps
+- `docs/api-reference.md` - Only if project has API endpoints (detected from routes, handlers, controllers)
 
-## Step 8: Generate Module CLAUDE.md Files
+## Step 10: Generate Module CLAUDE.md Files
 
 **For new projects:**
 - `src/api/CLAUDE.md`
 - `src/persistence/CLAUDE.md`
+- `tests/unit/CLAUDE.md`
+- `tests/integration/CLAUDE.md`
 
 **For existing projects:**
 - Scan all top-level source directories
 - Create `CLAUDE.md` for each directory that doesn't have one
 - Auto-fill module role based on directory name and contained files
+- If `tests/` directory exists, create `tests/CLAUDE.md`
 
-## Step 9: Generate Supporting Files
+## Step 11: Generate MCP Configuration
+
+Read [references/mcp-json-template.md](../skills/project-scaffolder/references/mcp-json-template.md).
+
+Create `.mcp.json` with an empty configuration:
+
+```json
+{
+  "mcpServers": {}
+}
+```
+
+If project context suggests MCP integrations (e.g., GitHub remote exists, database config found), add commented example configurations.
+
+## Step 12: Generate Supporting Files
 
 Create (only if they don't already exist):
 - `README.md` with project overview and structure
-- `.gitignore` with patterns appropriate for the detected language
-- `tools/scripts/.gitkeep`
-- `tools/prompts/.gitkeep`
+- `.gitignore` with patterns appropriate for the detected language (include `.env`, `settings.local.json`)
+- `.env.example` from [references/docs-templates.md](../skills/project-scaffolder/references/docs-templates.md) - adapted to project type
+- `.editorconfig` with sensible defaults
 
-## Step 10: Initialize Git (Optional)
+Read [references/scripts-templates.md](../skills/project-scaffolder/references/scripts-templates.md) and create:
+- `scripts/setup.sh` - Project setup for new developers
+- `scripts/install-hooks.sh` - Git hooks installer
+
+Make scripts executable:
+
+```bash
+chmod +x scripts/*.sh
+```
+
+## Step 13: Initialize Git (Optional)
 
 If `.git/` doesn't already exist, ask the user if they want to initialize:
 
@@ -150,16 +204,13 @@ If `.git/` doesn't already exist, ask the user if they want to initialize:
 git init
 ```
 
-Create `.git/hooks/commit-msg` to auto-remove Co-Authored-By lines:
+Install Git hooks via the installer script:
 
 ```bash
-#!/bin/bash
-sed -i '/^Co-Authored-By:.*/d' "$1"
+bash scripts/install-hooks.sh
 ```
 
-```bash
-chmod +x .git/hooks/commit-msg
-```
+This installs the `commit-msg` hook that removes all Co-Authored-By lines from commit messages, preventing Claude and other AI assistants from appearing as contributors.
 
 Then stage and create initial commit:
 
@@ -168,13 +219,17 @@ git add -A
 git commit -m "Initial project structure for Claude Code"
 ```
 
-## Step 11: Summary
+## Step 14: Summary
 
 Display the created structure and explain the auto-sync mechanisms:
 
 1. **CLAUDE.md Auto-Sync Rules** - Plan mode exit triggers doc updates
 2. **Hook (check-doc-sync.sh)** - Write/Edit triggers missing doc detection
-3. **Skill (/sync-docs)** - Manual full documentation sync
-4. **Git Hook (commit-msg)** - Auto-remove Co-Authored-By lines
+3. **Hook (secret-scan.sh)** - PreCommit blocks commits containing secrets
+4. **Hook (session-context.sh)** - Session start loads project context
+5. **Hook (commit-msg)** - Auto-removes Co-Authored-By lines (AI contributor exclusion)
+6. **Skill (/sync-docs)** - Manual full documentation sync with quality scoring
+7. **Commands (/review, /test-all, /deploy)** - Common development workflows
+8. **Agents (code-reviewer, security-auditor)** - Parallel analysis agents
 
 If existing project was detected, highlight what was adapted vs created fresh.

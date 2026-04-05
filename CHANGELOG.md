@@ -12,11 +12,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-04-05
+
+### Added
+
+- `/add-runbook` command for creating operational runbooks from template with structured steps, verification, and rollback sections
+- `/add-adr` command for creating Architecture Decision Records with auto-numbering and options-considered format
+- `/health-check` command for validating entire project setup with health score (0-200, A-F grades)
+- PreCommit hook (`secret-scan.sh`) for scanning staged files for API keys, passwords, and tokens
+- SessionStart hook (`session-context.sh`) for loading project context at session start
+- Notification hook (`notify.sh`) for webhook alerts on significant events
+- Git commit-msg hook enhancement for case-insensitive Co-Authored-By removal (AI contributor exclusion)
+- Agent templates for generated projects: `code-reviewer` and `security-auditor`
+- Slash command templates for generated projects: `/review`, `/test-all`, `/deploy`
+- MCP configuration template (`.mcp.json`) with GitHub, Slack, PostgreSQL, Playwright examples
+- `onboarding.md` document template for new developer onboarding
+- `api-reference.md` document template for API documentation
+- `.env.example` template with security rules (no real secrets)
+- `scripts/setup.sh` and `scripts/install-hooks.sh` templates for generated projects
+- `tests/` directory structure generation (unit, integration) with CLAUDE.md
+- CLAUDE.md anti-pattern detection in `doc-sync-checker` (500+ lines, vague instructions, secrets, stale deps)
+- Runbook coverage check in `doc-sync-checker` agent (recommends runbooks based on project characteristics)
+- ADR freshness check in `doc-sync-checker` agent (flags stale or proposed ADRs)
+- Runbook audit phase in `/sync-docs` command (Phase 6)
+- Troubleshooting section in README.md (both English and Korean)
+- Example command output in README.md Usage section
+- `.gitignore`, `.editorconfig`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`
+- GitHub issue templates (bug report, feature request) and PR template
+
 ### Changed
 
-- Rewrite README.md as bilingual (English/Korean) format with shields.io badges and structured sections
+- **BREAKING:** `/init-project` now generates 14 steps (was 11), producing a more complete project structure
+- Rewrite README.md as bilingual (English/Korean) format with shields.io badges
+- Expand `doc-sync-checker` agent from 6 tasks to 9 tasks (runbook, ADR freshness, anti-patterns)
+- Expand settings.json template to include all 4 hook types (SessionStart, PreCommit, PostToolUse, Notification)
+- Expand skills-templates.md to include common slash command templates
+- Expand docs-templates.md to include onboarding, API reference, and .env templates
+- Expand SKILL.md knowledge base with extension types, anti-patterns, and security best practices
+- Fix installation instructions to use `git clone` workflow instead of missing setup script
+- Replace `tree` command with `find` in `/sync-docs` for cross-platform portability
+- Update author from "Claude Code Plugin" to "whchoi98" in plugin.json
+- Update email to whchoi98@gmail.com across all manifests
 
-## [2.0.0] - 2026-03-07
+## [1.0.0] - 2026-03-07
 
 ### Added
 
@@ -37,7 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructure repository as marketplace with plugin in `plugins/project-init/` subdirectory ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
 [Unreleased]: https://github.com/whchoi98/project-init/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/whchoi98/project-init/releases/tag/v2.0.0
+[2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
 
 ---
 
@@ -49,11 +88,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-04-05
+
+### Added
+
+- 운영 런북을 템플릿 기반으로 생성하는 `/add-runbook` 커맨드 추가 (검증, 롤백 섹션 포함)
+- 아키텍처 결정 기록(ADR)을 자동 번호 부여로 생성하는 `/add-adr` 커맨드 추가
+- 전체 프로젝트 설정을 검증하는 `/health-check` 커맨드 추가 (건강 점수 0-200, A-F 등급)
+- PreCommit 훅(`secret-scan.sh`) 추가: 스테이징된 파일에서 API 키, 비밀번호, 토큰 스캔
+- SessionStart 훅(`session-context.sh`) 추가: 세션 시작 시 프로젝트 컨텍스트 로딩
+- Notification 훅(`notify.sh`) 추가: 중요 이벤트 시 웹훅 알림 전송
+- Git commit-msg 훅 강화: 대소문자 무관 Co-Authored-By 제거 (AI 기여자 배제)
+- 생성 프로젝트용 에이전트 템플릿 추가: `code-reviewer`, `security-auditor`
+- 생성 프로젝트용 슬래시 커맨드 템플릿 추가: `/review`, `/test-all`, `/deploy`
+- MCP 설정 템플릿(`.mcp.json`) 추가: GitHub, Slack, PostgreSQL, Playwright 예시 포함
+- `onboarding.md` 문서 템플릿 추가: 신규 개발자 온보딩 가이드
+- `api-reference.md` 문서 템플릿 추가: API 문서화
+- `.env.example` 템플릿 추가: 보안 규칙 적용 (실제 시크릿 미포함)
+- `scripts/setup.sh`, `scripts/install-hooks.sh` 템플릿 추가
+- `tests/` 디렉토리 구조 생성 (unit, integration) 및 CLAUDE.md 포함
+- `doc-sync-checker`에 CLAUDE.md 안티패턴 감지 추가 (500줄 초과, 모호한 지시, 시크릿, 오래된 의존성)
+- `doc-sync-checker` 에이전트에 런북 커버리지 검사 추가 (프로젝트 특성에 따라 런북 추천)
+- `doc-sync-checker` 에이전트에 ADR 최신성 검사 추가 (오래된 Proposed 상태 ADR 감지)
+- `/sync-docs` 커맨드에 런북 감사 단계(Phase 6) 추가
+- README.md에 문제 해결(Troubleshooting) 섹션 및 실행 결과 예시 추가
+- `.gitignore`, `.editorconfig`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` 추가
+- GitHub 이슈 템플릿(버그 리포트, 기능 요청) 및 PR 템플릿 추가
+
 ### Changed
 
-- README.md를 이중 언어(영어/한국어) 형식으로 전면 재작성, shields.io 뱃지 및 구조화된 섹션 적용
+- **BREAKING:** `/init-project`가 14단계로 확장 (기존 11단계), 더 완전한 프로젝트 구조 생성
+- README.md를 이중 언어(영어/한국어) 형식으로 shields.io 뱃지와 함께 전면 재작성
+- `doc-sync-checker` 에이전트를 6개에서 9개 태스크로 확장 (런북, ADR 최신성, 안티패턴)
+- settings.json 템플릿을 4개 훅 유형 모두 포함하도록 확장 (SessionStart, PreCommit, PostToolUse, Notification)
+- skills-templates.md를 일반 슬래시 커맨드 템플릿 포함하도록 확장
+- docs-templates.md를 온보딩, API 참조, .env 템플릿 포함하도록 확장
+- SKILL.md를 확장 유형, 안티패턴, 보안 모범 사례 포함하도록 확장
+- 설치 안내를 누락된 설정 스크립트 대신 `git clone` 워크플로우로 수정
+- `/sync-docs`의 `tree` 명령어를 크로스 플랫폼 호환을 위해 `find`로 교체
+- plugin.json의 author를 "Claude Code Plugin"에서 "whchoi98"로 변경
+- 모든 매니페스트의 이메일을 whchoi98@gmail.com으로 변경
 
-## [2.0.0] - 2026-03-07
+## [1.0.0] - 2026-03-07
 
 ### Added
 
@@ -74,4 +150,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 리포지토리를 마켓플레이스 구조로 변경, 플러그인을 `plugins/project-init/` 하위 디렉토리로 이동 ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
 [Unreleased]: https://github.com/whchoi98/project-init/compare/v2.0.0...HEAD
-[2.0.0]: https://github.com/whchoi98/project-init/releases/tag/v2.0.0
+[2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
+[1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0

@@ -49,13 +49,68 @@ Look for commits that suggest architectural decisions:
 
 Check if corresponding ADRs exist in `docs/decisions/`.
 
-### 5. Check Root CLAUDE.md Freshness
+### 5. Check Runbook Coverage
+
+Detect operational aspects of the project and check if corresponding runbooks exist:
+
+```bash
+ls docs/runbooks/*.md 2>/dev/null
+```
+
+Recommend runbooks based on project characteristics:
+- Has `Dockerfile`, `docker-compose.yml`, CDK, SAM, or Terraform -> recommend `deploy-production.md`
+- Has migration files or database config -> recommend `database-migration.md`
+- Has monitoring/alerting config -> recommend `incident-response.md`
+- Has multiple environments (staging, production) -> recommend `environment-setup.md`
+
+### 6. Check ADR Freshness
+
+Review existing ADRs for staleness:
+
+```bash
+find docs/decisions -name 'ADR-*.md' -not -name '.template.md' 2>/dev/null
+```
+
+For each ADR:
+- Read the Status field (Proposed, Accepted, Deprecated, Superseded)
+- Check last modified date via `git log -1 --format="%ai" -- <adr-file>`
+- Flag ADRs in "Proposed" status older than 30 days
+- Flag ADRs in "Accepted" status where the referenced technology is no longer in use
+
+### 7. Check Root CLAUDE.md Freshness
 
 - Compare Tech Stack section against actual dependency files
 - Compare Project Structure section against actual directory tree
 - Compare Key Commands against actual build system (package.json scripts, Makefile, etc.)
 
-### 6. Score Each CLAUDE.md
+### 8. CLAUDE.md Anti-Pattern Detection
+
+For each CLAUDE.md file, check for these anti-patterns and apply score deductions:
+
+| Anti-Pattern | Detection | Deduction |
+|-------------|-----------|-----------|
+| Over 500 lines | `wc -l` > 500 | -15 (causes context bloat) |
+| Vague instructions | Contains "write good code", "follow best practices" without specifics | -10 |
+| Duplicated docs | Embeds full content instead of linking (e.g., repeats README sections) | -10 |
+| No test guidance | No mention of testing commands, frameworks, or patterns | -10 |
+| No error patterns | No mention of error handling conventions | -5 |
+| Contains secrets | Patterns matching API keys, passwords, tokens | -20 (CRITICAL) |
+| Stale dependencies | Lists dependencies not in current package.json/pyproject.toml/go.mod | -10 |
+
+Detection commands:
+
+```bash
+wc -l <claude_md_file>
+```
+
+Use Grep to search for vague patterns:
+- "write good code", "follow best practices", "use common sense"
+- "TODO", "FIXME" (indicating incomplete documentation)
+
+Use Grep to search for secret patterns:
+- `AKIA[0-9A-Z]{16}`, `sk-`, `password\s*[:=]`, `api[_-]?key\s*[:=]`
+
+### 9. Score Each CLAUDE.md
 
 For each CLAUDE.md file found, score against these criteria (total 100):
 
@@ -98,9 +153,28 @@ Return a structured report:
 - Commit abc1234 added Redis dependency - no ADR found
 - Commit def5678 changed auth from JWT to session-based - no ADR found
 
+### Runbook Coverage
+- docs/runbooks/ contains N runbook(s)
+- Missing recommended runbooks:
+  - No deployment runbook found (project has Dockerfile/CDK/SAM)
+  - No incident-response runbook found
+  - No database-migration runbook found (project has migration files)
+
+### ADR Freshness
+- docs/decisions/ contains N ADR(s)
+- ADR-001-use-postgresql.md - Status: Accepted - last modified 30 days ago - CURRENT
+- ADR-002-rest-api-design.md - Status: Accepted - last modified 90 days ago - REVIEW RECOMMENDED
+
+### Anti-Patterns Detected
+- ./CLAUDE.md: 523 lines (over 500 limit) - consider splitting into module CLAUDE.md files
+- ./src/api/CLAUDE.md: Contains vague instruction "follow best practices" at line 15
+- ./CLAUDE.md: Lists "express" in Tech Stack but package.json shows "fastify"
+
 ### Summary
 - X modules missing documentation
 - Y documents potentially stale
 - Z architectural decisions undocumented
-- Average quality score: XX/100
+- R recommended runbooks missing
+- P anti-patterns detected
+- Average quality score: XX/100 (after anti-pattern deductions)
 ```
