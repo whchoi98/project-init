@@ -12,6 +12,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Automated test framework (`tests/run-all.sh`) with 113 tests across 3 categories: hooks (27), secret patterns (22), structure (64)
+- Test fixture files for secret pattern validation (true positives and false positives)
+- Error recovery sections in all generated commands: `/deploy` (5 scenarios including full rollback), `/review` (3 scenarios), `/test-all` (failure pattern table + multi-failure diagnosis)
+- Structured output schemas for agents: `code-reviewer` (Verdict: PASS/WARN/FAIL, Summary table, Guideline field) and `security-auditor` (category breakdown, Recommendations section, Passed Checks checklist)
+- Deny list in `settings.json` blocking dangerous commands: `rm -rf`, `git push --force`, `git reset --hard`, `eval`, `curl|bash`, `python3 -c import os`
+- `tests-templates.md` reference template for test framework generation by `/init-project`
+- Module `CLAUDE.md` files for `tests/`, `docs/`, `scripts/` directories
+- Harness Engineering section in README explaining the plugin as a harness automation tool
+- Recommended Workflow section in README: brainstorm → plan → implement → /init-project → /sync-docs
+
+### Changed
+
+- **BREAKING:** `/init-project` now generates 15 steps (was 14), adding test framework generation (Step 14)
+- Secret scan patterns hardened: replaced broad base64 pattern with context-aware AWS Secret Key detection; added Stripe, Google, Azure, GitHub token patterns
+- Tool scoping hardened: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` removed in favor of Read tool
+- `check-doc-sync.sh` hook walks parent directories to find `CLAUDE.md` instead of only checking the immediate directory
+- Reference templates (9 total, was 8) fully synced with project-level improvements
+- Plugin version synchronized: `marketplace.json` and `plugin.json` both at 2.0.0
+
+### Fixed
+
+- Version mismatch between `marketplace.json` (1.0.0) and `plugin.json` (2.0.0)
+- `check-doc-sync.sh` false warnings for nested directories where parent has `CLAUDE.md`
+- Secret scan false positives from overly broad AWS Secret Key pattern
+- GitHub Push Protection blocking test fixtures (now runtime-constructed)
+
 ## [2.0.0] - 2026-04-05
 
 ### Added
@@ -90,6 +118,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+
+- 자동화된 테스트 프레임워크(`tests/run-all.sh`) 추가: 3개 카테고리 113개 테스트 (훅 27, 시크릿 패턴 22, 구조 64)
+- 시크릿 패턴 검증용 테스트 픽스처 파일 추가 (True Positive / False Positive)
+- 모든 생성 커맨드에 에러 복구 섹션 추가: `/deploy` (전체 롤백 포함 5개 시나리오), `/review` (3개 시나리오), `/test-all` (실패 패턴 표 + 다중 실패 진단)
+- 에이전트 구조화된 출력 스키마 추가: `code-reviewer` (Verdict, Summary 테이블, Guideline 필드), `security-auditor` (카테고리별 분류, Recommendations, Passed Checks 체크리스트)
+- `settings.json` Deny 목록 추가: `rm -rf`, `git push --force`, `git reset --hard`, `eval`, `curl|bash`, `python3 -c import os` 차단
+- `/init-project`의 테스트 프레임워크 생성을 위한 `tests-templates.md` 참조 템플릿 추가
+- `tests/`, `docs/`, `scripts/` 디렉토리용 모듈 `CLAUDE.md` 추가
+- README에 하네스 엔지니어링 섹션 추가: 플러그인을 하네스 자동화 도구로 설명
+- README에 권장 워크플로우 섹션 추가: brainstorm → plan → implement → /init-project → /sync-docs
+
+### Changed
+
+- **BREAKING:** `/init-project`가 15단계로 확장 (기존 14단계), 테스트 프레임워크 생성(Step 14) 추가
+- 시크릿 스캔 패턴 강화: 광범위 Base64 패턴을 컨텍스트 기반 AWS Secret Key 감지로 교체; Stripe, Google, Azure, GitHub 토큰 패턴 추가
+- 도구 범위 강화: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` 제거 후 Read 도구 사용
+- `check-doc-sync.sh` 훅이 부모 디렉토리를 탐색하여 `CLAUDE.md`를 찾도록 개선
+- 참조 템플릿 9개(기존 8개) 전체를 프로젝트 수준 개선 사항과 동기화
+- 플러그인 버전 동기화: `marketplace.json`과 `plugin.json` 모두 2.0.0
+
+### Fixed
+
+- `marketplace.json` (1.0.0)과 `plugin.json` (2.0.0) 간 버전 불일치 수정
+- 부모 디렉토리에 `CLAUDE.md`가 있는데 하위 디렉토리에서 거짓 경고하는 `check-doc-sync.sh` 버그 수정
+- 지나치게 광범위한 AWS Secret Key 패턴으로 인한 시크릿 스캔 거짓 양성 수정
+- GitHub Push Protection이 테스트 픽스처를 차단하는 문제 수정 (런타임 조합으로 전환)
 
 ## [2.0.0] - 2026-04-05
 

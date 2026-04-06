@@ -37,7 +37,11 @@ In short, project-init is a **harness engineering automation tool** — it gener
 - **4-Layer Auto-Sync Workflow** -- Generated projects include Plan mode rules, PostToolUse hooks, the `/sync-docs` command, and a Git commit-msg hook, ensuring documentation stays current as code evolves.
 - **Plan Mode Integration** -- Run `/init-project` after a `/plan` session and the generated structure reflects all architectural decisions discussed, including pre-filled `architecture.md` and auto-created ADRs.
 - **Confidence-Based Code Review** -- The generated `code-review` skill scores issues 0-100 and only reports those above 75, filtering out false positives.
-- **Security-First Hooks** -- PreCommit secret scanning blocks commits containing API keys and passwords. The commit-msg hook removes AI Co-Authored-By lines automatically.
+- **Security-First Hooks** -- PreCommit secret scanning with 17+ patterns (AWS, Stripe, Google, Azure, GitHub, Slack) blocks commits containing secrets. Context-aware detection reduces false positives. The commit-msg hook removes AI Co-Authored-By lines automatically.
+- **Tool Scoping & Deny List** -- Generated `settings.json` enforces least-privilege tool permissions and blocks dangerous commands (`rm -rf`, `git push --force`, `eval`, `curl|bash`).
+- **Automated Test Framework** -- Generated projects include 113+ tests validating hook scripts, secret scan patterns (TP/FP), plugin structure, version consistency, and CLAUDE.md content.
+- **Error Recovery Guides** -- Every generated command includes recovery procedures: deploy rollback (5 scenarios), review fallbacks (3 scenarios), test failure diagnosis table.
+- **Structured Agent Output** -- Generated agents return results in defined Markdown schemas with Verdict (PASS/WARN/FAIL), Summary tables, and actionable recommendations.
 - **Full Project Lifecycle** -- Generated projects include slash commands (/review, /test-all, /deploy), agent definitions (code-reviewer, security-auditor), MCP configuration, onboarding docs, and operational scripts.
 
 ## Prerequisites
@@ -177,7 +181,7 @@ The most effective workflow is to run `/init-project` **after implementation**, 
 
 | Command | Description |
 |---------|-------------|
-| `/project-init:init-project [path]` | Initialize a Claude Code project structure (14 steps). Detects existing projects and adapts. |
+| `/project-init:init-project [path]` | Initialize a Claude Code project structure (15 steps). Detects existing projects and adapts. |
 | `/project-init:sync-docs` | Synchronize all documentation with quality scoring, runbook audit, and anti-pattern detection. |
 | `/project-init:add-module <path>` | Add a new module directory with CLAUDE.md and update architecture docs. |
 | `/project-init:add-runbook <name>` | Create an operational runbook with verification and rollback sections. |
@@ -186,9 +190,9 @@ The most effective workflow is to run `/init-project` **after implementation**, 
 
 ### Command Details
 
-**`/project-init:init-project [path]`** -- 14-step project initialization
+**`/project-init:init-project [path]`** -- 15-step project initialization
 
-Generates a complete Claude Code project structure with CLAUDE.md, hooks (5 scripts), skills (4), slash commands (3), agents (2), docs templates, MCP config, and operational scripts. Detects existing projects (Node.js, Python, Go, Rust, Java/Kotlin) and adapts without overwriting.
+Generates a complete Claude Code project structure with CLAUDE.md, hooks (5 scripts), skills (4), slash commands (3), agents (2), test framework (113+ tests), docs templates, MCP config, deny list, and operational scripts. Detects existing projects (Node.js, Python, Go, Rust, Java/Kotlin) and adapts without overwriting.
 
 **`/project-init:sync-docs`** -- 8-phase documentation synchronization
 
@@ -237,7 +241,7 @@ project-init/                              # Marketplace root
         └── skills/
             └── project-scaffolder/
                 ├── SKILL.md               # Structure pattern knowledge skill
-                └── references/            # 8 template reference files
+                └── references/            # 9 template reference files
                     ├── claude-md-template.md
                     ├── docs-templates.md
                     ├── hook-scripts.md
@@ -245,7 +249,8 @@ project-init/                              # Marketplace root
                     ├── skills-templates.md
                     ├── agents-templates.md
                     ├── mcp-json-template.md
-                    └── scripts-templates.md
+                    ├── scripts-templates.md
+                    └── tests-templates.md
 ```
 
 ### Generated Project Structure
@@ -288,12 +293,17 @@ project/
 ├── scripts/
 │   ├── setup.sh                       # Project setup for new developers
 │   └── install-hooks.sh              # Git hooks installer
+├── tests/
+│   ├── run-all.sh                     # Test runner (TAP-style, 113+ tests)
+│   ├── hooks/
+│   │   ├── test-hooks.sh             # Hook validation tests
+│   │   └── test-secret-patterns.sh   # Secret TP/FP tests
+│   ├── structure/
+│   │   └── test-plugin-structure.sh  # Manifest and file validation
+│   └── fixtures/                      # Test data (secret samples)
 ├── tools/
 │   └── prompts/
-├── tests/
-│   ├── unit/CLAUDE.md
-│   └── integration/CLAUDE.md
-└── src/
+└── src/                               # (new projects only)
     ├── api/CLAUDE.md                  # API module context
     └── persistence/CLAUDE.md          # Persistence module context
 ```
@@ -412,7 +422,11 @@ Claude Code는 **하네스(Harness)** 위에서 동작합니다 — hooks, skill
 - **4단계 자동 동기화 워크플로우** -- 생성된 프로젝트에 Plan 모드 규칙, PostToolUse 훅, `/sync-docs` 커맨드, Git commit-msg 훅이 설치되어 코드 변경 시 문서가 자동으로 따라갑니다.
 - **Plan 모드 연동** -- `/plan` 세션 이후 `/init-project`를 실행하면 논의한 아키텍처 결정이 반영된 구조가 생성됩니다. `architecture.md`가 사전 작성되고 ADR이 자동 생성됩니다.
 - **confidence 기반 코드 리뷰** -- 생성되는 `code-review` 스킬은 이슈를 0-100점으로 평가하고, 75점 이상만 보고하여 거짓 양성을 필터링합니다.
-- **보안 우선 훅** -- PreCommit 시크릿 스캐닝이 API 키와 비밀번호가 포함된 커밋을 차단합니다. commit-msg 훅이 AI Co-Authored-By 라인을 자동 제거합니다.
+- **보안 우선 훅** -- 17개 이상의 패턴(AWS, Stripe, Google, Azure, GitHub, Slack)으로 시크릿을 감지하는 PreCommit 스캐닝이 커밋을 차단합니다. 컨텍스트 기반 감지로 거짓 양성을 줄입니다. commit-msg 훅이 AI Co-Authored-By 라인을 자동 제거합니다.
+- **도구 범위 제한 및 Deny 목록** -- 생성되는 `settings.json`이 최소 권한 원칙을 적용하고, 위험한 명령어(`rm -rf`, `git push --force`, `eval`, `curl|bash`)를 차단합니다.
+- **자동화된 테스트 프레임워크** -- 생성 프로젝트에 훅 스크립트, 시크릿 스캔 패턴(TP/FP), 플러그인 구조, 버전 일관성, CLAUDE.md 내용을 검증하는 113개 이상의 테스트가 포함됩니다.
+- **에러 복구 가이드** -- 모든 생성 커맨드에 복구 절차가 포함됩니다: deploy 롤백(5개 시나리오), review 폴백(3개 시나리오), test 실패 진단 표.
+- **구조화된 에이전트 출력** -- 생성 에이전트가 정의된 Markdown 스키마로 결과를 반환합니다: Verdict (PASS/WARN/FAIL), Summary 테이블, 실행 가능한 권장 사항.
 - **전체 프로젝트 라이프사이클** -- 생성된 프로젝트에 슬래시 커맨드(/review, /test-all, /deploy), 에이전트 정의(code-reviewer, security-auditor), MCP 설정, 온보딩 문서, 운영 스크립트가 포함됩니다.
 
 ## 사전 요구 사항
@@ -552,7 +566,7 @@ $ /sync-docs
 
 | 커맨드 | 설명 |
 |--------|------|
-| `/project-init:init-project [path]` | Claude Code 프로젝트 구조를 초기화합니다 (14단계). 기존 프로젝트를 감지하여 적응합니다. |
+| `/project-init:init-project [path]` | Claude Code 프로젝트 구조를 초기화합니다 (15단계). 기존 프로젝트를 감지하여 적응합니다. |
 | `/project-init:sync-docs` | 모든 문서를 동기화합니다. 품질 점수, 런북 감사, 안티패턴 감지를 포함합니다. |
 | `/project-init:add-module <path>` | 새 모듈 디렉토리를 생성하고 CLAUDE.md와 아키텍처 문서를 업데이트합니다. |
 | `/project-init:add-runbook <name>` | 검증 및 롤백 섹션을 포함한 운영 런북을 생성합니다. |
@@ -561,9 +575,9 @@ $ /sync-docs
 
 ### 커맨드 상세
 
-**`/project-init:init-project [path]`** -- 14단계 프로젝트 초기화
+**`/project-init:init-project [path]`** -- 15단계 프로젝트 초기화
 
-CLAUDE.md, 훅(5개 스크립트), 스킬(4개), 슬래시 커맨드(3개), 에이전트(2개), 문서 템플릿, MCP 설정, 운영 스크립트를 포함하는 완전한 Claude Code 프로젝트 구조를 생성합니다. 기존 프로젝트(Node.js, Python, Go, Rust, Java/Kotlin)를 감지하여 덮어쓰지 않고 적응합니다.
+CLAUDE.md, 훅(5개 스크립트), 스킬(4개), 슬래시 커맨드(3개), 에이전트(2개), 테스트 프레임워크(113개 이상 테스트), 문서 템플릿, MCP 설정, Deny 목록, 운영 스크립트를 포함하는 완전한 Claude Code 프로젝트 구조를 생성합니다. 기존 프로젝트(Node.js, Python, Go, Rust, Java/Kotlin)를 감지하여 덮어쓰지 않고 적응합니다.
 
 **`/project-init:sync-docs`** -- 8단계 문서 동기화
 
@@ -612,7 +626,7 @@ project-init/                              # 마켓플레이스 루트
         └── skills/
             └── project-scaffolder/
                 ├── SKILL.md               # 구조 패턴 지식 스킬
-                └── references/            # 8개 템플릿 참조 파일
+                └── references/            # 9개 템플릿 참조 파일
                     ├── claude-md-template.md
                     ├── docs-templates.md
                     ├── hook-scripts.md
@@ -620,7 +634,8 @@ project-init/                              # 마켓플레이스 루트
                     ├── skills-templates.md
                     ├── agents-templates.md
                     ├── mcp-json-template.md
-                    └── scripts-templates.md
+                    ├── scripts-templates.md
+                    └── tests-templates.md
 ```
 
 ### 생성되는 프로젝트 구조
@@ -663,12 +678,17 @@ project/
 ├── scripts/
 │   ├── setup.sh                       # 신규 개발자용 프로젝트 설정
 │   └── install-hooks.sh              # Git 훅 설치
+├── tests/
+│   ├── run-all.sh                     # 테스트 러너 (TAP-style, 113+ 테스트)
+│   ├── hooks/
+│   │   ├── test-hooks.sh             # 훅 검증 테스트
+│   │   └── test-secret-patterns.sh   # 시크릿 TP/FP 테스트
+│   ├── structure/
+│   │   └── test-plugin-structure.sh  # 매니페스트 및 파일 검증
+│   └── fixtures/                      # 테스트 데이터 (시크릿 샘플)
 ├── tools/
 │   └── prompts/
-├── tests/
-│   ├── unit/CLAUDE.md
-│   └── integration/CLAUDE.md
-└── src/
+└── src/                               # (새 프로젝트만 해당)
     ├── api/CLAUDE.md                  # API 모듈 컨텍스트
     └── persistence/CLAUDE.md          # 영속성 모듈 컨텍스트
 ```
