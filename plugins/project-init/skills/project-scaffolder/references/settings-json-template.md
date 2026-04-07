@@ -17,8 +17,8 @@ Use this template for `.claude/settings.json`.
       "Bash(git reset --hard:*)",
       "Bash(git clean -f:*)",
       "Bash(chmod 777:*)",
-      "Bash(curl:* | bash)",
-      "Bash(wget:* | bash)",
+      "Bash(curl*| bash*)",
+      "Bash(wget*| bash*)",
       "Bash(eval:*)",
       "Bash(python3 -c*import os*)"
     ]
