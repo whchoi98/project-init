@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`PreCommit` → `PreToolUse`**: `PreCommit` is not a valid Claude Code hook event; replaced with `PreToolUse` (matcher: `Bash`) across all templates, commands, and documentation (15 files)
 - **Invalid deny pattern**: `Bash(python3 -c:*import os*)` — `:*` mid-pattern breaks Claude Code's parser; fixed to `Bash(python3 -c*import os*)`
+- **Invalid deny pattern**: `Bash(curl:* | bash)` and `Bash(wget:* | bash)` — `:*` mid-pattern causes settings.json parse failure; fixed to glob wildcards `Bash(curl*| bash*)` and `Bash(wget*| bash*)` in both `settings.json` and `settings-json-template.md`
 - Template count references updated from 8 to 9 in architecture.md, SKILL.md, onboarding.md, and structure tests
 - Phantom `scripts/deploy.sh` reference removed from architecture.md (file doesn't exist in this repo)
 - Empty `tools/prompts/` removed from CLAUDE.md project structure
@@ -149,6 +150,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **`PreCommit` → `PreToolUse`**: `PreCommit`은 유효한 Claude Code 훅 이벤트가 아님; 모든 템플릿, 커맨드, 문서에서 `PreToolUse` (matcher: `Bash`)로 교체 (15개 파일)
 - **잘못된 deny 패턴**: `Bash(python3 -c:*import os*)` — 패턴 중간의 `:*`가 Claude Code 파서를 깨뜨림; `Bash(python3 -c*import os*)`로 수정
+- **잘못된 deny 패턴**: `Bash(curl:* | bash)` 및 `Bash(wget:* | bash)` — 패턴 중간의 `:*`로 settings.json 파싱 실패; glob 와일드카드 `Bash(curl*| bash*)` 및 `Bash(wget*| bash*)`로 수정 (`settings.json` 및 `settings-json-template.md` 양쪽 모두)
 - 템플릿 수 참조를 8에서 9로 업데이트 (architecture.md, SKILL.md, onboarding.md, 구조 테스트)
 - architecture.md에서 존재하지 않는 `scripts/deploy.sh` 참조 제거
 - CLAUDE.md 프로젝트 구조에서 빈 `tools/prompts/` 제거
