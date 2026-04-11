@@ -47,22 +47,33 @@ If the user provides minimal input:
 git log --oneline -10 2>/dev/null
 ```
 
-## Step 4: Read Template
+## Step 4: Read Templates and Style Guide
 
-Read the ADR template for structure reference:
+Read the shared writing style guide and ADR template:
 
 ```
+Read file: skills/project-scaffolder/references/writing-style-guide.md
 Read file: skills/project-scaffolder/references/docs-templates.md
 ```
 
+Follow all bilingual structure, formatting, and style rules from the writing style guide.
 Use the ADR Template section as the base structure.
 
-## Step 5: Create ADR
+## Step 5: Create Bilingual ADR
 
-Create `docs/decisions/ADR-NNN-<title>.md`:
+Create `docs/decisions/ADR-NNN-<title>.md` with bilingual (English/Korean) structure:
 
 ```markdown
 # ADR-NNN: <Title in Natural Language>
+
+<p align="center">
+  <a href="#-한국어"><kbd>한국어</kbd></a>&nbsp;&nbsp;&nbsp;
+  <a href="#-english"><kbd>English</kbd></a>
+</p>
+
+---
+
+# English
 
 ## Status
 <Proposed | Accepted | Deprecated | Superseded>
@@ -93,6 +104,40 @@ Create `docs/decisions/ADR-NNN-<title>.md`:
 
 ## References
 - <links to relevant docs, issues, or discussions>
+
+---
+
+# 한국어
+
+## 상태
+<제안됨 | 승인됨 | 더 이상 사용되지 않음 | 대체됨>
+
+## 배경
+<결정이 필요한 이유를 설명하는 배경>
+
+## 검토한 옵션
+
+### 옵션 1: <이름>
+- **장점**: <이점>
+- **단점**: <단점>
+
+### 옵션 2: <이름>
+- **장점**: <이점>
+- **단점**: <단점>
+
+## 결정
+<내려진 결정과 그 근거>
+
+## 영향
+
+### 긍정적
+- <긍정적 영향>
+
+### 부정적
+- <부정적 영향 또는 트레이드오프>
+
+## 참고 자료
+- <관련 문서, 이슈, 또는 논의 링크>
 ```
 
 Key principles:
@@ -100,6 +145,9 @@ Key principles:
 - At least 2 options must be listed (including the chosen one)
 - Consequences must include **both positive and negative** impacts
 - References should link to relevant issues, PRs, or external docs
+- Both language sections must contain identical information
+- English uses imperative mood; Korean uses 경어체 (~합니다)
+- No emojis; code blocks must specify the language
 
 ## Step 6: Update docs/architecture.md
 
@@ -111,7 +159,17 @@ Read `docs/architecture.md`. If the decision impacts the architecture:
 
 If the root `CLAUDE.md` has an Architecture Decisions or Conventions section, add a reference to the new ADR.
 
-## Step 8: Summary
+## Step 8: Validate Bilingual Output
+
+After writing the ADR, verify:
+
+- [ ] Language toggle links correctly point to `#english` and `#한국어`
+- [ ] Both language sections have identical structure and information
+- [ ] No emojis in the document
+- [ ] Code blocks specify the language
+- [ ] Status values are correctly translated in both sections
+
+## Step 9: Summary
 
 Display:
 - Created ADR file path (e.g. `docs/decisions/ADR-003-use-postgresql.md`)

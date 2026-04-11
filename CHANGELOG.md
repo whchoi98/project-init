@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `writing-style-guide.md` shared reference template for consistent style and bilingual rules across all document types
+- Bilingual (EN/KR) structure for ADR templates with language toggle and translated section headings
+- Bilingual (EN/KR) structure for Runbook templates with language toggle and translated section headings
+- Bilingual output validation step in `/add-adr` (Step 8) and `/add-runbook` (Step 7)
 - `/generate-readme` command for standalone bilingual (EN/KR) README.md generation with auto-detection and shields.io badges
 - `/generate-changelog` command for standalone bilingual (EN/KR) CHANGELOG.md generation following Keep a Changelog convention
 - `readme-template.md` and `changelog-template.md` reference templates for README/CHANGELOG generation rules
@@ -34,8 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING:** `/init-project` now generates 17 steps (was 15), adding bilingual README.md (Step 12) and CHANGELOG.md (Step 13) generation
-- `/sync-docs` expanded to 9 phases (was 8), adding full README.md sync (Phase 7) and CHANGELOG.md sync (Phase 8)
-- Reference templates expanded to 11 (was 9) with readme-template.md and changelog-template.md
+- `/sync-docs` expanded to 11 phases (was 9), adding shared style guide read (Phase 0), README.md sync (Phase 8), and CHANGELOG.md sync (Phase 9)
+- All document generation commands (`/generate-readme`, `/generate-changelog`, `/add-adr`, `/add-runbook`, `/sync-docs`) now reference shared `writing-style-guide.md`
+- `/add-adr` generates bilingual ADR with English and Korean sections
+- `/add-runbook` generates bilingual Runbook with English and Korean sections
+- Reference templates expanded to 12 (was 9) with writing-style-guide.md, readme-template.md, and changelog-template.md
 - Secret scan patterns hardened: replaced broad base64 pattern with context-aware AWS Secret Key detection; added Stripe, Google, Azure, GitHub token patterns
 - Tool scoping hardened: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` removed in favor of Read tool
 - `check-doc-sync.sh` hook walks parent directories to find `CLAUDE.md` instead of only checking the immediate directory
@@ -136,6 +143,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 모든 문서 유형에 일관된 스타일 및 이중 언어 규칙을 적용하는 공통 `writing-style-guide.md` 참조 템플릿 추가
+- ADR 템플릿에 이중 언어(EN/KR) 구조 추가 (언어 토글 및 번역된 섹션 제목)
+- Runbook 템플릿에 이중 언어(EN/KR) 구조 추가 (언어 토글 및 번역된 섹션 제목)
+- `/add-adr` (Step 8) 및 `/add-runbook` (Step 7)에 이중 언어 출력 검증 단계 추가
 - 이중 언어(EN/KR) README.md를 자동 감지와 shields.io 뱃지로 생성하는 `/generate-readme` 커맨드 추가
 - Keep a Changelog 규약에 따라 이중 언어(EN/KR) CHANGELOG.md를 생성하는 `/generate-changelog` 커맨드 추가
 - README/CHANGELOG 생성 규칙을 정의하는 `readme-template.md`, `changelog-template.md` 참조 템플릿 추가
@@ -156,8 +167,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING:** `/init-project`가 17단계로 확장 (기존 15단계), 이중 언어 README.md (Step 12) 및 CHANGELOG.md (Step 13) 생성 추가
-- `/sync-docs`가 9단계로 확장 (기존 8단계), 전체 README.md 동기화 (Phase 7) 및 CHANGELOG.md 동기화 (Phase 8) 추가
-- 참조 템플릿 11개로 확장 (기존 9개), readme-template.md 및 changelog-template.md 추가
+- `/sync-docs`가 11단계로 확장 (기존 9단계), 공통 스타일 가이드 읽기 (Phase 0), README.md 동기화 (Phase 8), CHANGELOG.md 동기화 (Phase 9) 추가
+- 모든 문서 생성 커맨드(`/generate-readme`, `/generate-changelog`, `/add-adr`, `/add-runbook`, `/sync-docs`)가 공통 `writing-style-guide.md` 참조
+- `/add-adr`가 영어/한국어 이중 언어 ADR 생성
+- `/add-runbook`이 영어/한국어 이중 언어 Runbook 생성
+- 참조 템플릿 12개로 확장 (기존 9개), writing-style-guide.md, readme-template.md, changelog-template.md 추가
 - 시크릿 스캔 패턴 강화: 광범위 Base64 패턴을 컨텍스트 기반 AWS Secret Key 감지로 교체; Stripe, Google, Azure, GitHub 토큰 패턴 추가
 - 도구 범위 강화: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` 제거 후 Read 도구 사용
 - `check-doc-sync.sh` 훅이 부모 디렉토리를 탐색하여 `CLAUDE.md`를 찾도록 개선

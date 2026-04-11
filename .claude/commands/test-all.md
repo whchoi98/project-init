@@ -15,10 +15,10 @@ Execute the harness test suite:
 bash tests/run-all.sh
 ```
 
-This runs 113 tests across 3 categories:
+This runs 114 tests across 3 categories:
 - **Hook tests** (27): Syntax, permissions, registration, behavior
 - **Secret pattern tests** (22): True positive detection, false positive rejection
-- **Structure tests** (64): Manifests, version sync, file existence, CLAUDE.md content
+- **Structure tests** (65): Manifests, version sync, file existence, CLAUDE.md content
 
 ## Step 2: Analyze Results
 

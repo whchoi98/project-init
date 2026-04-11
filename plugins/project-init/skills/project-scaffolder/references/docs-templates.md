@@ -167,8 +167,19 @@ Format: `<What was decided> -- <Why this choice was made over alternatives>`
 
 Path: `docs/decisions/.template.md`
 
+**Style**: Follow [writing-style-guide.md](writing-style-guide.md) for bilingual structure and formatting rules.
+
 ```markdown
 # ADR-000: Title
+
+<p align="center">
+  <a href="#-한국어"><kbd>한국어</kbd></a>&nbsp;&nbsp;&nbsp;
+  <a href="#-english"><kbd>English</kbd></a>
+</p>
+
+---
+
+# English
 
 ## Status
 Proposed | Accepted | Deprecated | Superseded
@@ -196,6 +207,43 @@ Proposed | Accepted | Deprecated | Superseded
 
 ### Negative
 - <negative impact or trade-off>
+
+## References
+- <links to relevant docs, issues, or discussions>
+
+---
+
+# 한국어
+
+## 상태
+제안됨 | 승인됨 | 더 이상 사용되지 않음 | 대체됨
+
+## 배경
+<!-- 결정이 필요한 이유를 설명하는 배경 -->
+
+## 검토한 옵션
+
+### 옵션 1: <이름>
+- **장점**: <이점>
+- **단점**: <단점>
+
+### 옵션 2: <이름>
+- **장점**: <이점>
+- **단점**: <단점>
+
+## 결정
+<!-- 내려진 결정과 그 근거 -->
+
+## 영향
+
+### 긍정적
+- <긍정적 영향>
+
+### 부정적
+- <부정적 영향 또는 트레이드오프>
+
+## 참고 자료
+- <관련 문서, 이슈, 또는 논의 링크>
 ```
 
 ### ADR Numbering Convention
@@ -216,8 +264,19 @@ Proposed | Accepted | Deprecated | Superseded
 
 Path: `docs/runbooks/.template.md`
 
+**Style**: Follow [writing-style-guide.md](writing-style-guide.md) for bilingual structure and formatting rules.
+
 ```markdown
 # Runbook: Title
+
+<p align="center">
+  <a href="#-한국어"><kbd>한국어</kbd></a>&nbsp;&nbsp;&nbsp;
+  <a href="#-english"><kbd>English</kbd></a>
+</p>
+
+---
+
+# English
 
 ## Overview
 <!-- Purpose of this runbook -->
@@ -245,6 +304,37 @@ Path: `docs/runbooks/.template.md`
 
 ## Notes
 - Last verified: YYYY-MM-DD
+
+---
+
+# 한국어
+
+## 개요
+<!-- 이 런북의 목적 -->
+
+## 사용 시점
+<!-- 이 런북을 따라야 하는 상황 -->
+
+## 사전 요구 사항
+<!-- 필요한 권한, 도구 등 -->
+
+## 절차
+
+### 1. <첫 번째 단계>
+<!-- 복사-붙여넣기 가능한 명령어와 상세 단계 -->
+
+### 2. <두 번째 단계>
+<!-- 복사-붙여넣기 가능한 명령어와 상세 단계 -->
+
+## 검증
+- [ ] <확인 1>
+- [ ] <확인 2>
+
+## 롤백
+<!-- 문제 발생 시 복구 절차 -->
+
+## 참고
+- 최종 검증일: YYYY-MM-DD
 ```
 
 ### Recommended Runbooks

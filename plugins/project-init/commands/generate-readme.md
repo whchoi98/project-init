@@ -79,15 +79,17 @@ If the user provides minimal input, infer as much as possible from:
 - Manifest file metadata
 - Directory structure analysis
 
-## Step 4: Read Template
+## Step 4: Read Style Guide and Template
 
-Read the README template for structure and style reference:
+Read the shared writing style guide and README template:
 
 ```
+Read file: skills/project-scaffolder/references/writing-style-guide.md
 Read file: skills/project-scaffolder/references/readme-template.md
 ```
 
-Follow all generation rules, section structure, and style rules defined in the template.
+Follow all bilingual structure, formatting, and style rules from the writing style guide.
+Follow all generation rules and section structure defined in the README template.
 
 ## Step 5: Analyze Project Structure
 

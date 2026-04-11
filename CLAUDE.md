@@ -32,7 +32,7 @@ img/                      - Images and assets
 ```
 
 ## Conventions
-- **Language**: Bilingual (Korean/English) for README, CHANGELOG, architecture docs
+- **Language**: Bilingual (Korean/English) for all user-facing docs (README, CHANGELOG, architecture, ADR, runbook); see `writing-style-guide.md`
 - **Plugin structure**: Commands are `.md` files with frontmatter; agents are `.md` or `.yml`
 - **Reference templates**: Stored in `skills/project-scaffolder/references/` as Markdown with embedded code blocks
 - **Versioning**: Semantic versioning; version tracked in `marketplace.json` and `plugin.json`
@@ -43,7 +43,7 @@ img/                      - Images and assets
 ## Key Commands
 ```bash
 # Tests
-bash tests/run-all.sh              # Run full test suite (113 tests)
+bash tests/run-all.sh              # Run full test suite (114 tests)
 bash tests/run-all.sh hooks        # Run only hook tests
 bash tests/run-all.sh secret       # Run only secret pattern tests
 bash tests/run-all.sh structure    # Run only structure tests

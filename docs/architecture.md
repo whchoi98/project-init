@@ -20,7 +20,7 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 ### Plugin Layer
 - **plugins/project-init/commands/** -- 8개의 슬래시 커맨드 (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, health-check). 각 `.md` 파일이 하나의 커맨드를 정의.
 - **plugins/project-init/agents/** -- doc-sync-checker 에이전트. 문서 동기화 상태를 병렬로 분석.
-- **plugins/project-init/skills/** -- project-scaffolder 스킬. `references/` 디렉토리에 11개의 템플릿 파일 포함.
+- **plugins/project-init/skills/** -- project-scaffolder 스킬. `references/` 디렉토리에 12개의 템플릿 파일 포함 (공통 writing-style-guide 포함).
 
 ### Generated Project Layer
 - **.claude/hooks/** -- PostToolUse(문서 동기화 감지), PreToolUse(시크릿 스캔), SessionStart(컨텍스트 로드), Notification(웹훅).
@@ -53,7 +53,7 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 │                         │  └──────────┘ └──────────┘  │     │
 │                         │  ┌──────────────────────┐   │     │
 │                         │  │ skills/scaffolder/    │   │     │
-│                         │  │  references/(11 tmpl) │   │     │
+│                         │  │  references/(12 tmpl) │   │     │
 │                         │  └──────────────────────┘   │     │
 │                         └─────────────────────────────┘     │
 └─────────────────────────────┬───────────────────────────────┘
@@ -102,7 +102,7 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **Markdown 기반 정의** -- 모든 커맨드/스킬/에이전트를 Markdown으로 정의하여 버전 관리와 코드 리뷰가 용이하도록 함.
 - **4계층 자동 동기화** -- Plan mode 규칙, PostToolUse 훅, /sync-docs 커맨드, commit-msg 훅의 4단계로 문서 동기화를 보장.
 - **신뢰도 기반 코드 리뷰** -- 75점 이상의 이슈만 보고하여 거짓 양성을 필터링하고 리뷰 피로 감소.
-- **이중언어 지원** -- README, CHANGELOG, architecture.md를 한국어/영어 병기로 제공하여 접근성 확대.
+- **이중언어 지원** -- 모든 사용자 대면 문서(README, CHANGELOG, architecture, ADR, runbook)를 한국어/영어 병기로 제공. 공통 writing-style-guide로 일관성 유지.
 
 ## Operations
 - Deployment: see [docs/runbooks/](runbooks/) (create deployment runbook as needed)
@@ -123,7 +123,7 @@ When users run `/init-project`, it detects the existing project and generates a 
 ### Plugin Layer
 - **plugins/project-init/commands/** -- 8 slash commands (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, health-check). Each `.md` file defines one command.
 - **plugins/project-init/agents/** -- doc-sync-checker agent. Analyzes documentation sync status in parallel.
-- **plugins/project-init/skills/** -- project-scaffolder skill. Contains 11 reference template files in `references/`.
+- **plugins/project-init/skills/** -- project-scaffolder skill. Contains 12 reference template files in `references/` (includes shared writing-style-guide).
 
 ### Generated Project Layer
 - **.claude/hooks/** -- PostToolUse (doc sync detection), PreToolUse (secret scanning), SessionStart (context loading), Notification (webhook).
@@ -156,7 +156,7 @@ When users run `/init-project`, it detects the existing project and generates a 
 │                         │  └──────────┘ └──────────┘  │     │
 │                         │  ┌──────────────────────┐   │     │
 │                         │  │ skills/scaffolder/    │   │     │
-│                         │  │  references/(11 tmpl) │   │     │
+│                         │  │  references/(12 tmpl) │   │     │
 │                         │  └──────────────────────┘   │     │
 │                         └─────────────────────────────┘     │
 └─────────────────────────────┬───────────────────────────────┘
@@ -205,7 +205,7 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **Markdown-based definitions** -- All commands/skills/agents defined as Markdown for easy version control and code review.
 - **4-layer auto-sync** -- Plan mode rules, PostToolUse hooks, /sync-docs command, and commit-msg hook ensure documentation stays current.
 - **Confidence-based code review** -- Only reports issues scoring 75+ to filter false positives and reduce review fatigue.
-- **Bilingual support** -- README, CHANGELOG, and architecture.md provided in Korean/English to broaden accessibility.
+- **Bilingual support** -- All user-facing documents (README, CHANGELOG, architecture, ADR, runbook) provided in Korean/English. Shared writing-style-guide ensures consistency.
 
 ## Operations
 - Deployment: see [docs/runbooks/](runbooks/) (create deployment runbook as needed)

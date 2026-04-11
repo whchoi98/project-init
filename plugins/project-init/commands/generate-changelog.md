@@ -98,15 +98,17 @@ Rules:
 - Group related commits into a single entry when they address the same feature or fix
 - Ask the user to clarify ambiguous changes if needed
 
-## Step 5: Read Template
+## Step 5: Read Style Guide and Template
 
-Read the CHANGELOG template for structure and style reference:
+Read the shared writing style guide and CHANGELOG template:
 
 ```
+Read file: skills/project-scaffolder/references/writing-style-guide.md
 Read file: skills/project-scaffolder/references/changelog-template.md
 ```
 
-Follow all generation rules, entry writing guidelines, and style rules defined in the template.
+Follow all bilingual structure, formatting, and style rules from the writing style guide.
+Follow all generation rules and entry writing guidelines defined in the CHANGELOG template.
 
 ## Step 6: Read Existing CHANGELOG
 

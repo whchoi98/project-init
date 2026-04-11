@@ -13,7 +13,17 @@ Synchronize project documentation with the current code state.
 - Recent commits: !`git log --oneline -20 2>/dev/null || echo "Not a git repository"`
 - Existing CLAUDE.md files: !`find . -name "CLAUDE.md" -not -path './.git/*' 2>/dev/null`
 
-## Phase 0: Gap Analysis (Subagent)
+## Phase 0: Read Shared Style Guide
+
+Read the shared writing style guide that applies to all generated documents:
+
+```
+Read file: skills/project-scaffolder/references/writing-style-guide.md
+```
+
+All documents created or updated in this sync process must follow the bilingual structure, formatting, and style rules defined in the writing style guide.
+
+## Phase 1: Gap Analysis (Subagent)
 
 Launch the `doc-sync-checker` agent to analyze documentation gaps in parallel. This provides a structured report of:
 - Missing module CLAUDE.md files
@@ -23,7 +33,7 @@ Launch the `doc-sync-checker` agent to analyze documentation gaps in parallel. T
 
 Use this report to prioritize updates in the following steps.
 
-## Phase 1: CLAUDE.md Quality Assessment
+## Phase 2: CLAUDE.md Quality Assessment
 
 For each CLAUDE.md file found, evaluate quality against these criteria:
 
@@ -68,7 +78,7 @@ Output a quality report before making changes:
 | Actionability | X/15 | ... |
 ```
 
-## Phase 2: Root CLAUDE.md Sync
+## Phase 3: Root CLAUDE.md Sync
 
 Read the root `CLAUDE.md` and update:
 - **Overview** - Match current project purpose
@@ -79,7 +89,7 @@ Read the root `CLAUDE.md` and update:
 
 Verify commands are copy-paste ready by checking they reference actual scripts/files.
 
-## Phase 3: Architecture Doc Sync
+## Phase 4: Architecture Doc Sync
 
 Read `docs/architecture.md` and update all sections:
 
@@ -93,7 +103,7 @@ Read `docs/architecture.md` and update all sections:
 
 If `docs/architecture.md` uses bilingual format (Korean/English), update both sections consistently.
 
-## Phase 4: Module CLAUDE.md Audit
+## Phase 5: Module CLAUDE.md Audit
 
 Detect the main source directory (src/, app/, lib/, cmd/, etc.):
 
@@ -112,7 +122,7 @@ For each directory:
 - If `CLAUDE.md` exists, verify it matches current files and update if needed
 - Score each module CLAUDE.md using the quality criteria
 
-## Phase 5: ADR Audit
+## Phase 6: ADR Audit
 
 Review recent commits for architecture-relevant changes:
 
@@ -137,7 +147,7 @@ Review existing ADRs for freshness:
 - Flag ADRs referencing technologies no longer in use -> suggest deprecating
 - Score: count of current ADRs vs estimated decisions from git history
 
-## Phase 6: Runbook Audit
+## Phase 7: Runbook Audit
 
 Check runbook coverage against project characteristics:
 
@@ -157,7 +167,7 @@ For each existing runbook:
 - Check last modified date vs recent code changes
 - Flag runbooks referencing removed files or changed paths
 
-## Phase 7: README.md Sync
+## Phase 8: README.md Sync
 
 Read [references/readme-template.md](../skills/project-scaffolder/references/readme-template.md) for structure and generation rules.
 
@@ -187,7 +197,7 @@ If `README.md` does not exist, generate a new bilingual README following the tem
 - [ ] No emojis in the document
 - [ ] Version and license badges reflect current values
 
-## Phase 8: CHANGELOG.md Sync
+## Phase 9: CHANGELOG.md Sync
 
 Read [references/changelog-template.md](../skills/project-scaffolder/references/changelog-template.md) for structure and generation rules.
 
@@ -217,7 +227,7 @@ If `CHANGELOG.md` does not exist, generate a new bilingual CHANGELOG from full g
 - [ ] Reference links correctly formatted
 - [ ] Previously released versions unchanged
 
-## Phase 9: Report
+## Phase 10: Report
 
 Present a comprehensive summary:
 

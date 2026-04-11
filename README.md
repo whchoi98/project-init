@@ -233,7 +233,7 @@ The most effective workflow is to run `/init-project` **after implementation**, 
 
 **`/project-init:init-project [path]`** -- 17-step project initialization
 
-Generates a complete Claude Code project structure with CLAUDE.md, hooks (5 scripts), skills (4), slash commands (3), agents (2), test framework (113+ tests), bilingual README.md and CHANGELOG.md, docs templates, MCP config, deny list, and operational scripts. Detects existing projects (Node.js, Python, Go, Rust, Java/Kotlin) and adapts without overwriting.
+Generates a complete Claude Code project structure with CLAUDE.md, hooks (5 scripts), skills (4), slash commands (3), agents (2), test framework (114+ tests), bilingual README.md and CHANGELOG.md, docs templates, MCP config, deny list, and operational scripts. Detects existing projects (Node.js, Python, Go, Rust, Java/Kotlin) and adapts without overwriting.
 
 **`/project-init:sync-docs`** -- 9-phase documentation synchronization
 
@@ -292,7 +292,8 @@ project-init/                              # Marketplace root
         └── skills/
             └── project-scaffolder/
                 ├── SKILL.md               # Structure pattern knowledge skill
-                └── references/            # 11 template reference files
+                └── references/            # 12 template reference files
+                    ├── writing-style-guide.md
                     ├── claude-md-template.md
                     ├── docs-templates.md
                     ├── hook-scripts.md
@@ -347,7 +348,7 @@ project/
 │   ├── setup.sh                       # Project setup for new developers
 │   └── install-hooks.sh              # Git hooks installer
 ├── tests/
-│   ├── run-all.sh                     # Test runner (TAP-style, 113+ tests)
+│   ├── run-all.sh                     # Test runner (TAP-style, 114+ tests)
 │   ├── hooks/
 │   │   ├── test-hooks.sh             # Hook validation tests
 │   │   └── test-secret-patterns.sh   # Secret TP/FP tests
@@ -746,7 +747,8 @@ project-init/                              # 마켓플레이스 루트
         └── skills/
             └── project-scaffolder/
                 ├── SKILL.md               # 구조 패턴 지식 스킬
-                └── references/            # 11개 템플릿 참조 파일
+                └── references/            # 12개 템플릿 참조 파일
+                    ├── writing-style-guide.md
                     ├── claude-md-template.md
                     ├── docs-templates.md
                     ├── hook-scripts.md
@@ -801,7 +803,7 @@ project/
 │   ├── setup.sh                       # 신규 개발자용 프로젝트 설정
 │   └── install-hooks.sh              # Git 훅 설치
 ├── tests/
-│   ├── run-all.sh                     # 테스트 러너 (TAP-style, 113+ 테스트)
+│   ├── run-all.sh                     # 테스트 러너 (TAP-style, 114+ 테스트)
 │   ├── hooks/
 │   │   ├── test-hooks.sh             # 훅 검증 테스트
 │   │   └── test-secret-patterns.sh   # 시크릿 TP/FP 테스트
