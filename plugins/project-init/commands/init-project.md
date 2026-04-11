@@ -1,6 +1,6 @@
 ---
 description: Initialize a Claude Code project structure with CLAUDE.md, docs, hooks, skills, agents, and MCP config. Adapts to existing projects by detecting language/framework.
-allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(ls:*), Bash(find:*), Bash(bash scripts/*), Glob, Grep
+allowed-tools: Read, Write, Edit, Bash(mkdir:*), Bash(chmod:*), Bash(git init:*), Bash(git add:*), Bash(git commit:*), Bash(git remote:*), Bash(git log:*), Bash(git tag:*), Bash(git describe:*), Bash(git diff:*), Bash(ls:*), Bash(find:*), Bash(bash scripts/*), Glob, Grep
 argument-hint: Optional project directory path (defaults to current directory)
 ---
 
@@ -199,6 +199,7 @@ If project context suggests MCP integrations (e.g., GitHub remote exists, databa
 
 ## Step 12: Generate README.md (Bilingual)
 
+Read [references/writing-style-guide.md](../skills/project-scaffolder/references/writing-style-guide.md) for shared bilingual and style rules.
 Read [references/readme-template.md](../skills/project-scaffolder/references/readme-template.md) for structure and generation rules.
 
 If `README.md` already exists, read it to preserve user-specific content.
@@ -223,6 +224,7 @@ Generate `README.md` with bilingual (English/Korean) structure:
 
 ## Step 13: Generate CHANGELOG.md (Bilingual)
 
+Read [references/writing-style-guide.md](../skills/project-scaffolder/references/writing-style-guide.md) for shared bilingual and style rules.
 Read [references/changelog-template.md](../skills/project-scaffolder/references/changelog-template.md) for structure and generation rules.
 
 If `CHANGELOG.md` already exists, preserve all existing entries.
