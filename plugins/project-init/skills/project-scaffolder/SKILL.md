@@ -156,3 +156,5 @@ For detailed templates, see:
 - [references/mcp-json-template.md](references/mcp-json-template.md) - MCP server configuration template
 - [references/scripts-templates.md](references/scripts-templates.md) - Setup, deploy, seed-db, install-hooks scripts
 - [references/tests-templates.md](references/tests-templates.md) - Test framework and harness validation templates
+- [references/readme-template.md](references/readme-template.md) - Bilingual README.md generation rules and section structure
+- [references/changelog-template.md](references/changelog-template.md) - Bilingual CHANGELOG.md generation rules following Keep a Changelog

@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `/generate-readme` command for standalone bilingual (EN/KR) README.md generation with auto-detection and shields.io badges
+- `/generate-changelog` command for standalone bilingual (EN/KR) CHANGELOG.md generation following Keep a Changelog convention
+- `readme-template.md` and `changelog-template.md` reference templates for README/CHANGELOG generation rules
+- Bilingual README.md generation integrated into `/init-project` (Step 12) with auto-detection from manifest files
+- Bilingual CHANGELOG.md generation integrated into `/init-project` (Step 13) with git tag history analysis
+- Full README.md sync in `/sync-docs` (Phase 7) with badge, section, and language sync validation
+- CHANGELOG.md sync in `/sync-docs` (Phase 8) with git log analysis and unreleased entry categorization
 - Automated test framework (`tests/run-all.sh`) with 114 tests across 3 categories: hooks (27), secret patterns (22), structure (65)
 - Test fixture files for secret pattern validation (true positives and false positives)
 - Error recovery sections in all generated commands: `/deploy` (5 scenarios including full rollback), `/review` (3 scenarios), `/test-all` (failure pattern table + multi-failure diagnosis)
@@ -26,7 +33,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** `/init-project` now generates 15 steps (was 14), adding test framework generation (Step 14)
+- **BREAKING:** `/init-project` now generates 17 steps (was 15), adding bilingual README.md (Step 12) and CHANGELOG.md (Step 13) generation
+- `/sync-docs` expanded to 9 phases (was 8), adding full README.md sync (Phase 7) and CHANGELOG.md sync (Phase 8)
+- Reference templates expanded to 11 (was 9) with readme-template.md and changelog-template.md
 - Secret scan patterns hardened: replaced broad base64 pattern with context-aware AWS Secret Key detection; added Stripe, Google, Azure, GitHub token patterns
 - Tool scoping hardened: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` removed in favor of Read tool
 - `check-doc-sync.sh` hook walks parent directories to find `CLAUDE.md` instead of only checking the immediate directory
@@ -127,6 +136,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- 이중 언어(EN/KR) README.md를 자동 감지와 shields.io 뱃지로 생성하는 `/generate-readme` 커맨드 추가
+- Keep a Changelog 규약에 따라 이중 언어(EN/KR) CHANGELOG.md를 생성하는 `/generate-changelog` 커맨드 추가
+- README/CHANGELOG 생성 규칙을 정의하는 `readme-template.md`, `changelog-template.md` 참조 템플릿 추가
+- `/init-project`에 매니페스트 파일 자동 감지 기반 이중 언어 README.md 생성 통합 (Step 12)
+- `/init-project`에 git 태그 히스토리 분석 기반 이중 언어 CHANGELOG.md 생성 통합 (Step 13)
+- `/sync-docs`에 뱃지, 섹션, 언어 동기화 검증을 포함한 전체 README.md 동기화 추가 (Phase 7)
+- `/sync-docs`에 git log 분석과 미릴리스 항목 분류를 포함한 CHANGELOG.md 동기화 추가 (Phase 8)
 - 자동화된 테스트 프레임워크(`tests/run-all.sh`) 추가: 3개 카테고리 114개 테스트 (훅 27, 시크릿 패턴 22, 구조 65)
 - 시크릿 패턴 검증용 테스트 픽스처 파일 추가 (True Positive / False Positive)
 - 모든 생성 커맨드에 에러 복구 섹션 추가: `/deploy` (전체 롤백 포함 5개 시나리오), `/review` (3개 시나리오), `/test-all` (실패 패턴 표 + 다중 실패 진단)
@@ -139,7 +155,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **BREAKING:** `/init-project`가 15단계로 확장 (기존 14단계), 테스트 프레임워크 생성(Step 14) 추가
+- **BREAKING:** `/init-project`가 17단계로 확장 (기존 15단계), 이중 언어 README.md (Step 12) 및 CHANGELOG.md (Step 13) 생성 추가
+- `/sync-docs`가 9단계로 확장 (기존 8단계), 전체 README.md 동기화 (Phase 7) 및 CHANGELOG.md 동기화 (Phase 8) 추가
+- 참조 템플릿 11개로 확장 (기존 9개), readme-template.md 및 changelog-template.md 추가
 - 시크릿 스캔 패턴 강화: 광범위 Base64 패턴을 컨텍스트 기반 AWS Secret Key 감지로 교체; Stripe, Google, Azure, GitHub 토큰 패턴 추가
 - 도구 범위 강화: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` 제거 후 Read 도구 사용
 - `check-doc-sync.sh` 훅이 부모 디렉토리를 탐색하여 `CLAUDE.md`를 찾도록 개선

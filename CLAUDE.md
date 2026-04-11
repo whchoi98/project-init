@@ -13,17 +13,18 @@
 ```
 plugins/project-init/     - Main plugin source
   .claude-plugin/         - Plugin manifest (plugin.json)
-  commands/               - Slash commands (init-project, sync-docs, add-adr, etc.)
+  commands/               - Slash commands (init-project, sync-docs, generate-readme, etc.)
   agents/                 - Agent definitions (doc-sync-checker)
   skills/project-scaffolder/ - Scaffolding skill with reference templates
 .claude/                  - Claude Code settings and project hooks
   hooks/                  - PostToolUse, PreToolUse, SessionStart, Notification hooks
-  skills/                 - Project-level skills (code-review, refactor, release)
+  skills/                 - Project-level skills (code-review, refactor, release, sync-docs)
   commands/               - Project-level slash commands (review, test-all, deploy)
   agents/                 - Project-level agents (code-reviewer, security-auditor)
 docs/                     - Architecture docs, ADRs, runbooks
   decisions/              - Architecture Decision Records
   runbooks/               - Operational runbooks
+tests/                    - Automated test suite (hooks, secret patterns, structure)
 scripts/                  - Setup and deployment scripts
 .claude-plugin/           - Marketplace manifest (marketplace.json)
 img/                      - Images and assets
@@ -54,6 +55,8 @@ claude plugin install project-init
 # Plugin commands (run inside Claude Code)
 /init-project          # Initialize project structure
 /sync-docs             # Synchronize documentation
+/generate-readme       # Generate bilingual README.md
+/generate-changelog    # Generate bilingual CHANGELOG.md
 /add-adr               # Create Architecture Decision Record
 /add-module            # Add new module with CLAUDE.md
 /add-runbook           # Create operational runbook
