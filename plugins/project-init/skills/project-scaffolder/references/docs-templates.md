@@ -27,10 +27,12 @@ When generating `docs/architecture.md`, Claude should:
 ```markdown
 # Architecture
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -82,6 +84,8 @@ When generating `docs/architecture.md`, Claude should:
 - Incident Response: see [docs/runbooks/incident-response.md](runbooks/incident-response.md)
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -170,10 +174,12 @@ Path: `docs/decisions/.template.md`
 ```markdown
 # ADR-000: Title
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -208,6 +214,8 @@ Proposed | Accepted | Deprecated | Superseded
 - <links to relevant docs, issues, or discussions>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -265,10 +273,12 @@ Path: `docs/runbooks/.template.md`
 ```markdown
 # Runbook: Title
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -300,6 +310,8 @@ Path: `docs/runbooks/.template.md`
 - Last verified: YYYY-MM-DD
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

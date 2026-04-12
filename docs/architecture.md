@@ -1,9 +1,11 @@
 # Architecture
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -107,6 +109,8 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - Release: use `/release` skill
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

@@ -1,8 +1,10 @@
 # Changelog
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english) [![한국어](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -132,6 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

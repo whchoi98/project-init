@@ -55,10 +55,12 @@ Create `docs/runbooks/<runbook-name>.md` with bilingual (English/Korean) structu
 ```markdown
 # Runbook: <Title>
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -97,6 +99,8 @@ Create `docs/runbooks/<runbook-name>.md` with bilingual (English/Korean) structu
 - Author: <user or inferred>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -157,7 +161,8 @@ If the runbook relates to a specific component (e.g. deployment, database), chec
 
 After writing the runbook, verify:
 
-- [ ] Language toggle links correctly point to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical structure and information
 - [ ] All commands and code blocks are identical in both sections
 - [ ] No emojis in the document

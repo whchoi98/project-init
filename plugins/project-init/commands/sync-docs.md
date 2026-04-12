@@ -191,7 +191,8 @@ git describe --tags --abbrev=0 2>/dev/null
 If `README.md` does not exist, generate a new bilingual README following the template. Auto-detect project information and ask the user for missing required fields.
 
 **Validation checklist:**
-- [ ] Language toggle badges link to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical structure
 - [ ] Code blocks specify the language
 - [ ] No emojis in the document

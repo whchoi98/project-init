@@ -7,21 +7,25 @@ All document-generating commands (generate-readme, generate-changelog, add-adr, 
 
 ## Bilingual Structure
 
-All user-facing documents are generated in bilingual format (English/Korean). **English section comes first**, followed by the Korean section. All documents use shields.io badges for the language toggle.
+All user-facing documents are generated in bilingual format (English/Korean). **English section comes first**, followed by the Korean section. Language toggle uses HTML `<a><img></a>` tags with ASCII-only anchors for reliable in-page navigation.
 
 ```markdown
 # <Document Title>
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
 <all English sections>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -31,21 +35,26 @@ All user-facing documents are generated in bilingual format (English/Korean). **
 ### Rules
 
 - **English section always comes first**, Korean section follows
-- Language toggle is a single line of shields.io badges placed immediately below the document title
+- Language toggle uses HTML `<a href="#anchor"><img>` tags (NOT Markdown `[![...](...)](#...)` syntax) to guarantee in-page navigation on all GitHub renderers
+- Anchor IDs are ASCII-only: `english` and `korean`
+- Explicit `<a id="english"></a>` and `<a id="korean"></a>` tags are placed before each language heading
 - Horizontal rule (`---`) separates the badge line from English, and English from Korean
-- `# English` and `# 한국어` as h1 headings create GitHub auto-anchors (`#english`, `#한국어`)
 - Both language sections MUST have identical structure, order, and information
 - Code blocks, tables, commands, and directory structures are duplicated identically in both sections
 - Only descriptive text is translated; code, technical terms, and proper nouns remain unchanged
 
 ### Language Toggle Format
 
-All documents use the same shields.io badge format on a single line:
+All documents use the same HTML badge format on a single line:
 
-```markdown
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+```html
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 ```
+
+**Why HTML instead of Markdown?** GitHub may render Markdown `[![img](url)](#anchor)` as a bare `<img>` without the `<a>` wrapper. Clicking opens the shields.io SVG instead of navigating. Explicit HTML `<a><img></a>` guarantees correct behavior.
+
+**Why ASCII anchors?** Unicode anchors like `#한국어` can break due to URL encoding differences across browsers. ASCII `#korean` is universally reliable.
 
 This applies to all document types: README, CHANGELOG, architecture, ADR, runbook, and any other bilingual document.
 
@@ -99,7 +108,8 @@ After generating or updating any bilingual document, verify:
 
 - [ ] Both language sections have identical structure and section order
 - [ ] All code blocks, tables, and diagrams appear in both sections
-- [ ] Language toggle links correctly point to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags are placed before each language heading
 - [ ] No untranslated descriptive text in either section
 - [ ] No emojis in the document
 - [ ] Code blocks specify the language

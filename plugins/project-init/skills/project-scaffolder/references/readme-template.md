@@ -44,13 +44,14 @@ The file starts with these elements in order:
 
 [![License](https://img.shields.io/badge/License-<LICENSE>-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-<VERSION>-green.svg)]()
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 <English one-line description> | <Korean one-line description>
 ```
 
-- Language badges link to `#english` and `#한국어` anchors respectively
+- Language badges use HTML `<a><img></a>` linking to `#english` and `#korean` anchors
+- Explicit `<a id="english">` and `<a id="korean">` tags placed before each language heading
 - License and version values must reflect actual project data
 - Build status badge is optional (include if CI config is detected)
 
@@ -61,17 +62,22 @@ The file starts with these elements in order:
 ```markdown
 # <Project Name>
 
-<badges>
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 <one-line description (EN) | one-line description (KR)>
 
 ---
+
+<a id="english"></a>
 
 # English
 
 <all English sections>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -80,7 +86,7 @@ The file starts with these elements in order:
 
 Rules:
 - Horizontal rule (`---`) separates badges from English section, and English from Korean section
-- `# English` and `# 한국어` as h1 headings create GitHub auto-anchors (`#english`, `#한국어`)
+- Explicit `<a id="english">` and `<a id="korean">` tags are placed before `# English` and `# 한국어` headings for reliable anchor navigation
 - Both language sections must have identical structure, order, and information
 - Code blocks, tables, and directory structures are duplicated identically in both sections
 - Only descriptive text is translated; code and technical terms remain unchanged

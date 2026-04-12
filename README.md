@@ -1,12 +1,14 @@
 # project-init
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/whchoi98/project-init) [![English](https://img.shields.io/badge/lang-English-blue.svg)](#english) [![한국어](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 A Claude Code plugin for initializing and maintaining project structures with adaptive detection, quality scoring, and auto-sync documentation workflows.
 
 Claude Code 프로젝트 구조 초기화, 문서 품질 점수 평가, 자동 동기화 워크플로우를 지원하는 플러그인입니다.
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -462,6 +464,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - Issues: [GitHub Issues](https://github.com/whchoi98/project-init/issues)
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

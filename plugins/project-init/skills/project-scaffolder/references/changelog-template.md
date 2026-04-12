@@ -48,16 +48,20 @@ git log -1 --format=%aI v1.0.0
 ```markdown
 # Changelog
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
 <English changelog content>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -66,7 +70,8 @@ git log -1 --format=%aI v1.0.0
 
 Rules:
 - Title is always `# Changelog` (h1)
-- Language toggle badges link to `#english` and `#한국어`
+- Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- Explicit `<a id="...">` tags placed before each language heading
 - Horizontal rule separates badges, English section, and Korean section
 
 ---
@@ -212,10 +217,12 @@ When releasing a new version from Unreleased:
 ```markdown
 # Changelog
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -256,6 +263,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.1.0]: https://github.com/user/repo/releases/tag/v1.1.0
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

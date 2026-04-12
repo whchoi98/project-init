@@ -187,7 +187,8 @@ At the bottom of each language section, generate comparison URLs:
 After writing CHANGELOG.md, verify:
 
 - [ ] Title is `# Changelog`
-- [ ] Language toggle badges link to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical version entries
 - [ ] Versions are in reverse chronological order
 - [ ] `[Unreleased]` section is present in both language sections

@@ -66,10 +66,12 @@ Create `docs/decisions/ADR-NNN-<title>.md` with bilingual (English/Korean) struc
 ```markdown
 # ADR-NNN: <Title in Natural Language>
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english)
-[![Korean](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
+<a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -104,6 +106,8 @@ Create `docs/decisions/ADR-NNN-<title>.md` with bilingual (English/Korean) struc
 - <links to relevant docs, issues, or discussions>
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 
@@ -161,7 +165,8 @@ If the root `CLAUDE.md` has an Architecture Decisions or Conventions section, ad
 
 After writing the ADR, verify:
 
-- [ ] Language toggle links correctly point to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical structure and information
 - [ ] No emojis in the document
 - [ ] Code blocks specify the language

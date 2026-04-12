@@ -1,8 +1,10 @@
 # Contributing
 
-[![English](https://img.shields.io/badge/lang-English-blue.svg)](#english) [![한국어](https://img.shields.io/badge/lang-한국어-red.svg)](#한국어)
+<a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 ---
+
+<a id="english"></a>
 
 # English
 
@@ -77,6 +79,8 @@ plugins/project-init/
 - No broken internal file references
 
 ---
+
+<a id="korean"></a>
 
 # 한국어
 

@@ -139,7 +139,8 @@ If README.md already exists:
 After writing README.md, verify:
 
 - [ ] Top layout has project name, badges, and bilingual description
-- [ ] Language toggle badges link to `#english` and `#한국어`
+- [ ] Language toggle uses HTML `<a><img></a>` with `#english` and `#korean` anchors
+- [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical structure and information
 - [ ] All required sections are present (Overview, Features, Prerequisites, Installation, Usage, Contributing, License, Contact)
 - [ ] Code blocks specify the language
