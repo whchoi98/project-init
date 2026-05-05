@@ -105,8 +105,9 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **Bilingual support** -- All user-facing documents (README, CHANGELOG, architecture, ADR, runbook) provided in Korean/English. Shared writing-style-guide ensures consistency.
 
 ## Operations
-- Deployment: see [docs/runbooks/](runbooks/) (create deployment runbook as needed)
-- Release: use `/release` skill
+- Release: see [docs/runbooks/release.md](runbooks/release.md) for the maintainer-side version bump and tag procedure
+- Update or remove the plugin: see [docs/runbooks/update-from-marketplace.md](runbooks/update-from-marketplace.md) for the consumer-side procedure
+- Architecture decisions: see [docs/decisions/](decisions/) -- ADR-001 (bilingual policy), ADR-002 (HTML anchor navigation), ADR-003 (shared writing-style-guide), ADR-004 (hook non-blocking failure)
 
 ---
 
@@ -210,5 +211,6 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **이중언어 지원** -- 모든 사용자 대면 문서(README, CHANGELOG, architecture, ADR, runbook)를 한국어/영어 병기로 제공. 공통 writing-style-guide로 일관성 유지.
 
 ## Operations
-- Deployment: see [docs/runbooks/](runbooks/) (create deployment runbook as needed)
-- Release: use `/release` skill
+- 릴리스: 메인테이너 측 버전 갱신과 태그 절차는 [docs/runbooks/release.md](runbooks/release.md) 참조
+- 플러그인 업데이트 또는 제거: 소비자 측 절차는 [docs/runbooks/update-from-marketplace.md](runbooks/update-from-marketplace.md) 참조
+- 아키텍처 결정: [docs/decisions/](decisions/) 참조 -- ADR-001(이중언어 정책), ADR-002(HTML 앵커 내비게이션), ADR-003(공유 writing-style-guide), ADR-004(훅 비차단 실패)

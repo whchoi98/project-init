@@ -91,3 +91,13 @@ After exiting Plan mode (`/plan`), before starting implementation:
 ### ADR Numbering
 Find the highest number in `docs/decisions/ADR-*.md` and increment by 1.
 Format: `ADR-NNN-concise-title.md`
+
+### Current ADRs
+- [ADR-001](docs/decisions/ADR-001-bilingual-documentation-policy.md) -- Bilingual documentation policy (Korean/English, English first, identical structure)
+- [ADR-002](docs/decisions/ADR-002-html-anchor-navigation.md) -- HTML `<a><img></a>` badges with ASCII-only anchor IDs (`#english`, `#korean`)
+- [ADR-003](docs/decisions/ADR-003-shared-writing-style-guide.md) -- Shared writing-style-guide as the single source of truth for all five document-generating commands
+- [ADR-004](docs/decisions/ADR-004-hook-non-blocking-failure.md) -- Hook non-blocking failure policy: gate hooks exit non-zero, observational hooks suppress via `2>/dev/null \|\| true` at the registration boundary
+
+### Current Runbooks
+- [release.md](docs/runbooks/release.md) -- Maintainer-side procedure to release a new plugin version with atomic version bump in both manifests
+- [update-from-marketplace.md](docs/runbooks/update-from-marketplace.md) -- Consumer-side procedure to update or remove the installed plugin
