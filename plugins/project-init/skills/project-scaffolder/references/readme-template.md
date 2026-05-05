@@ -123,7 +123,7 @@ Apply the following sections in order within each language block. Omit optional 
 - Korean: 경어체 (~합니다)
 
 ### Features / 주요 기능
-- Format: `- **Feature name** -- Description`
+- Format: `- **Feature name** — Description` (use em-dash `—` between name and description)
 - List 3-5 key features
 - Be specific about what each feature does, not vague marketing language
 
