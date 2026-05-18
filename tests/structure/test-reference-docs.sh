@@ -93,3 +93,15 @@ if [ -f "$INIT_CMD" ]; then
     assert_contains "init-project: writes INDEX.md" "$INIT_CONTENT" "docs/reference/INDEX.md"
     assert_contains "init-project: skip-on-exist policy" "$INIT_CONTENT" "existing, kept"
 fi
+
+# --- sync-docs Phase 1 reference block ---
+
+SYNC_CMD="plugins/project-init/commands/sync-docs.md"
+if [ -f "$SYNC_CMD" ]; then
+    SYNC_CONTENT=$(cat "$SYNC_CMD")
+    assert_contains "sync-docs: has Implementation References block" "$SYNC_CONTENT" "Implementation References"
+    assert_contains "sync-docs: detects missing layer files" "$SYNC_CONTENT" "docs/reference/"
+    assert_contains "sync-docs: validates Code Pointers" "$SYNC_CONTENT" "Code Pointer"
+    assert_contains "sync-docs: notes INDEX auto-correction" "$SYNC_CONTENT" "AUTO-MANAGED:index"
+    assert_contains "sync-docs: refers users to /add-reference-doc" "$SYNC_CONTENT" "/add-reference-doc"
+fi
