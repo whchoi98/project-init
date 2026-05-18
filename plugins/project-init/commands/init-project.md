@@ -100,6 +100,61 @@ Read the template from [references/claude-md-template.md](../skills/project-scaf
 
 Always include Auto-Sync Rules section.
 
+## Step 4.5: Implementation Reference Detection
+
+Before generating files, detect which implementation layers apply to this
+project and produce skeletons under `docs/reference/`. This runs the same
+logic as `/add-reference-doc`, applied to a detected layer set the user
+confirms.
+
+### 4.5.a Detection signal matrix
+
+| Layer | Detect when ANY present |
+|---|---|
+| infrastructure | `Dockerfile`, `docker-compose.yml`, `compose.yaml`, `k8s/`, `helm/` |
+| data | `migrations/`, `prisma/`, `schema.sql`, `*.prisma`, `models/`, `entities/`, `db/` |
+| api | `routes/`, `controllers/`, `api/`, `openapi.yaml`, `*.proto`, `swagger.json` |
+| iac | `*.tf`, `cdk.json`, `template.yaml`, `serverless.yml`, `terragrunt.hcl` |
+| frontend | `package.json` deps with react/vue/svelte/next/nuxt/angular, `index.html`, `vite.config.*` |
+| ui | (frontend detected) AND any of `components/`, `styles/`, `tailwind.config.*`, `*.css`/`*.scss` |
+| security | `.env.example`, `auth/`, `middleware/`, `permissions/`, `iam/`, `policies/` — **always pre-checked** |
+| agent-llm | `prompts/`, package deps with anthropic/openai/langchain/bedrock |
+
+### 4.5.b Confirmation prompt
+
+Print detection results and ask the user to confirm or edit:
+
+```
+Detected implementation layers:
+  ✓ Infrastructure (Dockerfile)
+  ✓ API (routes/)
+  ✓ Security (.env.example) — auto-recommended
+  ─ Data — not detected
+  ...
+
+Proceed with detected set, or adjust? (a)ccept / (e)dit
+```
+
+On `(e)dit`, present a multi-select prompt with each layer pre-checked per
+detection, allowing toggle. Empty projects (zero detections) show all layers
+unchecked except Security, plus the note: *"More layers can be added later
+with /add-reference-doc <layer>."*
+
+### 4.5.c Generation
+
+For each selected layer:
+- Extract its skeleton from
+  `plugins/project-init/skills/project-scaffolder/references/reference-doc-template.md`
+  (fenced block under `## Layer: {layer}`)
+- Substitute variables: `{{COMPONENTS_TABLE}}` rows from detected paths;
+  `{{CODE_POINTERS_AUTO}}` from top 1-3 detected files
+- Write to `docs/reference/{layer}.md`
+- **If file exists**: skip silently and log `(existing, kept)`
+
+After all layer files: regenerate `docs/reference/INDEX.md` (AUTO-MANAGED
+region) and upsert `## Implementation References` block in root
+`CLAUDE.md` between `<!-- AUTO-MANAGED:references -->` markers.
+
 ## Step 5: Generate .claude/settings.json and All Hooks
 
 Read [references/settings-json-template.md](../skills/project-scaffolder/references/settings-json-template.md) and create `.claude/settings.json` with all hook registrations (SessionStart, PreToolUse, PostToolUse, Notification).
