@@ -105,3 +105,13 @@ if [ -f "$SYNC_CMD" ]; then
     assert_contains "sync-docs: notes INDEX auto-correction" "$SYNC_CONTENT" "AUTO-MANAGED:index"
     assert_contains "sync-docs: refers users to /add-reference-doc" "$SYNC_CONTENT" "/add-reference-doc"
 fi
+
+# --- doc-sync-checker agent extension ---
+
+CHECKER_AGENT="plugins/project-init/agents/doc-sync-checker.md"
+if [ -f "$CHECKER_AGENT" ]; then
+    CHECKER_CONTENT=$(cat "$CHECKER_AGENT")
+    assert_contains "doc-sync-checker: examines docs/reference/" "$CHECKER_CONTENT" "docs/reference/"
+    assert_contains "doc-sync-checker: validates Code Pointers" "$CHECKER_CONTENT" "Code Pointer"
+    assert_contains "doc-sync-checker: checks INDEX consistency" "$CHECKER_CONTENT" "AUTO-MANAGED:index"
+fi
