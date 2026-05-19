@@ -13,9 +13,11 @@ Core plugin providing project structure initialization, documentation quality sc
 - `commands/generate-readme.md` - Bilingual README.md generation/update
 - `commands/generate-changelog.md` - Bilingual CHANGELOG.md generation/update
 - `commands/health-check.md` - Project validation
+- `commands/add-reference-doc.md` - Add layer-specific implementation reference doc
 - `agents/doc-sync-checker.md` - Documentation sync analysis agent
 - `skills/project-scaffolder/SKILL.md` - Scaffolding skill definition
 - `skills/project-scaffolder/references/` - 12 template files for code generation (includes shared writing-style-guide)
+- `skills/project-scaffolder/references/reference-doc-template.md` - 8-layer skeleton library used by /init-project and /add-reference-doc
 
 ## Rules
 - All commands must have clear step-by-step instructions

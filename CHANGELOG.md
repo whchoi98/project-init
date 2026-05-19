@@ -64,6 +64,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Secret scan false positives from overly broad AWS Secret Key pattern
 - GitHub Push Protection blocking test fixtures (now runtime-constructed)
 
+## [2.1.0] - 2026-05-19
+
+### Added
+
+- Implementation reference docs feature — `/init-project` Step 4.5 detects up to 8 layers (infrastructure, data, api, iac, frontend, ui, security, agent-llm) and generates skeletons under `docs/reference/`
+- New command `/add-reference-doc <layer>` for incremental layer additions
+- Auto-managed `docs/reference/INDEX.md` and `## Implementation References` block in root CLAUDE.md (between `<!-- AUTO-MANAGED:* -->` markers)
+- New plugin template: `skills/project-scaffolder/references/reference-doc-template.md`
+
+### Changed
+
+- `/sync-docs` Phase 1 extended with a reference block: detects missing layer docs, validates Code Pointers, auto-corrects INDEX drift
+- `doc-sync-checker` agent extended with reference-doc validation
+
+### Documentation
+
+- ADR-005: Implementation reference docs structure
+- ADR-006: Hybrid detection + user confirmation for /init-project
+
 ## [2.0.0] - 2026-04-05
 
 ### Added
@@ -129,7 +148,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Restructure repository as marketplace with plugin in `plugins/project-init/` subdirectory ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
 
@@ -195,6 +215,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 지나치게 광범위한 AWS Secret Key 패턴으로 인한 시크릿 스캔 거짓 양성 수정
 - GitHub Push Protection이 테스트 픽스처를 차단하는 문제 수정 (런타임 조합으로 전환)
 
+## [2.1.0] - 2026-05-19
+
+### Added
+
+- 구현 참조 문서 기능 — `/init-project` Step 4.5가 최대 8개 레이어(infrastructure, data, api, iac, frontend, ui, security, agent-llm)를 감지하고 `docs/reference/` 아래 스켈레톤 생성
+- 점진적 레이어 추가를 위한 새로운 커맨드 `/add-reference-doc <layer>`
+- 루트 CLAUDE.md의 자동 관리형 `docs/reference/INDEX.md` 및 `## Implementation References` 블록 (`<!-- AUTO-MANAGED:* -->` 마커 사이)
+- 새로운 플러그인 템플릿: `skills/project-scaffolder/references/reference-doc-template.md`
+
+### Changed
+
+- `/sync-docs` Phase 1을 참조 블록으로 확장: 누락된 레이어 문서 감지, Code Pointers 검증, INDEX 드리프트 자동 수정
+- `doc-sync-checker` 에이전트를 참조 문서 검증 기능 추가
+
+### Documentation
+
+- ADR-005: 구현 참조 문서 구조
+- ADR-006: `/init-project`을 위한 하이브리드 감지 + 사용자 확인
+
 ## [2.0.0] - 2026-04-05
 
 ### Added
@@ -259,6 +298,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 리포지토리를 마켓플레이스 구조로 변경, 플러그인을 `plugins/project-init/` 하위 디렉토리로 이동 ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0

@@ -54,7 +54,7 @@ assert_eq() {
 
 assert_contains() {
     local desc="$1" haystack="$2" needle="$3"
-    if echo "$haystack" | grep -q "$needle"; then
+    if echo "$haystack" | command grep -qF -- "$needle"; then
         pass "$desc"
     else
         fail "$desc" "output does not contain '$needle'"

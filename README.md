@@ -44,6 +44,7 @@ In short, project-init is a **harness engineering automation tool** — it gener
 - **Automated Test Framework** -- Generated projects include 114+ tests validating hook scripts, secret scan patterns (TP/FP), plugin structure, version consistency, and CLAUDE.md content.
 - **Error Recovery Guides** -- Every generated command includes recovery procedures: deploy rollback (5 scenarios), review fallbacks (3 scenarios), test failure diagnosis table.
 - **Structured Agent Output** -- Generated agents return results in defined Markdown schemas with Verdict (PASS/WARN/FAIL), Summary tables, and actionable recommendations.
+- **Implementation reference docs** -- Per-layer skeletons under `docs/reference/` with shared 5-section structure (Overview / Components / Key Decisions / Code Pointers / Cross-references). Auto-detected at init, drift-checked by `/sync-docs`.
 - **Full Project Lifecycle** -- Generated projects include slash commands (/review, /test-all, /deploy), agent definitions (code-reviewer, security-auditor), MCP configuration, onboarding docs, and operational scripts.
 
 ## Prerequisites
@@ -229,6 +230,7 @@ The most effective workflow is to run `/init-project` **after implementation**, 
 | `/project-init:add-module <path>` | Add a new module directory with CLAUDE.md and update architecture docs. |
 | `/project-init:add-runbook <name>` | Create an operational runbook with verification and rollback sections. |
 | `/project-init:add-adr <title>` | Create an Architecture Decision Record with auto-numbering. |
+| `/project-init:add-reference-doc <layer>` | Add a layer-specific implementation reference doc skeleton (`infrastructure`, `data`, `api`, `iac`, `frontend`, `ui`, `security`, `agent-llm`). |
 | `/project-init:health-check` | Validate entire project setup and report health score (0-200, A-F grade). |
 
 ### Command Details
@@ -501,6 +503,7 @@ Claude Code는 **하네스(Harness)** 위에서 동작합니다 — hooks, skill
 - **자동화된 테스트 프레임워크** -- 생성 프로젝트에 훅 스크립트, 시크릿 스캔 패턴(TP/FP), 플러그인 구조, 버전 일관성, CLAUDE.md 내용을 검증하는 114개 이상의 테스트가 포함됩니다.
 - **에러 복구 가이드** -- 모든 생성 커맨드에 복구 절차가 포함됩니다: deploy 롤백(5개 시나리오), review 폴백(3개 시나리오), test 실패 진단 표.
 - **구조화된 에이전트 출력** -- 생성 에이전트가 정의된 Markdown 스키마로 결과를 반환합니다: Verdict (PASS/WARN/FAIL), Summary 테이블, 실행 가능한 권장 사항.
+- **구현 참조 문서** -- `docs/reference/` 하위에 5-섹션 공유 구조(Overview / Components / Key Decisions / Code Pointers / Cross-references)의 계층별 스켈레톤. init 시 자동 감지, `/sync-docs`로 드리프트 점검.
 - **전체 프로젝트 라이프사이클** -- 생성된 프로젝트에 슬래시 커맨드(/review, /test-all, /deploy), 에이전트 정의(code-reviewer, security-auditor), MCP 설정, 온보딩 문서, 운영 스크립트가 포함됩니다.
 
 ## 사전 요구 사항
@@ -686,6 +689,7 @@ $ /sync-docs
 | `/project-init:add-module <path>` | 새 모듈 디렉토리를 생성하고 CLAUDE.md와 아키텍처 문서를 업데이트합니다. |
 | `/project-init:add-runbook <name>` | 검증 및 롤백 섹션을 포함한 운영 런북을 생성합니다. |
 | `/project-init:add-adr <title>` | 자동 번호 부여로 아키텍처 결정 기록(ADR)을 생성합니다. |
+| `/project-init:add-reference-doc <layer>` | 계층별 구현 참조 문서 스켈레톤 추가 (`infrastructure`, `data`, `api`, `iac`, `frontend`, `ui`, `security`, `agent-llm`). |
 | `/project-init:health-check` | 전체 프로젝트 설정을 검증하고 건강 점수(0-200, A-F 등급)를 보고합니다. |
 
 ### 커맨드 상세
