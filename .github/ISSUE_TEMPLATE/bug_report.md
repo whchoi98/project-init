@@ -28,7 +28,7 @@ What actually happened. Include error messages or output if available.
 
 - Claude Code version: [e.g., 1.0.0]
 - OS: [e.g., macOS 14, Ubuntu 24.04]
-- Plugin version: [e.g., 2.0.0]
+- Plugin version: [e.g., 2.1.0]
 
 ## Additional Context
 

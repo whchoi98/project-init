@@ -18,7 +18,7 @@ When users run `/init-project`, it detects the existing project and generates a 
 ## Components
 
 ### Plugin Layer
-- **plugins/project-init/commands/** -- 8 slash commands (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, health-check). Each `.md` file defines one command.
+- **plugins/project-init/commands/** -- 9 slash commands (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, add-reference-doc, health-check). Each `.md` file defines one command.
 - **plugins/project-init/agents/** -- doc-sync-checker agent. Analyzes documentation sync status in parallel.
 - **plugins/project-init/skills/** -- project-scaffolder skill. Contains 12 reference template files in `references/` (includes shared writing-style-guide).
 
@@ -124,7 +124,7 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 ## Components
 
 ### Plugin Layer
-- **plugins/project-init/commands/** -- 8개의 슬래시 커맨드 (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, health-check). 각 `.md` 파일이 하나의 커맨드를 정의.
+- **plugins/project-init/commands/** -- 9개의 슬래시 커맨드 (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, add-reference-doc, health-check). 각 `.md` 파일이 하나의 커맨드를 정의.
 - **plugins/project-init/agents/** -- doc-sync-checker 에이전트. 문서 동기화 상태를 병렬로 분석.
 - **plugins/project-init/skills/** -- project-scaffolder 스킬. `references/` 디렉토리에 12개의 템플릿 파일 포함 (공통 writing-style-guide 포함).
 

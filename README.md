@@ -1,6 +1,6 @@
 # project-init
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.1.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 A Claude Code plugin for initializing and maintaining project structures with adaptive detection, quality scoring, and auto-sync documentation workflows.
 
@@ -16,7 +16,7 @@ Claude Code 프로젝트 구조 초기화, 문서 품질 점수 평가, 자동 �
 
 project-init is a Claude Code plugin that automates **project structure generation** and **documentation maintenance**. Claude Code understands project context through `CLAUDE.md` files, but creating and keeping them in sync with code changes is a manual, error-prone process.
 
-This plugin provides eight commands: scaffolding new or existing projects with `/init-project`, synchronizing documentation with `/sync-docs`, generating bilingual README with `/generate-readme`, generating bilingual CHANGELOG with `/generate-changelog`, adding modules with `/add-module`, creating runbooks with `/add-runbook`, recording architecture decisions with `/add-adr`, and objectively measuring documentation quality with a 0-100 scoring system.
+This plugin provides nine commands: scaffolding new or existing projects with `/init-project`, synchronizing documentation with `/sync-docs`, generating bilingual README with `/generate-readme`, generating bilingual CHANGELOG with `/generate-changelog`, adding modules with `/add-module`, creating runbooks with `/add-runbook`, recording architecture decisions with `/add-adr`, adding per-layer implementation reference docs with `/add-reference-doc`, and validating the entire project setup with `/health-check` (0-200 health score). Documentation quality is measured objectively on a 0-100 scoring system.
 
 ### Harness Engineering
 
@@ -275,11 +275,11 @@ Scores project setup across 8 categories: Core files (20pts), Hook configuration
 ```
 project-init/                              # Marketplace root
 ├── .claude-plugin/
-│   └── marketplace.json                   # Marketplace manifest (v1.0.0)
+│   └── marketplace.json                   # Marketplace manifest (v2.1.0)
 ├── LICENSE                                # MIT License
 ├── README.md
 └── plugins/
-    └── project-init/                      # Plugin package (v2.0.0)
+    └── project-init/                      # Plugin package (v2.1.0)
         ├── .claude-plugin/
         │   └── plugin.json                # Plugin manifest
         ├── commands/
@@ -475,7 +475,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 project-init은 Claude Code 프로젝트의 **구조 생성**과 **문서 유지보수**를 자동화하는 플러그인입니다. Claude Code는 `CLAUDE.md` 파일을 통해 프로젝트 컨텍스트를 이해하지만, 이를 생성하고 코드 변경에 맞춰 동기화하는 과정은 수동적이고 실수가 잦습니다.
 
-이 플러그인은 8개의 커맨드를 제공합니다: `/init-project`로 신규/기존 프로젝트 스캐폴딩, `/sync-docs`로 문서 동기화, `/generate-readme`로 이중 언어 README 생성, `/generate-changelog`로 이중 언어 CHANGELOG 생성, `/add-module`로 모듈 추가, `/add-runbook`으로 운영 런북 생성, `/add-adr`로 아키텍처 결정 기록, 그리고 0-100점 품질 점수 시스템으로 문서 품질을 객관적으로 측정합니다.
+이 플러그인은 9개의 커맨드를 제공합니다: `/init-project`로 신규/기존 프로젝트 스캐폴딩, `/sync-docs`로 문서 동기화, `/generate-readme`로 이중 언어 README 생성, `/generate-changelog`로 이중 언어 CHANGELOG 생성, `/add-module`로 모듈 추가, `/add-runbook`으로 운영 런북 생성, `/add-adr`로 아키텍처 결정 기록, `/add-reference-doc`로 계층별 구현 참조 문서 추가, `/health-check`로 전체 프로젝트 설정 검증(0-200 건강 점수). 문서 품질은 0-100점 점수 시스템으로 객관적으로 측정합니다.
 
 ### 하네스 엔지니어링
 
@@ -734,11 +734,11 @@ git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic 
 ```
 project-init/                              # 마켓플레이스 루트
 ├── .claude-plugin/
-│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v1.0.0)
+│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.1.0)
 ├── LICENSE                                # MIT 라이선스
 ├── README.md
 └── plugins/
-    └── project-init/                      # 플러그인 패키지 (v2.0.0)
+    └── project-init/                      # 플러그인 패키지 (v2.1.0)
         ├── .claude-plugin/
         │   └── plugin.json                # 플러그인 매니페스트
         ├── commands/

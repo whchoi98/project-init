@@ -15,10 +15,11 @@ Execute the harness test suite:
 bash tests/run-all.sh
 ```
 
-This runs 114 tests across 3 categories:
+This runs 169 tests across 4 categories:
 - **Hook tests** (27): Syntax, permissions, registration, behavior
 - **Secret pattern tests** (22): True positive detection, false positive rejection
 - **Structure tests** (65): Manifests, version sync, file existence, CLAUDE.md content
+- **Reference-doc tests** (55): 8-layer template skeletons, INDEX/Code Pointer validation, sync-docs reference logic
 
 ## Step 2: Analyze Results
 
@@ -35,6 +36,7 @@ If tests fail:
 bash tests/run-all.sh hooks        # Hook tests only
 bash tests/run-all.sh secret       # Secret pattern tests only
 bash tests/run-all.sh structure    # Structure tests only
+bash tests/run-all.sh reference    # Reference-doc tests only
 ```
 
 ## Step 4: Report

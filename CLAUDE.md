@@ -43,10 +43,11 @@ img/                      - Images and assets
 ## Key Commands
 ```bash
 # Tests
-bash tests/run-all.sh              # Run full test suite (114 tests)
+bash tests/run-all.sh              # Run full test suite (169 tests)
 bash tests/run-all.sh hooks        # Run only hook tests
 bash tests/run-all.sh secret       # Run only secret pattern tests
 bash tests/run-all.sh structure    # Run only structure tests
+bash tests/run-all.sh reference    # Run only reference-doc tests
 
 # Plugin management
 claude plugin marketplace add ./project-init

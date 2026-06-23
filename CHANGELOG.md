@@ -14,8 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-05-19
+
 ### Added
 
+- Implementation reference docs feature — `/init-project` Step 4.5 detects up to 8 layers (infrastructure, data, api, iac, frontend, ui, security, agent-llm) and generates skeletons under `docs/reference/`
+- New command `/add-reference-doc <layer>` for incremental layer additions
+- Auto-managed `docs/reference/INDEX.md` and `## Implementation References` block in root CLAUDE.md (between `<!-- AUTO-MANAGED:* -->` markers)
+- New plugin template: `skills/project-scaffolder/references/reference-doc-template.md`
 - `writing-style-guide.md` shared reference template for consistent style and bilingual rules across all document types
 - Bilingual (EN/KR) structure for ADR templates with language toggle and translated section headings
 - Bilingual (EN/KR) structure for Runbook templates with language toggle and translated section headings
@@ -39,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `/sync-docs` Phase 1 extended with a reference block: detects missing layer docs, validates Code Pointers, auto-corrects INDEX drift
+- `doc-sync-checker` agent extended with reference-doc validation
 - **BREAKING:** `/init-project` now generates 17 steps (was 15), adding bilingual README.md (Step 12) and CHANGELOG.md (Step 13) generation
 - `/sync-docs` expanded to 11 phases (was 9), adding shared style guide read (Phase 0), README.md sync (Phase 8), and CHANGELOG.md sync (Phase 9)
 - All document generation commands (`/generate-readme`, `/generate-changelog`, `/add-adr`, `/add-runbook`, `/sync-docs`) now reference shared `writing-style-guide.md`
@@ -49,7 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tool scoping hardened: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` removed in favor of Read tool
 - `check-doc-sync.sh` hook walks parent directories to find `CLAUDE.md` instead of only checking the immediate directory
 - Reference templates (9 total, was 8) fully synced with project-level improvements
-- Plugin version synchronized: `marketplace.json` and `plugin.json` both at 2.0.0
+- Plugin version synchronized: `marketplace.json` and `plugin.json` both bumped to 2.1.0
 
 ### Fixed
 
@@ -63,20 +71,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `check-doc-sync.sh` false warnings for nested directories where parent has `CLAUDE.md`
 - Secret scan false positives from overly broad AWS Secret Key pattern
 - GitHub Push Protection blocking test fixtures (now runtime-constructed)
-
-## [2.1.0] - 2026-05-19
-
-### Added
-
-- Implementation reference docs feature — `/init-project` Step 4.5 detects up to 8 layers (infrastructure, data, api, iac, frontend, ui, security, agent-llm) and generates skeletons under `docs/reference/`
-- New command `/add-reference-doc <layer>` for incremental layer additions
-- Auto-managed `docs/reference/INDEX.md` and `## Implementation References` block in root CLAUDE.md (between `<!-- AUTO-MANAGED:* -->` markers)
-- New plugin template: `skills/project-scaffolder/references/reference-doc-template.md`
-
-### Changed
-
-- `/sync-docs` Phase 1 extended with a reference block: detects missing layer docs, validates Code Pointers, auto-corrects INDEX drift
-- `doc-sync-checker` agent extended with reference-doc validation
 
 ### Documentation
 
@@ -165,8 +159,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-05-19
+
 ### Added
 
+- 구현 참조 문서 기능 — `/init-project` Step 4.5가 최대 8개 레이어(infrastructure, data, api, iac, frontend, ui, security, agent-llm)를 감지하고 `docs/reference/` 아래 스켈레톤 생성
+- 점진적 레이어 추가를 위한 새로운 커맨드 `/add-reference-doc <layer>`
+- 루트 CLAUDE.md의 자동 관리형 `docs/reference/INDEX.md` 및 `## Implementation References` 블록 (`<!-- AUTO-MANAGED:* -->` 마커 사이)
+- 새로운 플러그인 템플릿: `skills/project-scaffolder/references/reference-doc-template.md`
 - 모든 문서 유형에 일관된 스타일 및 이중 언어 규칙을 적용하는 공통 `writing-style-guide.md` 참조 템플릿 추가
 - ADR 템플릿에 이중 언어(EN/KR) 구조 추가 (언어 토글 및 번역된 섹션 제목)
 - Runbook 템플릿에 이중 언어(EN/KR) 구조 추가 (언어 토글 및 번역된 섹션 제목)
@@ -190,6 +190,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `/sync-docs` Phase 1을 참조 블록으로 확장: 누락된 레이어 문서 감지, Code Pointers 검증, INDEX 드리프트 자동 수정
+- `doc-sync-checker` 에이전트를 참조 문서 검증 기능 추가
 - **BREAKING:** `/init-project`가 17단계로 확장 (기존 15단계), 이중 언어 README.md (Step 12) 및 CHANGELOG.md (Step 13) 생성 추가
 - `/sync-docs`가 11단계로 확장 (기존 9단계), 공통 스타일 가이드 읽기 (Phase 0), README.md 동기화 (Phase 8), CHANGELOG.md 동기화 (Phase 9) 추가
 - 모든 문서 생성 커맨드(`/generate-readme`, `/generate-changelog`, `/add-adr`, `/add-runbook`, `/sync-docs`)가 공통 `writing-style-guide.md` 참조
@@ -200,7 +202,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 도구 범위 강화: `Bash(python3:*)` → `Bash(python3 -c:*)`, `Bash(cat:*)` 제거 후 Read 도구 사용
 - `check-doc-sync.sh` 훅이 부모 디렉토리를 탐색하여 `CLAUDE.md`를 찾도록 개선
 - 참조 템플릿 9개(기존 8개) 전체를 프로젝트 수준 개선 사항과 동기화
-- 플러그인 버전 동기화: `marketplace.json`과 `plugin.json` 모두 2.0.0
+- 플러그인 버전 동기화: `marketplace.json`과 `plugin.json` 모두 2.1.0으로 상향
 
 ### Fixed
 
@@ -214,20 +216,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 부모 디렉토리에 `CLAUDE.md`가 있는데 하위 디렉토리에서 거짓 경고하는 `check-doc-sync.sh` 버그 수정
 - 지나치게 광범위한 AWS Secret Key 패턴으로 인한 시크릿 스캔 거짓 양성 수정
 - GitHub Push Protection이 테스트 픽스처를 차단하는 문제 수정 (런타임 조합으로 전환)
-
-## [2.1.0] - 2026-05-19
-
-### Added
-
-- 구현 참조 문서 기능 — `/init-project` Step 4.5가 최대 8개 레이어(infrastructure, data, api, iac, frontend, ui, security, agent-llm)를 감지하고 `docs/reference/` 아래 스켈레톤 생성
-- 점진적 레이어 추가를 위한 새로운 커맨드 `/add-reference-doc <layer>`
-- 루트 CLAUDE.md의 자동 관리형 `docs/reference/INDEX.md` 및 `## Implementation References` 블록 (`<!-- AUTO-MANAGED:* -->` 마커 사이)
-- 새로운 플러그인 템플릿: `skills/project-scaffolder/references/reference-doc-template.md`
-
-### Changed
-
-- `/sync-docs` Phase 1을 참조 블록으로 확장: 누락된 레이어 문서 감지, Code Pointers 검증, INDEX 드리프트 자동 수정
-- `doc-sync-checker` 에이전트를 참조 문서 검증 기능 추가
 
 ### Documentation
 
