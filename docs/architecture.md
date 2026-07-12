@@ -40,60 +40,36 @@ When users run `/init-project`, it detects the existing project and generates a 
 
 ## Full Architecture Diagram
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   Plugin Marketplace                         │
-│                                                             │
-│  ┌─────────────────┐    ┌─────────────────────────────┐     │
-│  │ marketplace.json │───▶│ plugins/project-init/       │     │
-│  │ (distribution)   │    │                             │     │
-│  └─────────────────┘    │  ┌──────────┐ ┌──────────┐  │     │
-│                         │  │ commands/ │ │ agents/  │  │     │
-│                         │  │ (8 cmds)  │ │ (1 agent)│  │     │
-│                         │  └──────────┘ └──────────┘  │     │
-│                         │  ┌──────────────────────┐   │     │
-│                         │  │ skills/scaffolder/    │   │     │
-│                         │  │  references/(12 tmpl) │   │     │
-│                         │  └──────────────────────┘   │     │
-│                         └─────────────────────────────┘     │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ /init-project
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Generated Project Structure                   │
-│                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ .claude/     │  │ docs/        │  │ scripts/     │      │
-│  │  hooks/ (4)  │  │  decisions/  │  │  setup.sh    │      │
-│  │  skills/ (4) │  │  runbooks/   │  │  install.sh  │      │
-│  │  commands/(3)│  │  arch.md     │  └──────────────┘      │
-│  │  agents/ (2) │  │  onboard.md  │                        │
-│  │  settings.json│ └──────────────┘                        │
-│  └──────────────┘                                          │
-│  ┌──────────────┐  ┌──────────────┐                        │
-│  │ CLAUDE.md    │  │ .mcp.json    │                        │
-│  │ (auto-sync)  │  │ .env.example │                        │
-│  └──────────────┘  └──────────────┘                        │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph marketplace[Plugin Marketplace]
+    MJ[marketplace.json] --> PLUGIN[plugins/project-init/]
+    PLUGIN --> CMDS["commands/ (9 commands)"]
+    PLUGIN --> AGENTS["agents/ (doc-sync-checker)"]
+    PLUGIN --> SKILLS["skills/project-scaffolder/references/ (12 templates)"]
+  end
+  subgraph generated[Generated Project Structure]
+    CLAUDEDIR[".claude/ (hooks 4, skills 4, commands 3, agents 2, settings.json)"]
+    DOCS["docs/ (decisions/, runbooks/, architecture.md, onboarding.md)"]
+    SCRIPTS["scripts/ (setup.sh, install-hooks.sh)"]
+    ROOTMD["CLAUDE.md (auto-sync)"]
+    CONFIG[".mcp.json / .env.example"]
+  end
+  PLUGIN -- /init-project --> generated
 ```
 
 ## Data Flow Summary
 
-```
-User -> /init-project -> Detect Project -> Read Templates -> Generate Structure -> Install Hooks
-                                                                                       |
-                                            ┌──────────────────────────────────────────┘
-                                            ▼
-                                     4-Layer Auto-Sync
-                                            |
-                           ┌────────────────┼────────────────┐
-                           ▼                ▼                ▼
-                     CLAUDE.md Rules   PostToolUse Hook   /sync-docs
-                     (Plan mode)       (Write/Edit)       (Manual)
-                           |                |                |
-                           └────────────────┼────────────────┘
-                                            ▼
-                                      Docs Updated
+```mermaid
+flowchart LR
+  User --> INIT["/init-project"] --> Detect[Detect Project] --> Templates[Read Templates] --> Generate[Generate Structure] --> Hooks[Install Hooks]
+  Hooks --> Sync[4-Layer Auto-Sync]
+  Sync --> Rules["CLAUDE.md Rules (Plan mode)"]
+  Sync --> Post["PostToolUse Hook (Write/Edit)"]
+  Sync --> Manual["/sync-docs (Manual)"]
+  Rules --> Updated[Docs Updated]
+  Post --> Updated
+  Manual --> Updated
 ```
 
 ## Key Design Decisions
@@ -103,11 +79,12 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **4-layer auto-sync** -- Plan mode rules, PostToolUse hooks, /sync-docs command, and commit-msg hook ensure documentation stays current.
 - **Confidence-based code review** -- Only reports issues scoring 75+ to filter false positives and reduce review fatigue.
 - **Bilingual support** -- All user-facing documents (README, CHANGELOG, architecture, ADR, runbook) provided in Korean/English. Shared writing-style-guide ensures consistency.
+- **Mermaid architecture diagrams** -- All architecture flows use Mermaid flowchart instead of ASCII box diagrams: GitHub renders them natively and doc-sync regeneration stays reliable (ADR-007).
 
 ## Operations
 - Release: see [docs/runbooks/release.md](runbooks/release.md) for the maintainer-side version bump and tag procedure
 - Update or remove the plugin: see [docs/runbooks/update-from-marketplace.md](runbooks/update-from-marketplace.md) for the consumer-side procedure
-- Architecture decisions: see [docs/decisions/](decisions/) -- ADR-001 (bilingual policy), ADR-002 (HTML anchor navigation), ADR-003 (shared writing-style-guide), ADR-004 (hook non-blocking failure)
+- Architecture decisions: see [docs/decisions/](decisions/) -- ADR-001 (bilingual policy), ADR-002 (HTML anchor navigation), ADR-003 (shared writing-style-guide), ADR-004 (hook non-blocking failure), ADR-005 (implementation reference docs), ADR-006 (hybrid detection + confirmation), ADR-007 (Mermaid architecture diagrams)
 
 ---
 
@@ -146,60 +123,36 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 
 ## Full Architecture Diagram
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                   Plugin Marketplace                         │
-│                                                             │
-│  ┌─────────────────┐    ┌─────────────────────────────┐     │
-│  │ marketplace.json │───▶│ plugins/project-init/       │     │
-│  │ (distribution)   │    │                             │     │
-│  └─────────────────┘    │  ┌──────────┐ ┌──────────┐  │     │
-│                         │  │ commands/ │ │ agents/  │  │     │
-│                         │  │ (8 cmds)  │ │ (1 agent)│  │     │
-│                         │  └──────────┘ └──────────┘  │     │
-│                         │  ┌──────────────────────┐   │     │
-│                         │  │ skills/scaffolder/    │   │     │
-│                         │  │  references/(12 tmpl) │   │     │
-│                         │  └──────────────────────┘   │     │
-│                         └─────────────────────────────┘     │
-└─────────────────────────────┬───────────────────────────────┘
-                              │ /init-project
-                              ▼
-┌─────────────────────────────────────────────────────────────┐
-│                Generated Project Structure                   │
-│                                                             │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
-│  │ .claude/     │  │ docs/        │  │ scripts/     │      │
-│  │  hooks/ (4)  │  │  decisions/  │  │  setup.sh    │      │
-│  │  skills/ (4) │  │  runbooks/   │  │  install.sh  │      │
-│  │  commands/(3)│  │  arch.md     │  └──────────────┘      │
-│  │  agents/ (2) │  │  onboard.md  │                        │
-│  │  settings.json│ └──────────────┘                        │
-│  └──────────────┘                                          │
-│  ┌──────────────┐  ┌──────────────┐                        │
-│  │ CLAUDE.md    │  │ .mcp.json    │                        │
-│  │ (auto-sync)  │  │ .env.example │                        │
-│  └──────────────┘  └──────────────┘                        │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph marketplace[Plugin Marketplace]
+    MJ[marketplace.json] --> PLUGIN[plugins/project-init/]
+    PLUGIN --> CMDS["commands/ (9 commands)"]
+    PLUGIN --> AGENTS["agents/ (doc-sync-checker)"]
+    PLUGIN --> SKILLS["skills/project-scaffolder/references/ (12 templates)"]
+  end
+  subgraph generated[Generated Project Structure]
+    CLAUDEDIR[".claude/ (hooks 4, skills 4, commands 3, agents 2, settings.json)"]
+    DOCS["docs/ (decisions/, runbooks/, architecture.md, onboarding.md)"]
+    SCRIPTS["scripts/ (setup.sh, install-hooks.sh)"]
+    ROOTMD["CLAUDE.md (auto-sync)"]
+    CONFIG[".mcp.json / .env.example"]
+  end
+  PLUGIN -- /init-project --> generated
 ```
 
 ## Data Flow Summary
 
-```
-User -> /init-project -> Detect Project -> Read Templates -> Generate Structure -> Install Hooks
-                                                                                       |
-                                            ┌──────────────────────────────────────────┘
-                                            ▼
-                                     4-Layer Auto-Sync
-                                            |
-                           ┌────────────────┼────────────────┐
-                           ▼                ▼                ▼
-                     CLAUDE.md Rules   PostToolUse Hook   /sync-docs
-                     (Plan mode)       (Write/Edit)       (Manual)
-                           |                |                |
-                           └────────────────┼────────────────┘
-                                            ▼
-                                      Docs Updated
+```mermaid
+flowchart LR
+  User --> INIT["/init-project"] --> Detect[Detect Project] --> Templates[Read Templates] --> Generate[Generate Structure] --> Hooks[Install Hooks]
+  Hooks --> Sync[4-Layer Auto-Sync]
+  Sync --> Rules["CLAUDE.md Rules (Plan mode)"]
+  Sync --> Post["PostToolUse Hook (Write/Edit)"]
+  Sync --> Manual["/sync-docs (Manual)"]
+  Rules --> Updated[Docs Updated]
+  Post --> Updated
+  Manual --> Updated
 ```
 
 ## Key Design Decisions
@@ -209,8 +162,9 @@ User -> /init-project -> Detect Project -> Read Templates -> Generate Structure 
 - **4계층 자동 동기화** -- Plan mode 규칙, PostToolUse 훅, /sync-docs 커맨드, commit-msg 훅의 4단계로 문서 동기화를 보장.
 - **신뢰도 기반 코드 리뷰** -- 75점 이상의 이슈만 보고하여 거짓 양성을 필터링하고 리뷰 피로 감소.
 - **이중언어 지원** -- 모든 사용자 대면 문서(README, CHANGELOG, architecture, ADR, runbook)를 한국어/영어 병기로 제공. 공통 writing-style-guide로 일관성 유지.
+- **Mermaid 아키텍처 다이어그램** -- 모든 아키텍처 흐름은 ASCII 박스 다이어그램 대신 Mermaid flowchart를 사용: GitHub이 네이티브로 렌더링하며 문서 동기화 재생성이 안정적으로 유지됨 (ADR-007).
 
 ## Operations
 - 릴리스: 메인테이너 측 버전 갱신과 태그 절차는 [docs/runbooks/release.md](runbooks/release.md) 참조
 - 플러그인 업데이트 또는 제거: 소비자 측 절차는 [docs/runbooks/update-from-marketplace.md](runbooks/update-from-marketplace.md) 참조
-- 아키텍처 결정: [docs/decisions/](decisions/) 참조 -- ADR-001(이중언어 정책), ADR-002(HTML 앵커 내비게이션), ADR-003(공유 writing-style-guide), ADR-004(훅 비차단 실패)
+- 아키텍처 결정: [docs/decisions/](decisions/) 참조 -- ADR-001(이중언어 정책), ADR-002(HTML 앵커 내비게이션), ADR-003(공유 writing-style-guide), ADR-004(훅 비차단 실패), ADR-005(구현 참조 문서), ADR-006(하이브리드 감지 + 확인), ADR-007(Mermaid 아키텍처 다이어그램)

@@ -1,6 +1,6 @@
 # project-init
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.1.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.2.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 A Claude Code plugin for initializing and maintaining project structures with adaptive detection, quality scoring, and auto-sync documentation workflows.
 
@@ -45,7 +45,19 @@ In short, project-init is a **harness engineering automation tool** — it gener
 - **Error Recovery Guides** -- Every generated command includes recovery procedures: deploy rollback (5 scenarios), review fallbacks (3 scenarios), test failure diagnosis table.
 - **Structured Agent Output** -- Generated agents return results in defined Markdown schemas with Verdict (PASS/WARN/FAIL), Summary tables, and actionable recommendations.
 - **Implementation reference docs** -- Per-layer skeletons under `docs/reference/` with shared 5-section structure (Overview / Components / Key Decisions / Code Pointers / Cross-references). Auto-detected at init, drift-checked by `/sync-docs`.
+- **Mermaid Architecture Diagrams** -- Generated README and architecture docs represent all architecture flows as Mermaid flowcharts that GitHub renders natively: `flowchart TB` with per-layer subgraphs for the full diagram, `flowchart LR` for the critical path.
 - **Full Project Lifecycle** -- Generated projects include slash commands (/review, /test-all, /deploy), agent definitions (code-reviewer, security-auditor), MCP configuration, onboarding docs, and operational scripts.
+
+## Architecture
+
+The critical flow: `/init-project` scaffolds the structure, then the 4-layer auto-sync workflow keeps documentation current as code evolves.
+
+```mermaid
+flowchart LR
+  User --> INIT["/init-project"] --> Scaffold[Generate Structure] --> Hooks[Install Hooks] --> Sync[4-Layer Auto-Sync] --> Docs[Docs Updated]
+```
+
+See [docs/architecture.md](docs/architecture.md) for the full architecture document.
 
 ## Prerequisites
 
@@ -152,7 +164,7 @@ bash scripts/setup.sh
 
 # Generate bilingual CHANGELOG.md (update unreleased or release version)
 /generate-changelog
-/generate-changelog 2.1.0
+/generate-changelog 2.2.0
 ```
 
 ### Example Output
@@ -241,7 +253,7 @@ Generates a complete Claude Code project structure with CLAUDE.md, hooks (5 scri
 
 **`/project-init:sync-docs`** -- 9-phase documentation synchronization
 
-Phase 0: Gap analysis (doc-sync-checker subagent) | Phase 1: CLAUDE.md quality scoring | Phase 2: Root CLAUDE.md sync | Phase 3: Architecture doc sync (ASCII diagrams, layer-based) | Phase 4: Module CLAUDE.md audit | Phase 5: ADR audit with freshness check | Phase 6: Runbook audit | Phase 7: README.md sync (bilingual structure, badges, sections) | Phase 8: CHANGELOG.md sync (unreleased entries from git log) | Phase 9: Before/After report
+Phase 0: Gap analysis (doc-sync-checker subagent) | Phase 1: CLAUDE.md quality scoring | Phase 2: Root CLAUDE.md sync | Phase 3: Architecture doc sync (Mermaid flowcharts, layer-based) | Phase 4: Module CLAUDE.md audit | Phase 5: ADR audit with freshness check | Phase 6: Runbook audit | Phase 7: README.md sync (bilingual structure, badges, sections) | Phase 8: CHANGELOG.md sync (unreleased entries from git log) | Phase 9: Before/After report
 
 **`/project-init:generate-readme`** -- Bilingual README.md generation
 
@@ -275,11 +287,11 @@ Scores project setup across 8 categories: Core files (20pts), Hook configuration
 ```
 project-init/                              # Marketplace root
 ├── .claude-plugin/
-│   └── marketplace.json                   # Marketplace manifest (v2.1.0)
+│   └── marketplace.json                   # Marketplace manifest (v2.2.0)
 ├── LICENSE                                # MIT License
 ├── README.md
 └── plugins/
-    └── project-init/                      # Plugin package (v2.1.0)
+    └── project-init/                      # Plugin package (v2.2.0)
         ├── .claude-plugin/
         │   └── plugin.json                # Plugin manifest
         ├── commands/
@@ -504,7 +516,19 @@ Claude Code는 **하네스(Harness)** 위에서 동작합니다 — hooks, skill
 - **에러 복구 가이드** -- 모든 생성 커맨드에 복구 절차가 포함됩니다: deploy 롤백(5개 시나리오), review 폴백(3개 시나리오), test 실패 진단 표.
 - **구조화된 에이전트 출력** -- 생성 에이전트가 정의된 Markdown 스키마로 결과를 반환합니다: Verdict (PASS/WARN/FAIL), Summary 테이블, 실행 가능한 권장 사항.
 - **구현 참조 문서** -- `docs/reference/` 하위에 5-섹션 공유 구조(Overview / Components / Key Decisions / Code Pointers / Cross-references)의 계층별 스켈레톤. init 시 자동 감지, `/sync-docs`로 드리프트 점검.
+- **Mermaid 아키텍처 다이어그램** -- 생성되는 README와 아키텍처 문서의 모든 아키텍처 흐름을 GitHub이 네이티브로 렌더링하는 Mermaid flowchart로 표현합니다: 전체 다이어그램은 계층별 subgraph를 가진 `flowchart TB`, 핵심 경로는 `flowchart LR`을 사용합니다.
 - **전체 프로젝트 라이프사이클** -- 생성된 프로젝트에 슬래시 커맨드(/review, /test-all, /deploy), 에이전트 정의(code-reviewer, security-auditor), MCP 설정, 온보딩 문서, 운영 스크립트가 포함됩니다.
+
+## 아키텍처
+
+핵심 흐름: `/init-project`가 구조를 스캐폴딩하고, 이후 4단계 자동 동기화 워크플로우가 코드 변경에 맞춰 문서를 최신 상태로 유지합니다.
+
+```mermaid
+flowchart LR
+  User --> INIT["/init-project"] --> Scaffold[Generate Structure] --> Hooks[Install Hooks] --> Sync[4-Layer Auto-Sync] --> Docs[Docs Updated]
+```
+
+전체 아키텍처 문서는 [docs/architecture.md](docs/architecture.md)를 참조합니다.
 
 ## 사전 요구 사항
 
@@ -611,7 +635,7 @@ bash scripts/setup.sh
 
 # 이중 언어 CHANGELOG.md 생성 (미릴리스 업데이트 또는 버전 릴리스)
 /generate-changelog
-/generate-changelog 2.1.0
+/generate-changelog 2.2.0
 ```
 
 ### 실행 결과 예시
@@ -700,7 +724,7 @@ CLAUDE.md, 훅(5개 스크립트), 스킬(4개), 슬래시 커맨드(3개), 에�
 
 **`/project-init:sync-docs`** -- 9단계 문서 동기화
 
-Phase 0: 갭 분석 (doc-sync-checker 서브에이전트) | Phase 1: CLAUDE.md 품질 점수 | Phase 2: 루트 CLAUDE.md 동기화 | Phase 3: 아키텍처 문서 동기화 (ASCII 다이어그램, 레이어 기반) | Phase 4: 모듈 CLAUDE.md 감사 | Phase 5: ADR 감사 및 최신성 검사 | Phase 6: 런북 감사 | Phase 7: README.md 동기화 (이중 언어 구조, 뱃지, 섹션) | Phase 8: CHANGELOG.md 동기화 (git log 기반 미릴리스 항목) | Phase 9: Before/After 리포트
+Phase 0: 갭 분석 (doc-sync-checker 서브에이전트) | Phase 1: CLAUDE.md 품질 점수 | Phase 2: 루트 CLAUDE.md 동기화 | Phase 3: 아키텍처 문서 동기화 (Mermaid flowchart, 레이어 기반) | Phase 4: 모듈 CLAUDE.md 감사 | Phase 5: ADR 감사 및 최신성 검사 | Phase 6: 런북 감사 | Phase 7: README.md 동기화 (이중 언어 구조, 뱃지, 섹션) | Phase 8: CHANGELOG.md 동기화 (git log 기반 미릴리스 항목) | Phase 9: Before/After 리포트
 
 **`/project-init:generate-readme`** -- 이중 언어 README.md 생성
 
@@ -734,11 +758,11 @@ git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic 
 ```
 project-init/                              # 마켓플레이스 루트
 ├── .claude-plugin/
-│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.1.0)
+│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.2.0)
 ├── LICENSE                                # MIT 라이선스
 ├── README.md
 └── plugins/
-    └── project-init/                      # 플러그인 패키지 (v2.1.0)
+    └── project-init/                      # 플러그인 패키지 (v2.2.0)
         ├── .claude-plugin/
         │   └── plugin.json                # 플러그인 매니페스트
         ├── commands/
