@@ -14,6 +14,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-07-12
+
+### Added
+
+- Architecture section in the README template (recommended, placed after Features) with a concise Mermaid flowchart and a link to `docs/architecture.md`
+- Diagram Rules section in the shared `writing-style-guide.md`: all architecture flows use Mermaid flowchart (`flowchart TB` with per-layer subgraphs for full diagrams, `flowchart LR` for data flow), diagrams duplicated identically in both language sections
+- ADR-007 recording the Mermaid flowchart decision
+
+### Changed
+
+- Replace ASCII box diagrams (`┌─┐│└─┘▶▼`) with Mermaid flowcharts across `docs-templates.md`, `/init-project`, `/sync-docs` (Phase 4), and the `doc-sync-checker` agent; `/sync-docs` converts legacy ASCII diagrams on its next run
+- `/generate-readme` detects `docs/architecture.md` and derives the README Architecture section's flowchart from its Data Flow Summary
+- Repository `README.md` and `docs/architecture.md` migrated to Mermaid flowcharts
+
 ## [2.1.0] - 2026-05-19
 
 ### Added
@@ -158,6 +172,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [2.2.0] - 2026-07-12
+
+### Added
+
+- README 템플릿에 Architecture 섹션 추가 (권장, Features 다음 배치) — 간결한 Mermaid flowchart와 `docs/architecture.md` 링크 포함
+- 공유 `writing-style-guide.md`에 Diagram Rules 섹션 추가: 모든 아키텍처 흐름은 Mermaid flowchart 사용 (전체 다이어그램은 계층별 subgraph를 가진 `flowchart TB`, 데이터 흐름은 `flowchart LR`), 다이어그램은 양 언어 섹션에 동일하게 복제
+- Mermaid flowchart 결정을 기록한 ADR-007 추가
+
+### Changed
+
+- `docs-templates.md`, `/init-project`, `/sync-docs`(Phase 4), `doc-sync-checker` 에이전트 전반에서 ASCII 박스 다이어그램(`┌─┐│└─┘▶▼`)을 Mermaid flowchart로 교체; `/sync-docs`가 다음 실행 시 레거시 ASCII 다이어그램 변환
+- `/generate-readme`가 `docs/architecture.md`를 감지하여 README Architecture 섹션의 flowchart를 Data Flow Summary에서 도출
+- 저장소 `README.md`와 `docs/architecture.md`를 Mermaid flowchart로 마이그레이션
 
 ## [2.1.0] - 2026-05-19
 
