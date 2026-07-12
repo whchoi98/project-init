@@ -4,7 +4,7 @@
 Project documentation including architecture design, Architecture Decision Records (ADRs), operational runbooks, and developer onboarding guide. All user-facing documents use bilingual (Korean/English) format.
 
 ## Key Files
-- `architecture.md` - System architecture with ASCII diagrams (bilingual)
+- `architecture.md` - System architecture with Mermaid flowchart diagrams (bilingual)
 - `onboarding.md` - Developer onboarding guide with setup steps
 - `decisions/.template.md` - ADR template (bilingual: Status/Context/Options/Decision/Consequences)
 - `runbooks/.template.md` - Runbook template (bilingual: Overview/Procedure/Verification/Rollback)
@@ -13,7 +13,7 @@ Project documentation including architecture design, Architecture Decision Recor
 - All documents follow `plugins/project-init/skills/project-scaffolder/references/writing-style-guide.md`
 
 ## Rules
-- Architecture doc uses Unicode box-drawing characters (`┌─┐│└─┘▶▼`)
+- Architecture flows use Mermaid flowchart in ```mermaid blocks (ADR-007); no ASCII box diagrams
 - ADR files follow `ADR-NNN-concise-title.md` naming convention
 - Runbook commands must be copy-paste ready
 - All docs use bilingual structure with `# English` / `# 한국어` sections

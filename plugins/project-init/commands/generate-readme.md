@@ -52,6 +52,14 @@ git tag --sort=-v:refname 2>/dev/null | head -5
 ls -d tests/ test/ __tests__/ spec/ 2>/dev/null
 ```
 
+**Architecture document:**
+```bash
+ls docs/architecture.md 2>/dev/null
+```
+
+- If `docs/architecture.md` exists, derive the README Architecture section's Mermaid flowchart from its Data Flow Summary and link to the document
+- Otherwise, derive a concise critical-path flow from the detected components (entry point -> processing -> storage/output)
+
 **Environment variables:**
 ```bash
 ls .env.example .env.sample 2>/dev/null
@@ -143,6 +151,7 @@ After writing README.md, verify:
 - [ ] Explicit `<a id="english">` and `<a id="korean">` tags before each language heading
 - [ ] Both language sections have identical structure and information
 - [ ] All required sections are present (Overview, Features, Prerequisites, Installation, Usage, Contributing, License, Contact)
+- [ ] Architecture section (if included) uses a Mermaid flowchart in a ```mermaid block, identical in both language sections
 - [ ] Code blocks specify the language
 - [ ] No emojis in the document
 - [ ] Shields.io badge URLs are valid

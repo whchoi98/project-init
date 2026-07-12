@@ -25,3 +25,4 @@ Core plugin providing project structure initialization, documentation quality sc
 - The init-project command adapts based on detected project type
 - Version in plugin.json must be updated for each release
 - Bilingual support (Korean/English) in user-facing templates
+- Architecture flows in generated docs use Mermaid flowchart, not ASCII box diagrams (see references/writing-style-guide.md Diagram Rules, ADR-007)

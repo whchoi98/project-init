@@ -100,6 +100,7 @@ Format: `ADR-NNN-concise-title.md`
 - [ADR-004](docs/decisions/ADR-004-hook-non-blocking-failure.md) -- Hook non-blocking failure policy: gate hooks exit non-zero, observational hooks suppress via `2>/dev/null \|\| true` at the registration boundary
 - [ADR-005](docs/decisions/ADR-005-implementation-reference-docs.md) -- Implementation reference docs structure (8 layers, shared 5-section skeleton, AUTO-MANAGED INDEX)
 - [ADR-006](docs/decisions/ADR-006-hybrid-detection-confirmation.md) -- Hybrid detection + user confirmation flow for /init-project Step 4.5
+- [ADR-007](docs/decisions/ADR-007-mermaid-architecture-diagrams.md) -- Mermaid flowchart replaces ASCII box diagrams for all architecture flows; README gains an Architecture section
 
 ### Current Runbooks
 - [release.md](docs/runbooks/release.md) -- Maintainer-side procedure to release a new plugin version with atomic version bump in both manifests
