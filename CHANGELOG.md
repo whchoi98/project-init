@@ -14,6 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Hook templates (`hook-scripts.md`, `settings-json-template.md`) now follow the Claude Code hook contract: event JSON is read from stdin (`tool_input.file_path`, `tool_input.command`, `message`), `secret-scan.sh` gates only `git commit` and blocks with exit 2, `check-doc-sync.sh` returns reminders as `hookSpecificOutput.additionalContext`, and the gate hook is registered without `|| true`
+- Agent templates (`agents-templates.md`) generate `.claude/agents/*.md` with YAML frontmatter and a Markdown system prompt; `/init-project` Step 8 and the README trees updated accordingly
+- Repository harness right-sized for frontier models (ADR-008): generic skills (code-review, refactor, release, sync-docs), unloaded `.yml` agents, and the unused Notification hook removed; `/review`, `/test-all`, `/deploy` reduced to repo-specific checks; hardcoded test and file counts removed from CLAUDE.md, runbooks, and tests
+
+### Fixed
+
+- Generated PostToolUse and Notification hooks silently did nothing because they relied on non-existent `$TOOL_INPUT_PATH` / `$EVENT` / `$MESSAGE` environment variables
+- Generated `secret-scan.sh` could never block a commit: it was wrapped in `|| true` and used exit 1, which Claude Code treats as non-blocking
+- Generated `.claude/agents/*.yml` files were never loaded by Claude Code (subagents must be `.md`)
+
 ## [2.2.0] - 2026-07-12
 
 ### Added
@@ -156,7 +168,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Restructure repository as marketplace with plugin in `plugins/project-init/` subdirectory ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.2.0...HEAD
 [2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
@@ -172,6 +184,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+
+- 훅 템플릿(`hook-scripts.md`, `settings-json-template.md`)이 Claude Code 훅 계약을 따르도록 수정: 이벤트 JSON을 stdin에서 읽고(`tool_input.file_path`, `tool_input.command`, `message`), `secret-scan.sh`는 `git commit`만 게이트하며 exit 2로 차단, `check-doc-sync.sh`는 `hookSpecificOutput.additionalContext`로 리마인드를 반환, 게이트 훅은 `|| true` 없이 등록
+- 에이전트 템플릿(`agents-templates.md`)이 YAML frontmatter와 Markdown 시스템 프롬프트를 가진 `.claude/agents/*.md`를 생성; `/init-project` Step 8과 README 트리 갱신
+- 저장소 하네스를 최신 모델 기준으로 적정화(ADR-008): 범용 스킬(code-review, refactor, release, sync-docs), 로드되지 않는 `.yml` 에이전트, 미사용 Notification 훅 제거; `/review`, `/test-all`, `/deploy`를 저장소 고유 점검만 남기도록 축소; CLAUDE.md, 런북, 테스트의 하드코딩된 테스트·파일 개수 제거
+
+### Fixed
+
+- 생성된 PostToolUse·Notification 훅이 존재하지 않는 `$TOOL_INPUT_PATH` / `$EVENT` / `$MESSAGE` 환경변수에 의존해 아무 동작도 하지 않던 문제
+- 생성된 `secret-scan.sh`가 `|| true`로 감싸져 있고 exit 1(비차단)을 사용해 커밋을 차단할 수 없던 문제
+- 생성된 `.claude/agents/*.yml` 파일이 Claude Code에 로드되지 않던 문제(서브에이전트는 `.md`만 지원)
 
 ## [2.2.0] - 2026-07-12
 
@@ -314,7 +338,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 리포지토리를 마켓플레이스 구조로 변경, 플러그인을 `plugins/project-init/` 하위 디렉토리로 이동 ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.2.0...HEAD
 [2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0

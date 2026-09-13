@@ -37,24 +37,12 @@ for tmpl in "${TEMPLATES[@]}"; do
     assert_file_exists "Reference: $tmpl.md" "plugins/project-init/skills/project-scaffolder/references/$tmpl.md"
 done
 
-# --- Project-level skills exist ---
-
-SKILLS=(code-review refactor release sync-docs)
-for skill in "${SKILLS[@]}"; do
-    assert_file_exists "Skill: $skill/SKILL.md" ".claude/skills/$skill/SKILL.md"
-done
-
 # --- Project-level commands exist ---
 
 PROJECT_CMDS=(review test-all deploy)
 for cmd in "${PROJECT_CMDS[@]}"; do
     assert_file_exists "Command: $cmd.md" ".claude/commands/$cmd.md"
 done
-
-# --- Project-level agents exist ---
-
-assert_file_exists "Agent: code-reviewer.yml" ".claude/agents/code-reviewer.yml"
-assert_file_exists "Agent: security-auditor.yml" ".claude/agents/security-auditor.yml"
 
 # --- CLAUDE.md files exist ---
 

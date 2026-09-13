@@ -10,13 +10,13 @@
 # English
 
 ## Status
-Accepted
+Accepted (amended by ADR-008: gate hooks block with exit 2 and are registered without `|| true`; the Notification hook was removed from this repository)
 
 ## Context
 The plugin registers four hooks in `.claude/settings.json`: SessionStart (`session-context.sh`), PreToolUse (`secret-scan.sh`), PostToolUse (`check-doc-sync.sh`), and Notification (`notify.sh`). Each hook is a Bash script invoked by Claude Code at a specific lifecycle point. A hook that exits non-zero or fails to execute can either be treated as an error that interrupts the user, or as a soft signal that is logged and ignored.
 
 Hooks differ in intent:
-- `secret-scan.sh` is a security gate. A detected secret should block the commit. It exits 1 deliberately when a secret is found.
+- `secret-scan.sh` is a security gate. A detected secret should block the commit. It exits 2 deliberately when a secret is found (exit 2 is the code Claude Code treats as a block).
 - `session-context.sh`, `check-doc-sync.sh`, `notify.sh` are observational. They surface information (project state, doc-sync warnings, webhook notifications) but do not gate user actions. A failure here (missing tool, malformed git state, network error) should not interrupt the user.
 
 The question is whether environmental failures of the observational hooks (Python missing, `find` failing on a permissions error, `curl` timing out) should propagate as user-visible errors.
@@ -46,7 +46,7 @@ The convention applies at the settings.json registration boundary, not inside th
 ```json
 {
   "type": "command",
-  "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
+  "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
 }
 ```
 
@@ -61,14 +61,14 @@ Scripts themselves do not include defensive `|| true` wrappers internally; the b
 
 ### Negative
 - Bugs in observational hooks fail silently. A regression in `check-doc-sync.sh` that prevents it from emitting any warnings will not be noticed by the user.
-- Test coverage for hooks must compensate for the loss of runtime feedback. The 27 hook tests in `tests/hooks/test-hooks.sh` are how the project mitigates this.
+- Test coverage for hooks must compensate for the loss of runtime feedback. The hook tests in `tests/hooks/test-hooks.sh` are how the project mitigates this.
 - The pattern is not self-evident from the script source; readers must know to check `.claude/settings.json` registration to understand the failure-handling policy.
 
 ## References
 - `.claude/settings.json`, hook registration entries
-- `.claude/hooks/secret-scan.sh` (gate hook, exits 1 on detection)
+- `.claude/hooks/secret-scan.sh` (gate hook, exits 2 on detection)
 - `.claude/hooks/session-context.sh`, `.claude/hooks/check-doc-sync.sh`, `.claude/hooks/notify.sh` (observational)
-- `tests/hooks/test-hooks.sh` (27 tests compensating for silent-failure risk)
+- `tests/hooks/test-hooks.sh` (tests compensating for silent-failure risk)
 
 ---
 
@@ -77,13 +77,13 @@ Scripts themselves do not include defensive `|| true` wrappers internally; the b
 # 한국어
 
 ## 상태
-승인됨
+승인됨 (ADR-008로 보완: 게이트 훅은 exit 2로 차단하며 `|| true` 없이 등록, Notification 훅은 이 저장소에서 제거)
 
 ## 배경
 플러그인은 `.claude/settings.json`에 네 개의 훅을 등록합니다: SessionStart(`session-context.sh`), PreToolUse(`secret-scan.sh`), PostToolUse(`check-doc-sync.sh`), Notification(`notify.sh`). 각 훅은 Claude Code가 특정 생명주기 시점에 호출하는 Bash 스크립트입니다. 비정상 종료하거나 실행에 실패한 훅은 사용자를 중단시키는 오류로 처리하거나, 로깅 후 무시되는 약한 신호로 처리할 수 있습니다.
 
 훅마다 의도가 다릅니다:
-- `secret-scan.sh`는 보안 게이트입니다. 시크릿이 발견되면 커밋을 차단해야 합니다. 발견 시 의도적으로 1로 종료합니다.
+- `secret-scan.sh`는 보안 게이트입니다. 시크릿이 발견되면 커밋을 차단해야 합니다. 발견 시 의도적으로 2로 종료합니다(Claude Code가 차단으로 처리하는 종료 코드).
 - `session-context.sh`, `check-doc-sync.sh`, `notify.sh`는 관찰성 훅입니다. 정보(프로젝트 상태, 문서 동기화 경고, 웹훅 알림)를 표면화하지만 사용자 동작을 막지 않습니다. 환경 실패(도구 누락, 잘못된 git 상태, 네트워크 오류)가 사용자를 중단시켜서는 안 됩니다.
 
 쟁점은 관찰성 훅의 환경적 실패(Python 누락, 권한 오류로 인한 `find` 실패, `curl` 타임아웃)가 사용자에게 보이는 오류로 전파되어야 하는가입니다.
@@ -113,7 +113,7 @@ Scripts themselves do not include defensive `|| true` wrappers internally; the b
 ```json
 {
   "type": "command",
-  "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
+  "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
 }
 ```
 
@@ -128,11 +128,11 @@ Scripts themselves do not include defensive `|| true` wrappers internally; the b
 
 ### 부정적
 - 관찰성 훅의 버그가 무음으로 실패합니다. `check-doc-sync.sh`가 어떤 경고도 내보내지 못하게 만드는 회귀가 사용자에게 보이지 않습니다.
-- 훅 테스트 커버리지가 런타임 피드백 손실을 보완해야 합니다. `tests/hooks/test-hooks.sh`의 27개 테스트가 프로젝트가 이를 완화하는 방식입니다.
+- 훅 테스트 커버리지가 런타임 피드백 손실을 보완해야 합니다. `tests/hooks/test-hooks.sh`의 테스트가 프로젝트가 이를 완화하는 방식입니다.
 - 패턴이 스크립트 소스에서 자명하지 않습니다. 독자는 실패 처리 정책을 이해하기 위해 `.claude/settings.json` 등록을 확인해야 합니다.
 
 ## 참고 자료
 - `.claude/settings.json`, 훅 등록 항목
-- `.claude/hooks/secret-scan.sh` (게이트 훅, 발견 시 1로 종료)
+- `.claude/hooks/secret-scan.sh` (게이트 훅, 발견 시 2로 종료)
 - `.claude/hooks/session-context.sh`, `.claude/hooks/check-doc-sync.sh`, `.claude/hooks/notify.sh` (관찰성)
-- `tests/hooks/test-hooks.sh` (조용한 실패 위험을 보완하는 27개 테스트)
+- `tests/hooks/test-hooks.sh` (조용한 실패 위험을 보완하는 테스트)

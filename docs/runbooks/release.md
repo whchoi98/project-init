@@ -20,7 +20,7 @@ Release a new version of the project-init plugin to the marketplace. The procedu
 ## Prerequisites
 - Working tree on `main` is clean (`git status` empty).
 - Local `main` is up to date with the remote (`git pull --ff-only` succeeds).
-- All 169 tests pass (`bash tests/run-all.sh`).
+- All tests pass (`bash tests/run-all.sh`).
 - Semantic version classification (major / minor / patch) decided based on the change set.
 
 ## Procedure
@@ -122,7 +122,7 @@ The version reported by `claude plugin list` must equal `X.Y.Z`.
 
 ## Verification
 
-- [ ] `bash tests/run-all.sh` reports 169/169 passed.
+- [ ] `bash tests/run-all.sh` reports zero failures.
 - [ ] Both manifest files report version `X.Y.Z`.
 - [ ] `CHANGELOG.md` contains the `[X.Y.Z]` entry in both English and Korean sections.
 - [ ] The annotated tag `vX.Y.Z` exists on `main` and is pushed to the remote.
@@ -171,7 +171,7 @@ project-init 플러그인의 새 버전을 마켓플레이스에 릴리스합니
 ## 사전 요구 사항
 - 작업 트리가 `main`에서 깨끗합니다(`git status`가 비어 있음).
 - 로컬 `main`이 원격과 동기화되어 있습니다(`git pull --ff-only` 성공).
-- 169개 테스트 전체 통과(`bash tests/run-all.sh`).
+- 테스트 전체 통과(`bash tests/run-all.sh`).
 - 변경 집합에 따라 시맨틱 버전 분류(major / minor / patch)가 결정되어 있습니다.
 
 ## 절차
@@ -273,7 +273,7 @@ claude plugin list | grep project-init
 
 ## 검증
 
-- [ ] `bash tests/run-all.sh`가 169/169 통과를 보고합니다.
+- [ ] `bash tests/run-all.sh`가 실패 0건을 보고합니다.
 - [ ] 두 매니페스트 파일이 모두 `X.Y.Z` 버전을 보고합니다.
 - [ ] `CHANGELOG.md`의 영어와 한국어 섹션 모두에 `[X.Y.Z]` 항목이 존재합니다.
 - [ ] 어노테이션 태그 `vX.Y.Z`가 `main`에 존재하고 원격에 푸시되었습니다.

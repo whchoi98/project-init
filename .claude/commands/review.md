@@ -1,51 +1,19 @@
 ---
-description: Run code review on current changes with confidence-based filtering
-allowed-tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
+description: Review current changes against this repo's conventions
+allowed-tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*), Bash(bash -n:*), Bash(bash tests/run-all.sh:*)
 ---
 
 # Code Review
 
-Review the current code changes using confidence-based scoring.
+Review `$ARGUMENTS` if given; otherwise `git diff`, falling back to `git diff --cached`.
 
-## Step 1: Get Changes
+Focus on what a generic review misses in this repo:
 
-Determine the scope of review:
+- Bilingual docs: English and Korean sections have identical structure, code blocks, and tables (ADR-001); language toggles use `#english` / `#korean` anchors (ADR-002)
+- Version consistency: `marketplace.json` (`metadata.version` and `plugins[0].version`) matches `plugin.json`
+- Hardcoded counts (test totals, file counts) in CLAUDE.md, README, or CHANGELOG match reality, or were removed
+- Hooks read their JSON input from stdin and block with exit 2 (ADR-008); registration follows ADR-004
+- A changed reference template is reflected in the command that consumes it
+- Shell scripts pass `bash -n`; `bash tests/run-all.sh` passes
 
-- If $ARGUMENTS specifies files, review those files
-- Otherwise, review unstaged changes: `git diff`
-- If no unstaged changes, review staged changes: `git diff --cached`
-
-## Step 2: Review
-
-For each changed file, apply the code-review skill criteria:
-- Project guidelines compliance (from CLAUDE.md)
-- Bug detection (logic errors, security, performance)
-- Code quality (duplication, complexity, test coverage)
-
-## Step 3: Score and Filter
-
-Rate each issue 0-100. Only report issues with confidence >= 75.
-
-## Step 4: Output
-
-Present findings in structured format with file paths, line numbers, and fix suggestions.
-If no high-confidence issues, confirm code meets standards.
-
-## Error Recovery
-
-### If no changes found (Step 1)
-No diff output means nothing to review. Inform the user:
-- Check if changes are committed: `git log -1 --oneline`
-- Check if on the right branch: `git branch --show-current`
-- Suggest specifying files directly: `/review path/to/file.md`
-
-### If CLAUDE.md is missing or empty (Step 2)
-Cannot evaluate project guidelines without CLAUDE.md. Suggest:
-- Run `/init-project` to generate CLAUDE.md
-- Or create a minimal CLAUDE.md with conventions section
-
-### If diff is too large (>500 lines)
-Focus on high-risk files first:
-1. Files with security-sensitive changes (hooks, scripts)
-2. Files with logic changes (commands, skills)
-3. Files with documentation changes (lower priority)
+Report only issues you are confident are real, each with `file:line` and a concrete fix. If nothing qualifies, say so in one line.

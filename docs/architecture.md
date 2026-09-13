@@ -23,10 +23,8 @@ When users run `/init-project`, it detects the existing project and generates a 
 - **plugins/project-init/skills/** -- project-scaffolder skill. Contains 12 reference template files in `references/` (includes shared writing-style-guide).
 
 ### Generated Project Layer
-- **.claude/hooks/** -- PostToolUse (doc sync detection), PreToolUse (secret scanning), SessionStart (context loading), Notification (webhook).
-- **.claude/skills/** -- code-review (confidence-based filtering), refactor, release, sync-docs skills.
-- **.claude/commands/** -- review, test-all, deploy commands.
-- **.claude/agents/** -- code-reviewer (green), security-auditor (red) agents.
+- **.claude/hooks/** -- SessionStart (context loading), PreToolUse (secret gate on `git commit`, exit 2 blocks), PostToolUse (module CLAUDE.md reminder via `additionalContext`). All hooks read the event JSON from stdin (ADR-008).
+- **.claude/commands/** -- review, test-all, deploy commands, each reduced to repo-specific checks; generic skills and `.yml` agents were removed (ADR-008).
 
 ### Documentation Layer
 - **docs/architecture.md** -- Bilingual architecture document (this file).
@@ -49,7 +47,7 @@ flowchart TB
     PLUGIN --> SKILLS["skills/project-scaffolder/references/ (12 templates)"]
   end
   subgraph generated[Generated Project Structure]
-    CLAUDEDIR[".claude/ (hooks 4, skills 4, commands 3, agents 2, settings.json)"]
+    CLAUDEDIR[".claude/ (hooks 3, commands 3, settings.json)"]
     DOCS["docs/ (decisions/, runbooks/, architecture.md, onboarding.md)"]
     SCRIPTS["scripts/ (setup.sh, install-hooks.sh)"]
     ROOTMD["CLAUDE.md (auto-sync)"]
@@ -84,7 +82,7 @@ flowchart LR
 ## Operations
 - Release: see [docs/runbooks/release.md](runbooks/release.md) for the maintainer-side version bump and tag procedure
 - Update or remove the plugin: see [docs/runbooks/update-from-marketplace.md](runbooks/update-from-marketplace.md) for the consumer-side procedure
-- Architecture decisions: see [docs/decisions/](decisions/) -- ADR-001 (bilingual policy), ADR-002 (HTML anchor navigation), ADR-003 (shared writing-style-guide), ADR-004 (hook non-blocking failure), ADR-005 (implementation reference docs), ADR-006 (hybrid detection + confirmation), ADR-007 (Mermaid architecture diagrams)
+- Architecture decisions: see [docs/decisions/](decisions/) -- ADR-001 (bilingual policy), ADR-002 (HTML anchor navigation), ADR-003 (shared writing-style-guide), ADR-004 (hook non-blocking failure), ADR-005 (implementation reference docs), ADR-006 (hybrid detection + confirmation), ADR-007 (Mermaid architecture diagrams), ADR-008 (right-sized harness)
 
 ---
 
@@ -106,10 +104,8 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 - **plugins/project-init/skills/** -- project-scaffolder 스킬. `references/` 디렉토리에 12개의 템플릿 파일 포함 (공통 writing-style-guide 포함).
 
 ### Generated Project Layer
-- **.claude/hooks/** -- PostToolUse(문서 동기화 감지), PreToolUse(시크릿 스캔), SessionStart(컨텍스트 로드), Notification(웹훅).
-- **.claude/skills/** -- code-review(신뢰도 기반 필터링), refactor, release, sync-docs 스킬.
-- **.claude/commands/** -- review, test-all, deploy 커맨드.
-- **.claude/agents/** -- code-reviewer(green), security-auditor(red) 에이전트.
+- **.claude/hooks/** -- SessionStart(컨텍스트 로드), PreToolUse(`git commit` 시크릿 게이트, exit 2로 차단), PostToolUse(`additionalContext`로 모듈 CLAUDE.md 리마인드). 모든 훅은 stdin의 이벤트 JSON을 읽습니다(ADR-008).
+- **.claude/commands/** -- review, test-all, deploy 커맨드. 각각 저장소 고유 점검만 남기고, 범용 스킬과 `.yml` 에이전트는 제거했습니다(ADR-008).
 
 ### Documentation Layer
 - **docs/architecture.md** -- 이중언어 아키텍처 문서 (이 파일).
@@ -132,7 +128,7 @@ flowchart TB
     PLUGIN --> SKILLS["skills/project-scaffolder/references/ (12 templates)"]
   end
   subgraph generated[Generated Project Structure]
-    CLAUDEDIR[".claude/ (hooks 4, skills 4, commands 3, agents 2, settings.json)"]
+    CLAUDEDIR[".claude/ (hooks 3, commands 3, settings.json)"]
     DOCS["docs/ (decisions/, runbooks/, architecture.md, onboarding.md)"]
     SCRIPTS["scripts/ (setup.sh, install-hooks.sh)"]
     ROOTMD["CLAUDE.md (auto-sync)"]

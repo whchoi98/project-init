@@ -32,7 +32,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
+            "command": "bash .claude/hooks/secret-scan.sh"
           }
         ]
       }
@@ -43,18 +43,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
-          }
-        ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/notify.sh \"$EVENT\" \"$MESSAGE\" 2>/dev/null || true"
+            "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
           }
         ]
       }

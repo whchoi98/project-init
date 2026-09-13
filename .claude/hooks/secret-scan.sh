@@ -1,7 +1,16 @@
 #!/bin/bash
-# Scan staged files for secrets before commit.
-# Triggered by PreToolUse event (matcher: Bash).
-# Exit 1 to block the commit if secrets are found.
+# PreToolUse (Bash) gate: block `git commit` when staged files contain secrets.
+# Claude Code passes the hook event as JSON on stdin; exit 2 blocks the tool call (ADR-008).
+# Any Bash command other than `git commit` passes through immediately.
+
+CMD="${1:-}"
+if [ $# -eq 0 ] && [ ! -t 0 ]; then
+    CMD=$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("tool_input",{}).get("command",""))' 2>/dev/null)
+fi
+case "$CMD" in
+    *"git commit"*) ;;
+    *) exit 0 ;;
+esac
 
 SECRETS_FOUND=0
 
@@ -34,7 +43,6 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null)
 [ -z "$STAGED_FILES" ] && exit 0
 
 for file in $STAGED_FILES; do
-    # Skip binary files and excluded patterns
     skip=false
     for pattern in "${SKIP_PATTERNS[@]}"; do
         [[ "$file" == $pattern ]] && skip=true && break
@@ -44,16 +52,13 @@ for file in $STAGED_FILES; do
 
     for regex in "${PATTERNS[@]}"; do
         if grep -qP "$regex" "$file" 2>/dev/null; then
-            echo "[secret-scan] Potential secret found in $file (pattern: ${regex:0:30}...)"
+            echo "[secret-scan] Potential secret found in $file (pattern: ${regex:0:30}...)" >&2
             SECRETS_FOUND=1
         fi
     done
 done
 
 if [ "$SECRETS_FOUND" -eq 1 ]; then
-    echo ""
-    echo "[secret-scan] BLOCKED: Potential secrets detected in staged files."
-    echo "[secret-scan] Review the files above and remove secrets before committing."
-    echo "[secret-scan] Use .env files for secrets and .env.example for templates."
-    exit 1
+    echo "[secret-scan] BLOCKED: remove the secrets above (use .env, keep .env.example as the template) and retry the commit." >&2
+    exit 2
 fi

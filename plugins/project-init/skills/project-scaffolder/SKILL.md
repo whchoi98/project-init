@@ -46,8 +46,8 @@ project-root/
 │   │   ├── release/SKILL.md      # Semver release automation
 │   │   └── sync-docs/SKILL.md    # Documentation sync with quality scoring
 │   └── agents/
-│       ├── code-reviewer.yml     # Parallel code review agent
-│       └── security-auditor.yml  # Security audit agent
+│       ├── code-reviewer.md      # Parallel code review agent
+│       └── security-auditor.md   # Security audit agent
 ├── scripts/
 │   ├── setup.sh                  # Project setup for new developers
 │   └── install-hooks.sh          # Git hooks installer

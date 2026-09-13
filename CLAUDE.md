@@ -17,10 +17,8 @@ plugins/project-init/     - Main plugin source
   agents/                 - Agent definitions (doc-sync-checker)
   skills/project-scaffolder/ - Scaffolding skill with reference templates
 .claude/                  - Claude Code settings and project hooks
-  hooks/                  - PostToolUse, PreToolUse, SessionStart, Notification hooks
-  skills/                 - Project-level skills (code-review, refactor, release, sync-docs)
+  hooks/                  - SessionStart (context), PreToolUse (secret gate on git commit), PostToolUse (module CLAUDE.md reminder)
   commands/               - Project-level slash commands (review, test-all, deploy)
-  agents/                 - Project-level agents (code-reviewer, security-auditor)
 docs/                     - Architecture docs, ADRs, runbooks
   decisions/              - Architecture Decision Records
   runbooks/               - Operational runbooks
@@ -33,17 +31,18 @@ img/                      - Images and assets
 
 ## Conventions
 - **Language**: Bilingual (Korean/English) for all user-facing docs (README, CHANGELOG, architecture, ADR, runbook); see `writing-style-guide.md`
-- **Plugin structure**: Commands are `.md` files with frontmatter; agents are `.md` or `.yml`
+- **Plugin structure**: Commands and agents are `.md` files with YAML frontmatter (Claude Code does not load `.yml` agents)
 - **Reference templates**: Stored in `skills/project-scaffolder/references/` as Markdown with embedded code blocks
 - **Versioning**: Semantic versioning; version tracked in `marketplace.json` and `plugin.json`
 - **Commit messages**: Co-Authored-By lines auto-removed by commit-msg hook
+- **Hooks**: read event JSON from stdin, block with exit 2; no hardcoded counts (tests, files) in docs (ADR-008)
 - **Indentation**: 2 spaces (see `.editorconfig`)
 - **Line endings**: LF
 
 ## Key Commands
 ```bash
 # Tests
-bash tests/run-all.sh              # Run full test suite (169 tests)
+bash tests/run-all.sh              # Run full test suite
 bash tests/run-all.sh hooks        # Run only hook tests
 bash tests/run-all.sh secret       # Run only secret pattern tests
 bash tests/run-all.sh structure    # Run only structure tests
@@ -101,6 +100,7 @@ Format: `ADR-NNN-concise-title.md`
 - [ADR-005](docs/decisions/ADR-005-implementation-reference-docs.md) -- Implementation reference docs structure (8 layers, shared 5-section skeleton, AUTO-MANAGED INDEX)
 - [ADR-006](docs/decisions/ADR-006-hybrid-detection-confirmation.md) -- Hybrid detection + user confirmation flow for /init-project Step 4.5
 - [ADR-007](docs/decisions/ADR-007-mermaid-architecture-diagrams.md) -- Mermaid flowchart replaces ASCII box diagrams for all architecture flows; README gains an Architecture section
+- [ADR-008](docs/decisions/ADR-008-right-sized-harness.md) -- Right-sized harness for frontier models: hooks follow the stdin JSON / exit 2 contract, dead or duplicated skills, agents, and the notify hook removed from this repo, commands reduced to repo-specific checks
 
 ### Current Runbooks
 - [release.md](docs/runbooks/release.md) -- Maintainer-side procedure to release a new plugin version with atomic version bump in both manifests

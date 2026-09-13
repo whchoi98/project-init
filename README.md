@@ -308,7 +308,7 @@ project-init/                              # Marketplace root
         └── skills/
             └── project-scaffolder/
                 ├── SKILL.md               # Structure pattern knowledge skill
-                └── references/            # 12 template reference files
+                └── references/            # Template reference files
                     ├── writing-style-guide.md
                     ├── claude-md-template.md
                     ├── docs-templates.md
@@ -358,8 +358,8 @@ project/
 │   │   ├── release/SKILL.md          # Semver release automation
 │   │   └── sync-docs/SKILL.md        # Documentation sync
 │   └── agents/
-│       ├── code-reviewer.yml          # Parallel code review
-│       └── security-auditor.yml       # Security audit
+│       ├── code-reviewer.md           # Parallel code review
+│       └── security-auditor.md        # Security audit
 ├── scripts/
 │   ├── setup.sh                       # Project setup for new developers
 │   └── install-hooks.sh              # Git hooks installer
@@ -829,8 +829,8 @@ project/
 │   │   ├── release/SKILL.md          # Semver 릴리스 자동화
 │   │   └── sync-docs/SKILL.md        # 문서 동기화
 │   └── agents/
-│       ├── code-reviewer.yml          # 병렬 코드 리뷰
-│       └── security-auditor.yml       # 보안 감사
+│       ├── code-reviewer.md           # 병렬 코드 리뷰
+│       └── security-auditor.md        # 보안 감사
 ├── scripts/
 │   ├── setup.sh                       # 신규 개발자용 프로젝트 설정
 │   └── install-hooks.sh              # Git 훅 설치

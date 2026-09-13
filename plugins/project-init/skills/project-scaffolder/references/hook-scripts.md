@@ -1,5 +1,9 @@
 # Hook Scripts
 
+## Input Contract
+
+Claude Code passes every hook event as JSON on stdin, for example `{"hook_event_name":"PostToolUse","tool_name":"Write","tool_input":{"file_path":"src/api/users.ts"}}`. The scripts below read that JSON with `python3` and also accept the same value as `$1` so they can be exercised from tests (stdin is read only when no argument is given, so a test passing `""` never blocks). Blocking is signalled with exit 2 plus a message on stderr; a PostToolUse reminder is returned as `hookSpecificOutput.additionalContext` so Claude actually sees it (plain stdout on exit 0 is not shown to Claude).
+
 ## check-doc-sync.sh
 
 Path: `.claude/hooks/check-doc-sync.sh`
@@ -9,11 +13,17 @@ This hook runs after Write/Edit operations and detects when documentation sync i
 ```bash
 #!/bin/bash
 # Detect documentation sync needs after file changes.
-# Triggered by PostToolUse (Write|Edit) events.
+# Triggered by PostToolUse (Write|Edit) events; event JSON arrives on stdin.
 # Walks parent directories to find CLAUDE.md before warning.
 
 FILE_PATH="${1:-}"
+if [ $# -eq 0 ] && [ ! -t 0 ]; then
+    FILE_PATH=$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("tool_input",{}).get("file_path",""))' 2>/dev/null)
+fi
 [ -z "$FILE_PATH" ] && exit 0
+FILE_PATH="${FILE_PATH#"$PWD"/}"   # absolute -> repo-relative
+
+MESSAGES=""
 
 # Detect source root directories (adapt per project)
 # Default: src/, app/, lib/  |  Plugin projects: plugins/
@@ -32,7 +42,7 @@ for ROOT in $SOURCE_ROOTS; do
             CHECK_DIR=$(dirname "$CHECK_DIR")
         done
         if ! $FOUND_CLAUDE && [ "$DIR" != "$ROOT" ]; then
-            echo "[doc-sync] $DIR/CLAUDE.md is missing. Create module documentation."
+            MESSAGES="$MESSAGES[doc-sync] $DIR/CLAUDE.md is missing. Create module documentation. "
         fi
         break
     fi
@@ -46,7 +56,7 @@ done
 if $IS_SOURCE || [[ "$FILE_PATH" == docs/architecture.md ]]; then
     ADR_COUNT=$(find docs/decisions -name 'ADR-*.md' -not -name '.template.md' 2>/dev/null | wc -l)
     if [ "$ADR_COUNT" -eq 0 ]; then
-        echo "[doc-sync] No ADRs found. Record architectural decisions."
+        MESSAGES="$MESSAGES[doc-sync] No ADRs found. Record architectural decisions. "
     fi
 fi
 
@@ -54,8 +64,13 @@ fi
 if [[ "$FILE_PATH" == Dockerfile* ]] || [[ "$FILE_PATH" == *terraform* ]] || [[ "$FILE_PATH" == *cdk* ]] || [[ "$FILE_PATH" == template.yaml ]]; then
     RUNBOOK_COUNT=$(find docs/runbooks -name '*.md' -not -name '.template.md' 2>/dev/null | wc -l)
     if [ "$RUNBOOK_COUNT" -eq 0 ]; then
-        echo "[doc-sync] No runbooks found. Create operational runbooks for deployment/recovery."
+        MESSAGES="$MESSAGES[doc-sync] No runbooks found. Create operational runbooks for deployment/recovery. "
     fi
+fi
+
+# Return reminders as additionalContext so Claude sees them
+if [ -n "$MESSAGES" ]; then
+    printf '{"hookSpecificOutput":{"hookEventName":"PostToolUse","additionalContext":"%s"}}\n' "$MESSAGES"
 fi
 ```
 
@@ -88,8 +103,17 @@ Scans staged files for secrets, API keys, and credentials before commit.
 ```bash
 #!/bin/bash
 # Scan staged files for secrets before commit.
-# Triggered by PreToolUse event (matcher: Bash).
-# Exit 1 to block the commit if secrets are found.
+# Triggered by PreToolUse event (matcher: Bash); event JSON arrives on stdin.
+# Only `git commit` commands are gated; exit 2 blocks the commit if secrets are found.
+
+CMD="${1:-}"
+if [ $# -eq 0 ] && [ ! -t 0 ]; then
+    CMD=$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("tool_input",{}).get("command",""))' 2>/dev/null)
+fi
+case "$CMD" in
+    *"git commit"*) ;;
+    *) exit 0 ;;
+esac
 
 SECRETS_FOUND=0
 
@@ -132,18 +156,15 @@ for file in $STAGED_FILES; do
 
     for regex in "${PATTERNS[@]}"; do
         if grep -qP "$regex" "$file" 2>/dev/null; then
-            echo "[secret-scan] Potential secret found in $file (pattern: ${regex:0:30}...)"
+            echo "[secret-scan] Potential secret found in $file (pattern: ${regex:0:30}...)" >&2
             SECRETS_FOUND=1
         fi
     done
 done
 
 if [ "$SECRETS_FOUND" -eq 1 ]; then
-    echo ""
-    echo "[secret-scan] BLOCKED: Potential secrets detected in staged files."
-    echo "[secret-scan] Review the files above and remove secrets before committing."
-    echo "[secret-scan] Use .env files for secrets and .env.example for templates."
-    exit 1
+    echo "[secret-scan] BLOCKED: remove the secrets above (use .env, keep .env.example as the template) and retry the commit." >&2
+    exit 2
 fi
 ```
 
@@ -170,7 +191,7 @@ fi
 chmod +x .claude/hooks/secret-scan.sh
 ```
 
-Registered in `.claude/settings.json` under `hooks.PreToolUse` with matcher `Bash`.
+Registered in `.claude/settings.json` under `hooks.PreToolUse` with matcher `Bash`, without `|| true` (a gate hook must be able to block; see ADR-004).
 
 ---
 
@@ -240,14 +261,19 @@ Sends notifications via webhook on significant events (Stop event, session end).
 ```bash
 #!/bin/bash
 # Send notifications via webhook on Claude Code events.
-# Triggered by Notification events.
+# Triggered by Notification events; event JSON ({"hook_event_name":..., "message":...}) arrives on stdin.
 # Configure WEBHOOK_URL in .env or export it before use.
 
 WEBHOOK_URL="${CLAUDE_NOTIFY_WEBHOOK:-}"
 [ -z "$WEBHOOK_URL" ] && exit 0
 
-EVENT="${1:-unknown}"
-MESSAGE="${2:-Claude Code event occurred}"
+EVENT="${1:-}"
+MESSAGE="${2:-}"
+if [ $# -eq 0 ] && [ ! -t 0 ]; then
+    read -r EVENT MESSAGE < <(python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("hook_event_name","Notification"), d.get("message",""))' 2>/dev/null)
+fi
+EVENT="${EVENT:-unknown}"
+MESSAGE="${MESSAGE:-Claude Code event occurred}"
 
 # Build payload
 PAYLOAD=$(cat <<EOF
