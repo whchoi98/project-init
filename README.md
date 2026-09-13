@@ -1,6 +1,6 @@
 # project-init
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.2.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.3.0-green.svg)](https://github.com/whchoi98/project-init) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 A Claude Code plugin for initializing and maintaining project structures with adaptive detection, quality scoring, and auto-sync documentation workflows.
 
@@ -39,11 +39,11 @@ In short, project-init is a **harness engineering automation tool** — it gener
 - **4-Layer Auto-Sync Workflow** -- Generated projects include Plan mode rules, PostToolUse hooks, the `/sync-docs` command, and a Git commit-msg hook, ensuring documentation stays current as code evolves.
 - **Plan Mode Integration** -- Run `/init-project` after a `/plan` session and the generated structure reflects all architectural decisions discussed, including pre-filled `architecture.md` and auto-created ADRs.
 - **Confidence-Based Code Review** -- The generated `code-review` skill scores issues 0-100 and only reports those above 75, filtering out false positives.
-- **Security-First Hooks** -- PreToolUse secret scanning with 17+ patterns (AWS, Stripe, Google, Azure, GitHub, Slack) blocks commits containing secrets. Context-aware detection reduces false positives. The commit-msg hook removes AI Co-Authored-By lines automatically.
+- **Security-First Hooks** -- PreToolUse secret scanning with 17+ patterns (AWS, Stripe, Google, Azure, GitHub, Slack) gates `git commit` and blocks with exit 2, following the Claude Code hook contract (event JSON on stdin). Context-aware detection reduces false positives. The commit-msg hook removes AI Co-Authored-By lines automatically.
 - **Tool Scoping & Deny List** -- Generated `settings.json` enforces least-privilege tool permissions and blocks dangerous commands (`rm -rf`, `git push --force`, `eval`, `curl|bash`).
 - **Automated Test Framework** -- Generated projects include 114+ tests validating hook scripts, secret scan patterns (TP/FP), plugin structure, version consistency, and CLAUDE.md content.
 - **Error Recovery Guides** -- Every generated command includes recovery procedures: deploy rollback (5 scenarios), review fallbacks (3 scenarios), test failure diagnosis table.
-- **Structured Agent Output** -- Generated agents return results in defined Markdown schemas with Verdict (PASS/WARN/FAIL), Summary tables, and actionable recommendations.
+- **Structured Agent Output** -- Generated agents are Markdown subagents (`.claude/agents/*.md` with YAML frontmatter) that return results in defined Markdown schemas with Verdict (PASS/WARN/FAIL), Summary tables, and actionable recommendations.
 - **Implementation reference docs** -- Per-layer skeletons under `docs/reference/` with shared 5-section structure (Overview / Components / Key Decisions / Code Pointers / Cross-references). Auto-detected at init, drift-checked by `/sync-docs`.
 - **Mermaid Architecture Diagrams** -- Generated README and architecture docs represent all architecture flows as Mermaid flowcharts that GitHub renders natively: `flowchart TB` with per-layer subgraphs for the full diagram, `flowchart LR` for the critical path.
 - **Full Project Lifecycle** -- Generated projects include slash commands (/review, /test-all, /deploy), agent definitions (code-reviewer, security-auditor), MCP configuration, onboarding docs, and operational scripts.
@@ -164,7 +164,7 @@ bash scripts/setup.sh
 
 # Generate bilingual CHANGELOG.md (update unreleased or release version)
 /generate-changelog
-/generate-changelog 2.2.0
+/generate-changelog 2.3.0
 ```
 
 ### Example Output
@@ -287,11 +287,11 @@ Scores project setup across 8 categories: Core files (20pts), Hook configuration
 ```
 project-init/                              # Marketplace root
 ├── .claude-plugin/
-│   └── marketplace.json                   # Marketplace manifest (v2.2.0)
+│   └── marketplace.json                   # Marketplace manifest (v2.3.0)
 ├── LICENSE                                # MIT License
 ├── README.md
 └── plugins/
-    └── project-init/                      # Plugin package (v2.2.0)
+    └── project-init/                      # Plugin package (v2.3.0)
         ├── .claude-plugin/
         │   └── plugin.json                # Plugin manifest
         ├── commands/
@@ -446,6 +446,17 @@ Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29)
 - Valid hook events: `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`, `Notification`
 - Deny pattern `:*` is only valid at the end of a pattern (prefix matching)
 
+**Generated hooks never fire, or `secret-scan.sh` does not block commits (projects initialized before v2.3)**
+- Hooks generated before v2.3 read `$TOOL_INPUT_PATH`, `$EVENT`, and `$MESSAGE`, which Claude Code never sets; hook events arrive as JSON on stdin. `secret-scan.sh` also exited 1 inside `|| true`, which Claude Code treats as non-blocking.
+- Regenerate the hook scripts from the v2.3 `hook-scripts.md` template, then update `.claude/settings.json`:
+  ```diff
+  - "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
+  + "command": "bash .claude/hooks/secret-scan.sh"
+  - "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
+  + "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
+  ```
+- Rename `.claude/agents/*.yml` to `.md` and give each file YAML frontmatter plus a Markdown body (see `agents-templates.md`); Claude Code does not load `.yml` subagents.
+
 **`doc-sync-checker` agent timeout**
 - The agent runs on model: opus, which may take longer for large projects
 - For projects with 50+ source directories, the agent may need extra time
@@ -510,11 +521,11 @@ Claude Code는 **하네스(Harness)** 위에서 동작합니다 — hooks, skill
 - **4단계 자동 동기화 워크플로우** -- 생성된 프로젝트에 Plan 모드 규칙, PostToolUse 훅, `/sync-docs` 커맨드, Git commit-msg 훅이 설치되어 코드 변경 시 문서가 자동으로 따라갑니다.
 - **Plan 모드 연동** -- `/plan` 세션 이후 `/init-project`를 실행하면 논의한 아키텍처 결정이 반영된 구조가 생성됩니다. `architecture.md`가 사전 작성되고 ADR이 자동 생성됩니다.
 - **confidence 기반 코드 리뷰** -- 생성되는 `code-review` 스킬은 이슈를 0-100점으로 평가하고, 75점 이상만 보고하여 거짓 양성을 필터링합니다.
-- **보안 우선 훅** -- 17개 이상의 패턴(AWS, Stripe, Google, Azure, GitHub, Slack)으로 시크릿을 감지하는 PreToolUse 스캐닝이 커밋을 차단합니다. 컨텍스트 기반 감지로 거짓 양성을 줄입니다. commit-msg 훅이 AI Co-Authored-By 라인을 자동 제거합니다.
+- **보안 우선 훅** -- 17개 이상의 패턴(AWS, Stripe, Google, Azure, GitHub, Slack)으로 시크릿을 감지하는 PreToolUse 스캐닝이 `git commit`을 게이트하고 exit 2로 차단합니다(stdin JSON 이벤트를 읽는 Claude Code 훅 계약 준수). 컨텍스트 기반 감지로 거짓 양성을 줄입니다. commit-msg 훅이 AI Co-Authored-By 라인을 자동 제거합니다.
 - **도구 범위 제한 및 Deny 목록** -- 생성되는 `settings.json`이 최소 권한 원칙을 적용하고, 위험한 명령어(`rm -rf`, `git push --force`, `eval`, `curl|bash`)를 차단합니다.
 - **자동화된 테스트 프레임워크** -- 생성 프로젝트에 훅 스크립트, 시크릿 스캔 패턴(TP/FP), 플러그인 구조, 버전 일관성, CLAUDE.md 내용을 검증하는 114개 이상의 테스트가 포함됩니다.
 - **에러 복구 가이드** -- 모든 생성 커맨드에 복구 절차가 포함됩니다: deploy 롤백(5개 시나리오), review 폴백(3개 시나리오), test 실패 진단 표.
-- **구조화된 에이전트 출력** -- 생성 에이전트가 정의된 Markdown 스키마로 결과를 반환합니다: Verdict (PASS/WARN/FAIL), Summary 테이블, 실행 가능한 권장 사항.
+- **구조화된 에이전트 출력** -- 생성되는 에이전트는 YAML frontmatter를 가진 Markdown 서브에이전트(`.claude/agents/*.md`)로, 정의된 Markdown 스키마로 결과를 반환합니다: Verdict (PASS/WARN/FAIL), Summary 테이블, 실행 가능한 권장 사항.
 - **구현 참조 문서** -- `docs/reference/` 하위에 5-섹션 공유 구조(Overview / Components / Key Decisions / Code Pointers / Cross-references)의 계층별 스켈레톤. init 시 자동 감지, `/sync-docs`로 드리프트 점검.
 - **Mermaid 아키텍처 다이어그램** -- 생성되는 README와 아키텍처 문서의 모든 아키텍처 흐름을 GitHub이 네이티브로 렌더링하는 Mermaid flowchart로 표현합니다: 전체 다이어그램은 계층별 subgraph를 가진 `flowchart TB`, 핵심 경로는 `flowchart LR`을 사용합니다.
 - **전체 프로젝트 라이프사이클** -- 생성된 프로젝트에 슬래시 커맨드(/review, /test-all, /deploy), 에이전트 정의(code-reviewer, security-auditor), MCP 설정, 온보딩 문서, 운영 스크립트가 포함됩니다.
@@ -635,7 +646,7 @@ bash scripts/setup.sh
 
 # 이중 언어 CHANGELOG.md 생성 (미릴리스 업데이트 또는 버전 릴리스)
 /generate-changelog
-/generate-changelog 2.2.0
+/generate-changelog 2.3.0
 ```
 
 ### 실행 결과 예시
@@ -758,11 +769,11 @@ git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic 
 ```
 project-init/                              # 마켓플레이스 루트
 ├── .claude-plugin/
-│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.2.0)
+│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.3.0)
 ├── LICENSE                                # MIT 라이선스
 ├── README.md
 └── plugins/
-    └── project-init/                      # 플러그인 패키지 (v2.2.0)
+    └── project-init/                      # 플러그인 패키지 (v2.3.0)
         ├── .claude-plugin/
         │   └── plugin.json                # 플러그인 매니페스트
         ├── commands/
@@ -916,6 +927,17 @@ project/
   ```
 - 유효한 훅 이벤트: `PreToolUse`, `PostToolUse`, `SessionStart`, `Stop`, `Notification`
 - Deny 패턴에서 `:*`는 패턴 끝에서만 사용 가능합니다 (접두사 매칭)
+
+**생성된 훅이 동작하지 않거나 `secret-scan.sh`가 커밋을 차단하지 않는 경우 (v2.3 이전에 초기화한 프로젝트)**
+- v2.3 이전 훅은 Claude Code가 설정하지 않는 `$TOOL_INPUT_PATH`, `$EVENT`, `$MESSAGE`를 읽었습니다. 훅 이벤트는 stdin JSON으로 전달됩니다. `secret-scan.sh`는 `|| true` 안에서 exit 1로 종료해 Claude Code가 비차단으로 처리했습니다.
+- v2.3 `hook-scripts.md` 템플릿으로 훅 스크립트를 다시 생성한 뒤 `.claude/settings.json`을 수정합니다:
+  ```diff
+  - "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
+  + "command": "bash .claude/hooks/secret-scan.sh"
+  - "command": "bash .claude/hooks/check-doc-sync.sh \"$TOOL_INPUT_PATH\" 2>/dev/null || true"
+  + "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
+  ```
+- `.claude/agents/*.yml`을 `.md`로 바꾸고 YAML frontmatter와 Markdown 본문을 넣습니다(`agents-templates.md` 참고). Claude Code는 `.yml` 서브에이전트를 로드하지 않습니다.
 
 **`doc-sync-checker` 에이전트 타임아웃**
 - 에이전트는 model: opus로 실행되며, 대규모 프로젝트에서 시간이 더 걸릴 수 있습니다
