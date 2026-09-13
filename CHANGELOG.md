@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-09-13
+
 ### Added
 
 - New command `/migrate-hooks [--dry-run]`: backs up `.claude/hooks/`, `settings.json`, and `.claude/agents/`, regenerates pre-v2.3 hook scripts from the current templates (preserving custom `PATTERNS` and `SOURCE_ROOTS`), rewrites hook command strings, converts `.yml` agents to Markdown subagents, and verifies with sample stdin events
@@ -175,7 +177,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Restructure repository as marketplace with plugin in `plugins/project-init/` subdirectory ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
@@ -192,6 +195,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [2.4.0] - 2026-09-13
 
 ### Added
 
@@ -353,7 +358,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 리포지토리를 마켓플레이스 구조로 변경, 플러그인을 `plugins/project-init/` 하위 디렉토리로 이동 ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.4.0...HEAD
+[2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
