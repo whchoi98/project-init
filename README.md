@@ -243,7 +243,8 @@ The most effective workflow is to run `/init-project` **after implementation**, 
 | `/project-init:add-runbook <name>` | Create an operational runbook with verification and rollback sections. |
 | `/project-init:add-adr <title>` | Create an Architecture Decision Record with auto-numbering. |
 | `/project-init:add-reference-doc <layer>` | Add a layer-specific implementation reference doc skeleton (`infrastructure`, `data`, `api`, `iac`, `frontend`, `ui`, `security`, `agent-llm`). |
-| `/project-init:health-check` | Validate entire project setup and report health score (0-200, A-F grade). |
+| `/project-init:health-check` | Validate entire project setup and report health score (0-200, A-F grade). Flags hooks and agents generated before v2.3. |
+| `/project-init:migrate-hooks [--dry-run]` | Migrate pre-v2.3 hooks, `settings.json`, and `.yml` agents to the current Claude Code hook contract, with backup. |
 
 ### Command Details
 
@@ -273,7 +274,11 @@ Creates `docs/decisions/ADR-NNN-<title>.md` with auto-numbering. Includes Contex
 
 **`/project-init:health-check`** -- Project health validation
 
-Scores project setup across 8 categories: Core files (20pts), Hook configuration (35pts), Skills (20pts), Documentation coverage (20pts), Security (25pts), CLAUDE.md quality (30pts), Tests structure (10pts). Grades: A (160-200), B (120-159), C (80-119), D (40-79), F (0-39).
+Scores project setup across 8 categories: Core files (20pts), Hook configuration (35pts), Skills (20pts), Documentation coverage (20pts), Security (25pts), CLAUDE.md quality (30pts), Tests structure (10pts). Grades: A (160-200), B (120-159), C (80-119), D (40-79), F (0-39). Also detects the pre-v2.3 hook contract (`$TOOL_INPUT_PATH` in `settings.json`, `secret-scan.sh` wrapped in `|| true`, `.yml` agents) and recommends `/project-init:migrate-hooks`.
+
+**`/project-init:migrate-hooks [--dry-run]`** -- Hook contract migration
+
+Backs up `.claude/hooks/`, `settings.json`, and `.claude/agents/` to `.claude/backup-<timestamp>/`, regenerates the hook scripts from the current templates (carrying over custom `PATTERNS` and `SOURCE_ROOTS`), rewrites the hook command strings in `settings.json`, converts `.yml` agents to Markdown subagents, and verifies the hooks with sample stdin events. `--dry-run` prints the plan without writing.
 
 ### Skills and Agents
 
@@ -302,7 +307,8 @@ project-init/                              # Marketplace root
         │   ├── add-module.md              # /add-module command
         │   ├── add-runbook.md             # /add-runbook command
         │   ├── add-adr.md                 # /add-adr command
-        │   └── health-check.md            # /health-check command
+        │   ├── health-check.md            # /health-check command
+        │   └── migrate-hooks.md           # /migrate-hooks command
         ├── agents/
         │   └── doc-sync-checker.md        # Documentation sync checker agent
         └── skills/
@@ -448,7 +454,7 @@ Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29)
 
 **Generated hooks never fire, or `secret-scan.sh` does not block commits (projects initialized before v2.3)**
 - Hooks generated before v2.3 read `$TOOL_INPUT_PATH`, `$EVENT`, and `$MESSAGE`, which Claude Code never sets; hook events arrive as JSON on stdin. `secret-scan.sh` also exited 1 inside `|| true`, which Claude Code treats as non-blocking.
-- Regenerate the hook scripts from the v2.3 `hook-scripts.md` template, then update `.claude/settings.json`:
+- Run `/project-init:migrate-hooks` (add `--dry-run` to preview). It backs up and rewrites everything below in one pass. Manual steps, if preferred: regenerate the hook scripts from the v2.3 `hook-scripts.md` template, then update `.claude/settings.json`:
   ```diff
   - "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
   + "command": "bash .claude/hooks/secret-scan.sh"
@@ -725,7 +731,8 @@ $ /sync-docs
 | `/project-init:add-runbook <name>` | 검증 및 롤백 섹션을 포함한 운영 런북을 생성합니다. |
 | `/project-init:add-adr <title>` | 자동 번호 부여로 아키텍처 결정 기록(ADR)을 생성합니다. |
 | `/project-init:add-reference-doc <layer>` | 계층별 구현 참조 문서 스켈레톤 추가 (`infrastructure`, `data`, `api`, `iac`, `frontend`, `ui`, `security`, `agent-llm`). |
-| `/project-init:health-check` | 전체 프로젝트 설정을 검증하고 건강 점수(0-200, A-F 등급)를 보고합니다. |
+| `/project-init:health-check` | 전체 프로젝트 설정을 검증하고 건강 점수(0-200, A-F 등급)를 보고합니다. v2.3 이전에 생성된 훅과 에이전트를 표시합니다. |
+| `/project-init:migrate-hooks [--dry-run]` | v2.3 이전 훅, `settings.json`, `.yml` 에이전트를 현재 Claude Code 훅 계약으로 마이그레이션합니다(백업 포함). |
 
 ### 커맨드 상세
 
@@ -755,7 +762,11 @@ git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic 
 
 **`/project-init:health-check`** -- 프로젝트 건강 검진
 
-8개 카테고리로 프로젝트 설정을 점수화합니다: 핵심 파일(20점), 훅 설정(35점), 스킬(20점), 문서 커버리지(20점), 보안(25점), CLAUDE.md 품질(30점), 테스트 구조(10점). 등급: A (160-200), B (120-159), C (80-119), D (40-79), F (0-39).
+8개 카테고리로 프로젝트 설정을 점수화합니다: 핵심 파일(20점), 훅 설정(35점), 스킬(20점), 문서 커버리지(20점), 보안(25점), CLAUDE.md 품질(30점), 테스트 구조(10점). 등급: A (160-200), B (120-159), C (80-119), D (40-79), F (0-39). v2.3 이전 훅 계약(`settings.json`의 `$TOOL_INPUT_PATH`, `|| true`로 감싼 `secret-scan.sh`, `.yml` 에이전트)도 감지하여 `/project-init:migrate-hooks`를 권장합니다.
+
+**`/project-init:migrate-hooks [--dry-run]`** -- 훅 계약 마이그레이션
+
+`.claude/hooks/`, `settings.json`, `.claude/agents/`를 `.claude/backup-<timestamp>/`에 백업한 뒤, 현재 템플릿으로 훅 스크립트를 다시 생성하고(사용자 정의 `PATTERNS`, `SOURCE_ROOTS`는 유지), `settings.json`의 훅 명령 문자열을 수정하고, `.yml` 에이전트를 Markdown 서브에이전트로 변환한 다음, 샘플 stdin 이벤트로 훅을 검증합니다. `--dry-run`은 변경 없이 계획만 출력합니다.
 
 ### 스킬 및 에이전트
 
@@ -784,7 +795,8 @@ project-init/                              # 마켓플레이스 루트
         │   ├── add-module.md              # /add-module 커맨드
         │   ├── add-runbook.md             # /add-runbook 커맨드
         │   ├── add-adr.md                 # /add-adr 커맨드
-        │   └── health-check.md            # /health-check 커맨드
+        │   ├── health-check.md            # /health-check 커맨드
+        │   └── migrate-hooks.md           # /migrate-hooks 커맨드
         ├── agents/
         │   └── doc-sync-checker.md        # 문서 동기화 검사 에이전트
         └── skills/
@@ -930,7 +942,7 @@ project/
 
 **생성된 훅이 동작하지 않거나 `secret-scan.sh`가 커밋을 차단하지 않는 경우 (v2.3 이전에 초기화한 프로젝트)**
 - v2.3 이전 훅은 Claude Code가 설정하지 않는 `$TOOL_INPUT_PATH`, `$EVENT`, `$MESSAGE`를 읽었습니다. 훅 이벤트는 stdin JSON으로 전달됩니다. `secret-scan.sh`는 `|| true` 안에서 exit 1로 종료해 Claude Code가 비차단으로 처리했습니다.
-- v2.3 `hook-scripts.md` 템플릿으로 훅 스크립트를 다시 생성한 뒤 `.claude/settings.json`을 수정합니다:
+- `/project-init:migrate-hooks`를 실행합니다(`--dry-run`으로 미리보기 가능). 아래 내용을 백업 후 한 번에 수정합니다. 수동으로 진행하려면 v2.3 `hook-scripts.md` 템플릿으로 훅 스크립트를 다시 생성한 뒤 `.claude/settings.json`을 수정합니다:
   ```diff
   - "command": "bash .claude/hooks/secret-scan.sh 2>/dev/null || true"
   + "command": "bash .claude/hooks/secret-scan.sh"

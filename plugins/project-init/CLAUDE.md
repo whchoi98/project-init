@@ -12,7 +12,8 @@ Core plugin providing project structure initialization, documentation quality sc
 - `commands/add-runbook.md` - Runbook creation
 - `commands/generate-readme.md` - Bilingual README.md generation/update
 - `commands/generate-changelog.md` - Bilingual CHANGELOG.md generation/update
-- `commands/health-check.md` - Project validation
+- `commands/health-check.md` - Project validation (includes pre-v2.3 hook contract detection)
+- `commands/migrate-hooks.md` - Migrate pre-v2.3 hooks, settings.json, and `.yml` agents to the stdin/exit 2 contract (with backup, `--dry-run`)
 - `commands/add-reference-doc.md` - Add layer-specific implementation reference doc
 - `agents/doc-sync-checker.md` - Documentation sync analysis agent
 - `skills/project-scaffolder/SKILL.md` - Scaffolding skill definition

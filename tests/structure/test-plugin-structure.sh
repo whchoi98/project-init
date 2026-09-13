@@ -17,7 +17,7 @@ assert_eq "Version sync: marketplace.json matches plugin.json" "$PLUGIN_VER" "$M
 
 # --- Plugin commands exist ---
 
-COMMANDS=(init-project sync-docs add-adr add-module add-runbook health-check)
+COMMANDS=(init-project sync-docs add-adr add-module add-runbook health-check add-reference-doc generate-readme generate-changelog migrate-hooks)
 for cmd in "${COMMANDS[@]}"; do
     assert_file_exists "Plugin command: $cmd.md" "plugins/project-init/commands/$cmd.md"
 done

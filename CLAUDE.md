@@ -61,6 +61,7 @@ claude plugin install project-init
 /add-module            # Add new module with CLAUDE.md
 /add-runbook           # Create operational runbook
 /health-check          # Validate project setup
+/migrate-hooks         # Migrate pre-v2.3 hooks/agents to the current hook contract
 
 # Scripts
 bash scripts/setup.sh           # Project setup for new developers

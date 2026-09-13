@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- New command `/migrate-hooks [--dry-run]`: backs up `.claude/hooks/`, `settings.json`, and `.claude/agents/`, regenerates pre-v2.3 hook scripts from the current templates (preserving custom `PATTERNS` and `SOURCE_ROOTS`), rewrites hook command strings, converts `.yml` agents to Markdown subagents, and verifies with sample stdin events
+- `/health-check` Step 2.5 detects the pre-v2.3 hook contract (`$TOOL_INPUT_PATH` in `settings.json`, `secret-scan.sh` wrapped in `|| true`, hooks not reading `tool_input`, `.yml` agents), marks affected hooks `STALE CONTRACT`, and recommends `/migrate-hooks`
+
 ## [2.3.0] - 2026-09-13
 
 ### Changed
@@ -187,6 +192,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+
+- 신규 커맨드 `/migrate-hooks [--dry-run]`: `.claude/hooks/`, `settings.json`, `.claude/agents/`를 백업하고, v2.3 이전 훅 스크립트를 현재 템플릿으로 재생성(사용자 정의 `PATTERNS`, `SOURCE_ROOTS` 유지), 훅 명령 문자열 수정, `.yml` 에이전트를 Markdown 서브에이전트로 변환, 샘플 stdin 이벤트로 검증
+- `/health-check` Step 2.5에서 v2.3 이전 훅 계약(`settings.json`의 `$TOOL_INPUT_PATH`, `|| true`로 감싼 `secret-scan.sh`, `tool_input`을 읽지 않는 훅, `.yml` 에이전트)을 감지하고 해당 훅을 `STALE CONTRACT`로 표시하며 `/migrate-hooks`를 권장
 
 ## [2.3.0] - 2026-09-13
 
