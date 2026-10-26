@@ -2,15 +2,17 @@
   "permissions": {
     "allow": [],
     "deny": [
-      "Bash(rm -rf:*)",
-      "Bash(rm -r:*)",
-      "Bash(git push --force:*)",
-      "Bash(git reset --hard:*)",
-      "Bash(git clean -f:*)",
-      "Bash(chmod 777:*)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(rm -r *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean -f *)",
+      "Bash(chmod 777 *)",
       "Bash(curl*| bash*)",
       "Bash(wget*| bash*)",
-      "Bash(eval:*)",
+      "Bash(eval *)",
       "Bash(python3 -c*import os*)"
     ]
   },
@@ -21,7 +23,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-context.sh 2>/dev/null || true"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-context.sh 2>/dev/null || true"
           }
         ]
       }
@@ -32,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/secret-scan.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/secret-scan.sh"
           }
         ]
       }
@@ -43,7 +45,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/check-doc-sync.sh 2>/dev/null || true"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check-doc-sync.sh 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/test-gate.sh",
+            "timeout": 180
           }
         ]
       }

@@ -1,32 +1,55 @@
 #!/bin/bash
-# Load project context at Claude Code session start.
-# Outputs key project information for immediate context.
+# SessionStart: print the plugin version and flag version drift across the files a release bumps.
+# Claude Code already injects the branch, status, and recent commits, so this hook adds only
+# what git does not show. Stdout reaches Claude's context. The event JSON on stdin is not needed
+# and is never read. Registered with `2>/dev/null || true` (observational, ADR-004).
+# tests/structure/test-plugin-structure.sh asserts the same versions, so drift also fails the suite.
 
-echo "=== Project Context ==="
+ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
+cd "$ROOT" 2>/dev/null || exit 0
 
-# Plugin marketplace project
-echo "Project: project-init (Claude Code Plugin)"
+python3 - <<'PY'
+import json
+import re
 
-# Recent activity
-LAST_COMMIT=$(git log -1 --format="%h %s (%cr)" 2>/dev/null)
-[ -n "$LAST_COMMIT" ] && echo "Last commit: $LAST_COMMIT"
 
-# Branch info
-BRANCH=$(git branch --show-current 2>/dev/null)
-[ -n "$BRANCH" ] && echo "Branch: $BRANCH"
+def read(path):
+    try:
+        with open(path, encoding="utf-8") as handle:
+            return handle.read()
+    except OSError:
+        return ""
 
-# Uncommitted changes
-CHANGES=$(git status --porcelain 2>/dev/null | wc -l | tr -d ' ')
-[ "$CHANGES" -gt 0 ] && echo "Uncommitted changes: $CHANGES file(s)"
 
-# Documentation status
-CLAUDE_COUNT=$(find . -name "CLAUDE.md" -not -path "./.git/*" 2>/dev/null | wc -l | tr -d ' ')
-echo "CLAUDE.md files: $CLAUDE_COUNT"
+def json_version(path, *keys):
+    try:
+        value = json.loads(read(path))
+        for key in keys:
+            value = value[key]
+        return str(value)
+    except (ValueError, KeyError, IndexError, TypeError):
+        return "missing"
 
-# Plugin version
-if [ -f "plugins/project-init/.claude-plugin/plugin.json" ]; then
-    VERSION=$(python3 -c "import json; print(json.load(open('plugins/project-init/.claude-plugin/plugin.json')).get('version','unknown'))" 2>/dev/null)
-    [ -n "$VERSION" ] && echo "Plugin version: $VERSION"
-fi
 
-echo "======================"
+def latest_release(section):
+    match = re.search(r"^## \[(\d+\.\d+\.\d+)\]", section, re.M)
+    return match.group(1) if match else "missing"
+
+
+plugin = json_version("plugins/project-init/.claude-plugin/plugin.json", "version")
+print("[project-init] plugin.json version: " + plugin)
+
+badge = re.search(r"badge/version-(\d+\.\d+\.\d+)-", read("README.md"))
+english, marker, korean = read("CHANGELOG.md").partition('<a id="korean"></a>')
+others = [
+    ("marketplace.json metadata.version", json_version(".claude-plugin/marketplace.json", "metadata", "version")),
+    ("marketplace.json plugins[0].version", json_version(".claude-plugin/marketplace.json", "plugins", 0, "version")),
+    ("README version badge", badge.group(1) if badge else "missing"),
+    ("CHANGELOG English latest release", latest_release(english)),
+    ("CHANGELOG Korean latest release", latest_release(korean) if marker else "missing"),
+]
+drift = ["%s=%s" % (name, value) for name, value in others if value != plugin]
+if drift:
+    print("[project-init] version drift (plugin.json=%s): %s. docs/runbooks/release.md lists the files a version bump updates."
+          % (plugin, ", ".join(drift)))
+PY

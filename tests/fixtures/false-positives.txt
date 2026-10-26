@@ -19,3 +19,13 @@ URL=https://api.example.com/v1/users/profile
 password = ""
 # Short API key (less than 8 chars)
 api_key = "short"
+# AWS secret key read from the environment or left as a placeholder
+aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}
+aws_secret_access_key = <your-secret-access-key>
+# Passwords, secrets, and API keys that reference a variable, template, or placeholder
+password: "${DB_PASSWORD}"
+secret: "{{ .Values.secret }}"
+password = "%(db_password)s"
+api_key = "<your-api-key-here>"
+# PEM public key header
+-----BEGIN PUBLIC KEY-----

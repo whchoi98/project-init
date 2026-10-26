@@ -10,7 +10,7 @@
 # English
 
 ## Status
-Accepted (amended by ADR-008: gate hooks block with exit 2 and are registered without `|| true`; the Notification hook was removed from this repository)
+Accepted (amended by ADR-008: gate hooks block with exit 2 and are registered without `|| true`; the Notification hook was removed from this repository; registration form refined by [ADR-009](ADR-009-opus-5-5-harness-alignment.md): `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`)
 
 ## Context
 The plugin registers four hooks in `.claude/settings.json`: SessionStart (`session-context.sh`), PreToolUse (`secret-scan.sh`), PostToolUse (`check-doc-sync.sh`), and Notification (`notify.sh`). Each hook is a Bash script invoked by Claude Code at a specific lifecycle point. A hook that exits non-zero or fails to execute can either be treated as an error that interrupts the user, or as a soft signal that is logged and ignored.
@@ -77,7 +77,7 @@ Scripts themselves do not include defensive `|| true` wrappers internally; the b
 # 한국어
 
 ## 상태
-승인됨 (ADR-008로 보완: 게이트 훅은 exit 2로 차단하며 `|| true` 없이 등록, Notification 훅은 이 저장소에서 제거)
+승인됨 (ADR-008로 보완: 게이트 훅은 exit 2로 차단하며 `|| true` 없이 등록, Notification 훅은 이 저장소에서 제거; 등록 형식은 [ADR-009](ADR-009-opus-5-5-harness-alignment.md)에서 `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`로 구체화)
 
 ## 배경
 플러그인은 `.claude/settings.json`에 네 개의 훅을 등록합니다: SessionStart(`session-context.sh`), PreToolUse(`secret-scan.sh`), PostToolUse(`check-doc-sync.sh`), Notification(`notify.sh`). 각 훅은 Claude Code가 특정 생명주기 시점에 호출하는 Bash 스크립트입니다. 비정상 종료하거나 실행에 실패한 훅은 사용자를 중단시키는 오류로 처리하거나, 로깅 후 무시되는 약한 신호로 처리할 수 있습니다.

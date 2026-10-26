@@ -1,7 +1,7 @@
 # Docs Module
 
 ## Role
-Project documentation including architecture design, Architecture Decision Records (ADRs), operational runbooks, and developer onboarding guide. All user-facing documents use bilingual (Korean/English) format.
+Project documentation including architecture design, Architecture Decision Records (ADRs), operational runbooks, and developer onboarding guide. Architecture, ADRs, and runbooks are bilingual (Korean/English); `onboarding.md` and the design notes under `superpowers/` are English-only.
 
 ## Key Files
 - `architecture.md` - System architecture with Mermaid flowchart diagrams (bilingual)
@@ -14,8 +14,6 @@ Project documentation including architecture design, Architecture Decision Recor
 
 ## Rules
 - Architecture flows use Mermaid flowchart in ```mermaid blocks (ADR-007); no ASCII box diagrams
-- ADR files follow `ADR-NNN-concise-title.md` naming convention
 - Runbook commands must be copy-paste ready
-- All docs use bilingual structure with `# English` / `# 한국어` sections
-- Both Korean and English sections must have identical structure and information
+- Bilingual docs use `# English` / `# 한국어` sections with identical structure and information
 - No emojis; code blocks must specify language; English imperative, Korean 경어체

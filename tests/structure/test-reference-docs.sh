@@ -1,6 +1,6 @@
 #!/bin/bash
 # Tests for the 8-layer implementation reference docs feature.
-# Validates plugin template, new command file, init-project Step 4.5,
+# Validates plugin template, new command file, init-project's Implementation Reference Detection,
 # sync-docs reference block, and doc-sync-checker reference validation.
 
 # --- Reference doc template exists and has all 8 layers ---
@@ -75,12 +75,12 @@ if [ -f "$ADD_CMD" ]; then
     assert_contains "add-reference-doc: updates root CLAUDE.md" "$ADD_CMD_CONTENT" "AUTO-MANAGED:references"
 fi
 
-# --- init-project Step 4.5: Implementation Reference Detection ---
+# --- init-project: Implementation Reference Detection section ---
 
 INIT_CMD="plugins/project-init/commands/init-project.md"
 if [ -f "$INIT_CMD" ]; then
     INIT_CONTENT=$(cat "$INIT_CMD")
-    assert_contains "init-project: has Step 4.5 (reference detection)" "$INIT_CONTENT" "Implementation Reference Detection"
+    assert_contains "init-project: has the Implementation Reference Detection section" "$INIT_CONTENT" "Implementation Reference Detection"
     assert_contains "init-project: detects Dockerfile (infra)" "$INIT_CONTENT" "Dockerfile"
     assert_contains "init-project: detects migrations/ (data)" "$INIT_CONTENT" "migrations/"
     assert_contains "init-project: detects routes/ (api)" "$INIT_CONTENT" "routes/"

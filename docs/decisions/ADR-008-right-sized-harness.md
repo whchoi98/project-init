@@ -10,7 +10,7 @@
 # English
 
 ## Status
-Accepted
+Accepted (extended by [ADR-009](ADR-009-opus-5-5-harness-alignment.md): decision 5 is superseded for the generated defaults, which are now tiered, so the generic skills and the Notification hook are generated only when the user checks them; the secret gate still fails open without python3, but now warns the user and Claude, per ADR-009 decision 8)
 
 ## Context
 This repository is developed with frontier models (Claude Fable 5.1, Claude Opus 5). Its own harness had grown to four hooks, four skills, three commands (up to 140 lines each), and two agents, largely mirroring what the plugin generates for consumers. An audit found three classes of problems:
@@ -67,7 +67,7 @@ Adopt Option 3.
 # 한국어
 
 ## 상태
-승인됨
+승인됨 ([ADR-009](ADR-009-opus-5-5-harness-alignment.md)로 확장: 생성 기본값이 티어로 나뉘면서 결정 5가 대체되어, 범용 스킬과 Notification 훅은 사용자가 선택할 때만 생성. python3가 없을 때 시크릿 게이트는 여전히 열린 채로 동작하지만, 이제 ADR-009 결정 8에 따라 사용자와 Claude에게 경고)
 
 ## 배경
 이 저장소는 최신 모델(Claude Fable 5.1, Claude Opus 5)로 개발됩니다. 저장소 자체 하네스는 훅 4개, 스킬 4개, 커맨드 3개(최대 140줄), 에이전트 2개까지 늘어나 플러그인이 소비자에게 생성해 주는 구조를 그대로 복제하고 있었습니다. 점검 결과 세 부류의 문제가 발견되었습니다.

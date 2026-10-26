@@ -52,9 +52,11 @@ assert_eq() {
     fi
 }
 
+# A glob match, not `echo | grep -q`: grep -q exits at the first match, and under pipefail the
+# writer's SIGPIPE then fails the pipeline at random on long output.
 assert_contains() {
     local desc="$1" haystack="$2" needle="$3"
-    if echo "$haystack" | command grep -qF -- "$needle"; then
+    if [[ "$haystack" == *"$needle"* ]]; then
         pass "$desc"
     else
         fail "$desc" "output does not contain '$needle'"
@@ -99,7 +101,7 @@ assert_bash_syntax() {
 
 assert_grep_match() {
     local desc="$1" pattern="$2" input="$3"
-    if echo "$input" | grep -qP "$pattern" 2>/dev/null; then
+    if grep -qP -- "$pattern" <<< "$input" 2>/dev/null; then
         pass "$desc"
     else
         fail "$desc" "pattern '$pattern' did not match"
@@ -108,7 +110,7 @@ assert_grep_match() {
 
 assert_grep_no_match() {
     local desc="$1" pattern="$2" input="$3"
-    if echo "$input" | grep -qP "$pattern" 2>/dev/null; then
+    if grep -qP -- "$pattern" <<< "$input" 2>/dev/null; then
         fail "$desc" "pattern '$pattern' matched (expected no match)"
     else
         pass "$desc"
@@ -126,23 +128,31 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
+# A sourced test file that calls exit, or an unguarded failure under set -e, ends the run early.
+# Report that as a failure, so the Stop gate never reads a truncated run as green.
+RUNALL_CURRENT="setup"
+RUNALL_FINISHED=0
+trap 'runall_rc=$?; if [ "$RUNALL_FINISHED" -eq 0 ]; then echo -e "${RED}run-all.sh stopped early in $RUNALL_CURRENT (exit $runall_rc): a sourced test file exited or hit an unguarded failure${NC}" >&2; exit 1; fi' EXIT
+
 echo -e "${CYAN}=== project-init Harness Test Suite ===${NC}"
 echo ""
 
-TEST_FILES=$(find "$SCRIPT_DIR" -name "test-*.sh" -not -name "run-all.sh" | sort)
-
-for test_file in $TEST_FILES; do
+# One path per line, read on fd 3: paths may contain spaces, and a sourced test that reads stdin
+# cannot swallow the rest of the list.
+while IFS= read -r test_file <&3; do
     test_name=$(basename "$test_file" .sh)
 
     # Filter if pattern provided
-    if [ -n "$FILTER" ] && ! echo "$test_name" | grep -q "$FILTER"; then
+    if [ -n "$FILTER" ] && ! grep -q -- "$FILTER" <<< "$test_name"; then
         continue
     fi
 
+    RUNALL_CURRENT="$test_name"
     echo -e "${CYAN}▸ $test_name${NC}"
     source "$test_file"
     echo ""
-done
+done 3< <(find "$SCRIPT_DIR" -name "test-*.sh" -not -name "run-all.sh" | sort)
+RUNALL_FINISHED=1
 
 # Summary
 echo -e "${CYAN}=== Results ===${NC}"

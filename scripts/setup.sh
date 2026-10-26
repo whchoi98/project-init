@@ -25,11 +25,10 @@ if [ -f ".claude/hooks/check-doc-sync.sh" ]; then
     echo "Claude hooks configured"
 fi
 
-# Install Git hooks
-if [ -d ".git" ]; then
-    if [ -f "scripts/install-hooks.sh" ]; then
-        bash scripts/install-hooks.sh
-    fi
+# Install the commit-msg hook. `git rev-parse` also finds a linked worktree, where .git is a file.
+# A hook manager (core.hooksPath) makes install-hooks.sh print the line to add instead; setup goes on.
+if git rev-parse --git-dir >/dev/null 2>&1 && [ -f "scripts/install-hooks.sh" ]; then
+    bash scripts/install-hooks.sh || echo "WARNING: commit-msg hook not installed; see the message above"
 fi
 
 echo "=== Setup Complete ==="
