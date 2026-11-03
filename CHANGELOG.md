@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - 2026-11-03
+
 ### Added
 
 - Add `plugins/project-init/scripts/harness-check.sh` (`bash harness-check.sh [--contract-only] [--] [PROJECT_DIR]`), which runs the deterministic harness checks and prints one `<STATUS> <id> <earned>/<max> <detail>` line per check, a `CATEGORY` line per category, and a final `TOTAL <earned>/<max> <percent>%`; `--contract-only` runs only the hook-contract checks (pre-v2.3 hooks, an unparsable `settings.json`, a registered gate whose script is missing or whose exit code its registration overrides, and the commit-scope and module-coverage markers) and exits 1 on any FAIL or WARN
@@ -277,7 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Restructure repository as marketplace with plugin in `plugins/project-init/` subdirectory ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/whchoi98/project-init/compare/v2.4.0...v3.0.0
 [2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/whchoi98/project-init/compare/v2.1.0...v2.2.0
@@ -296,6 +299,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [3.0.0] - 2026-11-03
 
 ### Added
 
@@ -559,7 +564,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 리포지토리를 마켓플레이스 구조로 변경, 플러그인을 `plugins/project-init/` 하위 디렉토리로 이동 ([7c6a6db](https://github.com/whchoi98/project-init/commit/7c6a6db))
 
-[Unreleased]: https://github.com/whchoi98/project-init/compare/v2.4.0...HEAD
+[Unreleased]: https://github.com/whchoi98/project-init/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/whchoi98/project-init/compare/v2.4.0...v3.0.0
 [2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/whchoi98/project-init/compare/v2.1.0...v2.2.0

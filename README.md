@@ -1,6 +1,6 @@
 # project-init
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-2.4.0-green.svg)](CHANGELOG.md) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Version](https://img.shields.io/badge/version-3.0.0-green.svg)](CHANGELOG.md) <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a> <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
 A Claude Code plugin for initializing and maintaining project structures with adaptive detection, quality scoring, and auto-sync documentation workflows.
 
@@ -173,7 +173,7 @@ bash scripts/setup.sh
 
 # Generate bilingual CHANGELOG.md (update unreleased or release version)
 /generate-changelog
-/generate-changelog 2.4.0
+/generate-changelog 3.0.0
 
 # Score the project's harness
 /health-check
@@ -309,11 +309,11 @@ Detects what needs migrating with `harness-check.sh --contract-only`, backs up `
 ```text
 project-init/                              # Marketplace root
 ├── .claude-plugin/
-│   └── marketplace.json                   # Marketplace manifest (v2.4.0)
+│   └── marketplace.json                   # Marketplace manifest (v3.0.0)
 ├── LICENSE                                # MIT License
 ├── README.md
 └── plugins/
-    └── project-init/                      # Plugin package (v2.4.0)
+    └── project-init/                      # Plugin package (v3.0.0)
         ├── .claude-plugin/
         │   └── plugin.json                # Plugin manifest
         ├── commands/
@@ -701,7 +701,7 @@ bash scripts/setup.sh
 
 # 이중 언어 CHANGELOG.md 생성 (미릴리스 업데이트 또는 버전 릴리스)
 /generate-changelog
-/generate-changelog 2.4.0
+/generate-changelog 3.0.0
 
 # 프로젝트 하네스 점수 확인
 /health-check
@@ -837,11 +837,11 @@ git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic 
 ```text
 project-init/                              # 마켓플레이스 루트
 ├── .claude-plugin/
-│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v2.4.0)
+│   └── marketplace.json                   # 마켓플레이스 매니페스트 (v3.0.0)
 ├── LICENSE                                # MIT 라이선스
 ├── README.md
 └── plugins/
-    └── project-init/                      # 플러그인 패키지 (v2.4.0)
+    └── project-init/                      # 플러그인 패키지 (v3.0.0)
         ├── .claude-plugin/
         │   └── plugin.json                # 플러그인 매니페스트
         ├── commands/
