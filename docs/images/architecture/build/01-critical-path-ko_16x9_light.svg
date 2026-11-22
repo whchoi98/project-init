@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="NanumSquareOTF, '나눔스퀘어OTF', NanumSquare, '나눔스퀘어', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', Arial, sans-serif">
+<defs><marker id="ah-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#232F3E"/></marker></defs>
+<rect x="0.0" y="0.0" width="1920.0" height="1080.0" fill="#FFFFFF"/>
+<text x="48.0" y="76.0" font-size="42" font-weight="800" fill="#232F3E" letter-spacing="0.2">초기화부터 문서 동기화까지</text>
+<text x="48.0" y="115.0"><tspan font-size="21" font-weight="800" fill="#E8710A">project-init Critical Path</tspan><tspan font-size="18" font-weight="700" fill="#5F6B7A" dx="16">핵심 경로 한눈에 보기</tspan></text>
+<rect x="48.0" y="140.0" width="1824.0" height="370.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="82.0" cy="173.0" r="15.0" fill="#232F3E"/>
+<text x="82.0" y="178.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="106.0" y="180.0" data-box="48,140,1824,370"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">핵심 경로</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">커맨드 한 번으로 하네스 구성, 이후 4개 계층이 문서를 최신으로 유지</tspan></text>
+<rect x="72.0" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#CDD4DD" stroke-width="1.4"/>
+<text x="90.0" y="244.0" font-size="13" font-weight="800" fill="#5F6B7A" letter-spacing="1.0" data-box="72,214,263,272">01</text>
+<text x="90.0" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="72,214,263,272">사용자</text>
+<line x1="90.0" y1="292.0" x2="316.7" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="90.0" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="72,214,263,272">새 프로젝트 또는 기존</text>
+<text x="90.0" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="72,214,263,272">프로젝트에서 커맨드 실행</text>
+<rect x="90.0" y="444.0" width="102.5" height="24.0" rx="12.0" fill="#FFFFFF" stroke="#9AA5B3" stroke-width="1.1"/>
+<text x="141.2" y="460.3" font-size="12" font-weight="800" fill="#5F6B7A" text-anchor="middle" data-box="72,214,263,272">프로젝트당 한 번</text>
+<path d="M341.7,350.0 L367.7,350.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="374.7" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#0972D3" stroke-width="1.4"/>
+<text x="392.7" y="244.0" font-size="13" font-weight="800" fill="#0972D3" letter-spacing="1.0" data-box="375,214,263,272">02</text>
+<text x="392.7" y="276.0" font-size="18" font-weight="700" fill="#232F3E" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="375,214,263,272">/init-project</text>
+<line x1="392.7" y1="292.0" x2="619.3" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="392.7" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="375,214,263,272">언어, 명령, 구조를 감지하고</text>
+<text x="392.7" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="375,214,263,272">저장소에서 알 수 없는 것만 질문</text>
+<rect x="392.7" y="444.0" width="80.6" height="24.0" rx="12.0" fill="#2E8CF0" fill-opacity="0.140" stroke="#0972D3" stroke-width="1.1"/>
+<text x="433.0" y="460.3" font-size="12" font-weight="800" fill="#0972D3" text-anchor="middle" data-box="375,214,263,272">질문은 한 번</text>
+<path d="M644.3,350.0 L670.3,350.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="677.3" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#A87900" stroke-width="1.4"/>
+<text x="695.3" y="244.0" font-size="13" font-weight="800" fill="#A87900" letter-spacing="1.0" data-box="677,214,263,272">03</text>
+<text x="695.3" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="677,214,263,272">구조 생성</text>
+<line x1="695.3" y1="292.0" x2="922.0" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="695.3" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="677,214,263,272">CLAUDE.md, settings, 문서,</text>
+<text x="695.3" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="677,214,263,272">테스트, 스크립트를 티어별로 작성,</text>
+<text x="695.3" y="364.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="677,214,263,272">기존 파일은 유지</text>
+<rect x="695.3" y="444.0" width="153.6" height="24.0" rx="12.0" fill="#F5C518" fill-opacity="0.140" stroke="#A87900" stroke-width="1.1"/>
+<text x="772.1" y="460.3" font-size="12" font-weight="800" fill="#A87900" text-anchor="middle" data-box="677,214,263,272">Core, Default, Optional</text>
+<path d="M947.0,350.0 L973.0,350.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="980.0" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#4F8A10" stroke-width="1.4"/>
+<text x="998.0" y="244.0" font-size="13" font-weight="800" fill="#4F8A10" letter-spacing="1.0" data-box="980,214,263,272">04</text>
+<text x="998.0" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="980,214,263,272">훅 설치</text>
+<line x1="998.0" y1="292.0" x2="1224.7" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="998.0" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="980,214,263,272">secret-scan 게이트와 doc-sync</text>
+<text x="998.0" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="980,214,263,272">알림 등록, commit-msg 훅 설치</text>
+<rect x="998.0" y="444.0" width="88.0" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1042.0" y="460.3" font-size="12" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="980,214,263,272">exit 2로 차단</text>
+<path d="M1249.7,350.0 L1275.7,350.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1282.7" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#E8710A" stroke-width="1.4"/>
+<text x="1300.7" y="244.0" font-size="13" font-weight="800" fill="#E8710A" letter-spacing="1.0" data-box="1283,214,263,272">05</text>
+<text x="1300.7" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="1283,214,263,272">4계층 자동 동기화</text>
+<line x1="1300.7" y1="292.0" x2="1527.3" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1300.7" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1283,214,263,272">Auto-Sync Rules,</text>
+<text x="1300.7" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1283,214,263,272">PostToolUse 훅, /sync-docs,</text>
+<text x="1300.7" y="364.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1283,214,263,272">commit-msg 훅이 코드 변경에</text>
+<text x="1300.7" y="386.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1283,214,263,272">맞춰 동작</text>
+<rect x="1300.7" y="444.0" width="99.8" height="24.0" rx="12.0" fill="#FF9900" fill-opacity="0.140" stroke="#E8710A" stroke-width="1.1"/>
+<text x="1350.5" y="460.3" font-size="12" font-weight="800" fill="#E8710A" text-anchor="middle" data-box="1283,214,263,272">규칙, 훅, 커맨드</text>
+<path d="M1552.3,350.0 L1578.3,350.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1585.3" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#FFFFFF" stroke="#A87900" stroke-width="1.4"/>
+<text x="1603.3" y="244.0" font-size="13" font-weight="800" fill="#A87900" letter-spacing="1.0" data-box="1585,214,263,272">06</text>
+<text x="1603.3" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="1585,214,263,272">문서 갱신</text>
+<line x1="1603.3" y1="292.0" x2="1830.0" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1603.3" y="320.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1585,214,263,272">CLAUDE.md, architecture,</text>
+<text x="1603.3" y="342.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1585,214,263,272">README, CHANGELOG가 코드를</text>
+<text x="1603.3" y="364.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1585,214,263,272">따라감, ADR과 런북은 제안</text>
+<rect x="1603.3" y="444.0" width="102.5" height="24.0" rx="12.0" fill="#F5C518" fill-opacity="0.140" stroke="#A87900" stroke-width="1.1"/>
+<text x="1654.6" y="460.3" font-size="12" font-weight="800" fill="#A87900" text-anchor="middle" data-box="1585,214,263,272">문서와 코드 일치</text>
+<rect x="48.0" y="530.0" width="902.0" height="514.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="82.0" cy="563.0" r="15.0" fill="#232F3E"/>
+<text x="82.0" y="568.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="106.0" y="570.0" data-box="48,530,902,514"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">티어별 생성</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">Core는 항상, 나머지는 선택</tspan></text>
+<rect x="72.0" y="600.0" width="854.0" height="133.3" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="612.0" width="4.0" height="109.3" rx="2.0" fill="#FF9900"/>
+<text x="98.0" y="663.7" font-size="19" font-weight="800" fill="#E8710A" data-box="72,600,854,133">Core</text>
+<text x="98.0" y="685.7" font-size="12.5" font-weight="700" fill="#5F6B7A" data-box="72,600,854,133">항상 생성</text>
+<text x="262.0" y="661.2" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,600,854,133">CLAUDE.md, settings.json, secret-scan과 check-doc-sync 훅,</text>
+<text x="262.0" y="682.2" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,600,854,133">setup과 install-hooks 스크립트, docs/, tests/, README, CHANGELOG</text>
+<rect x="72.0" y="743.3" width="854.0" height="133.3" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="755.3" width="4.0" height="109.3" rx="2.0" fill="#2E8CF0"/>
+<text x="98.0" y="807.0" font-size="19" font-weight="800" fill="#0972D3" data-box="72,743,854,133">Default</text>
+<text x="98.0" y="829.0" font-size="12.5" font-weight="700" fill="#5F6B7A" data-box="72,743,854,133">해제하지 않으면 생성</text>
+<text x="262.0" y="815.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,743,854,133">/test-all, 그리고 code-reviewer 에이전트와 함께하는 /review</text>
+<rect x="72.0" y="886.7" width="854.0" height="133.3" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="898.7" width="4.0" height="109.3" rx="2.0" fill="#CDD4DD"/>
+<text x="98.0" y="950.3" font-size="19" font-weight="800" fill="#232F3E" data-box="72,887,854,133">Optional</text>
+<text x="98.0" y="972.3" font-size="12.5" font-weight="700" fill="#5F6B7A" data-box="72,887,854,133">선택한 경우만 생성</text>
+<text x="262.0" y="947.9" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,887,854,133">/deploy, security-auditor 에이전트, code-review, refactor,</text>
+<text x="262.0" y="968.9" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,887,854,133">release 스킬, session-context, notify, verify-on-stop 훅</text>
+<rect x="970.0" y="530.0" width="902.0" height="514.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="1004.0" cy="563.0" r="15.0" fill="#232F3E"/>
+<text x="1004.0" y="568.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="1028.0" y="570.0" data-box="970,530,902,514"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">4계층 자동 동기화</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">안내, 훅 두 개, 커맨드 한 개</tspan></text>
+<rect x="994.0" y="600.0" width="854.0" height="99.0" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<text x="1014.0" y="646.5" font-size="16" font-weight="800" fill="#232F3E" data-box="994,600,854,99">Auto-Sync Rules</text>
+<text x="1014.0" y="666.5" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,600,854,99">CLAUDE.md</text>
+<text x="1324.0" y="654.5" font-size="14" font-weight="700" fill="#2E3A4A" data-box="994,600,854,99">코드 변경 시, Claude 작업 중</text>
+<rect x="1783.2" y="637.5" width="46.8" height="24.0" rx="12.0" fill="#8C4FFF" fill-opacity="0.140" stroke="#7D3FE0" stroke-width="1.1"/>
+<text x="1806.6" y="654.0" font-size="12.5" font-weight="800" fill="#7D3FE0" text-anchor="middle" data-box="994,600,854,99">안내</text>
+<rect x="994.0" y="707.0" width="854.0" height="99.0" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<text x="1014.0" y="753.5" font-size="16" font-weight="800" fill="#232F3E" data-box="994,707,854,99">PostToolUse 훅</text>
+<text x="1014.0" y="773.5" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,707,854,99">.claude/hooks/check-doc-sync.sh</text>
+<text x="1324.0" y="761.5" font-size="14" font-weight="700" fill="#2E3A4A" data-box="994,707,854,99">Write, Edit 직후</text>
+<rect x="1783.2" y="744.5" width="46.8" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1806.6" y="761.0" font-size="12.5" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="994,707,854,99">자동</text>
+<rect x="994.0" y="814.0" width="854.0" height="99.0" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<text x="1014.0" y="860.5" font-size="16" font-weight="700" fill="#232F3E" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,814,854,99">/sync-docs</text>
+<text x="1014.0" y="880.5" font-size="12" font-weight="700" fill="#5F6B7A" data-box="994,814,854,99">플러그인 커맨드</text>
+<text x="1324.0" y="868.5" font-size="14" font-weight="700" fill="#2E3A4A" data-box="994,814,854,99">사용자가 실행할 때</text>
+<rect x="1783.2" y="851.5" width="46.8" height="24.0" rx="12.0" fill="#2E8CF0" fill-opacity="0.140" stroke="#0972D3" stroke-width="1.1"/>
+<text x="1806.6" y="868.0" font-size="12.5" font-weight="800" fill="#0972D3" text-anchor="middle" data-box="994,814,854,99">수동</text>
+<rect x="994.0" y="921.0" width="854.0" height="99.0" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<text x="1014.0" y="967.5" font-size="16" font-weight="800" fill="#232F3E" data-box="994,921,854,99">commit-msg 훅</text>
+<text x="1014.0" y="987.5" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,921,854,99">.git/hooks/commit-msg</text>
+<text x="1324.0" y="975.5" font-size="14" font-weight="700" fill="#2E3A4A" data-box="994,921,854,99">git commit 시점</text>
+<rect x="1783.2" y="958.5" width="46.8" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1806.6" y="975.0" font-size="12.5" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="994,921,854,99">자동</text>
+<text x="1872.0" y="1064.0" font-size="13" font-weight="700" fill="#8A94A2" text-anchor="end">출처: docs/architecture.md, README.md의 Auto-Sync Mechanisms</text>
+</svg>

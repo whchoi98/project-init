@@ -42,7 +42,7 @@ Adopt Option 3.
 2. **Availability.** The skill is available when the session's skill list has `aws-infographic`, with or without a plugin prefix. Without it, the commands write Mermaid flowcharts as ADR-007 describes. ASCII box diagrams stay removed in both cases.
 3. **Brief.** The skill gets a fixed brief in place of its own scope questions: one 16:9 page per figure in the dark and light themes, no 4:5 version and no PowerPoint deck, an English and a Korean version with the same sections and layout (slugs ending in `-en` and `-ko`), content from the code and `docs/architecture.md` only, and the work folder `docs/images/architecture/`.
 4. **Embedding.** Each half embeds its own language's 2x PNG in a `<picture>` element, light by default and dark for a dark color scheme, with an `alt` text and one sentence of prose that says what the flow is. The PNG is used because the SVG needs fonts the reader may not have.
-5. **Existing figures.** A figure that still matches the code stays in the form it has. A stale figure is rebuilt in that form, and a stale infographic in a session without the skill is reported, not replaced with Mermaid. This repository's own Mermaid diagrams stay until they are rebuilt in a later change.
+5. **Existing figures.** A figure that still matches the code stays in the form it has. A stale figure is rebuilt in that form, and a stale infographic in a session without the skill is reported, not replaced with Mermaid. This repository's own figures were rebuilt as infographics on 2026-11-22, and their page modules are under `docs/images/architecture/`.
 6. **Check.** `check-bilingual.py` reports a document whose halves have different numbers of `<picture>` figures. Mermaid blocks stay byte-identical in both halves.
 7. **Asking.** `/init-project` asks whether to build infographics or write Mermaid only when the skill is available, because the build takes several minutes and asks for permission for the skill and its commands.
 
@@ -104,7 +104,7 @@ ADR-007은 README와 `docs/architecture.md`의 아키텍처 그림 형식을 Mer
 2. **사용 가능 여부.** 세션의 스킬 목록에 플러그인 접두사가 있든 없든 `aws-infographic`이 있으면 스킬을 쓸 수 있습니다. 없으면 커맨드는 ADR-007대로 Mermaid flowchart를 씁니다. ASCII 박스 다이어그램은 두 경우 모두 쓰지 않습니다.
 3. **브리프.** 스킬에는 스킬 자체의 범위 질문 대신 정해진 브리프를 줍니다. 그림마다 16:9 한 장을 다크와 라이트 테마로 만들고, 4:5 버전과 PowerPoint 덱은 만들지 않으며, 섹션과 배치가 같은 영어판과 한국어판을 만들고(slug는 `-en`, `-ko`로 끝남), 내용은 코드와 `docs/architecture.md`에서만 가져오고, 작업 폴더는 `docs/images/architecture/`입니다.
 4. **삽입.** 각 절반은 자기 언어의 2x PNG를 `<picture>` 요소로 넣습니다. 기본은 라이트, 다크 색 구성표에서는 다크이며, `alt` 텍스트와 흐름을 설명하는 문장 하나를 함께 둡니다. SVG는 독자에게 없을 수 있는 폰트가 필요하므로 PNG를 씁니다.
-5. **기존 그림.** 코드와 맞는 그림은 지금 형식 그대로 둡니다. 낡은 그림은 같은 형식으로 다시 만들고, 스킬이 없는 세션에서 낡은 인포그래픽은 Mermaid로 바꾸지 않고 보고합니다. 이 저장소의 Mermaid 다이어그램은 이후 변경에서 다시 만들 때까지 그대로 둡니다.
+5. **기존 그림.** 코드와 맞는 그림은 지금 형식 그대로 둡니다. 낡은 그림은 같은 형식으로 다시 만들고, 스킬이 없는 세션에서 낡은 인포그래픽은 Mermaid로 바꾸지 않고 보고합니다. 이 저장소의 그림은 2026-11-22에 인포그래픽으로 다시 만들었고, page module은 `docs/images/architecture/`에 있습니다.
 6. **검사.** `check-bilingual.py`는 양쪽 절반의 `<picture>` 그림 수가 다른 문서를 보고합니다. Mermaid 블록은 양쪽 절반에서 계속 바이트 단위로 같아야 합니다.
 7. **질문.** `/init-project`는 스킬이 있을 때만 인포그래픽을 만들지 Mermaid를 쓸지 묻습니다. 빌드에 몇 분이 걸리고 스킬과 그 명령마다 권한을 묻기 때문입니다.
 

@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Keep the `aws-infographic` skill's script copies (`infokit.py`, `buildkit.py`) out of version control in the Diagram Rules, next to its icon pointer and review images
+
 ## [3.1.0] - 2026-11-22
 
 ### Added
@@ -325,6 +329,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+
+- Diagram Rules에서 `aws-infographic` 스킬의 스크립트 사본(`infokit.py`, `buildkit.py`)도 아이콘 경로 파일, 검수용 이미지와 함께 버전 관리에서 제외하도록 변경
 
 ## [3.1.0] - 2026-11-22
 

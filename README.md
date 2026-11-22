@@ -57,10 +57,10 @@ In short, project-init is a **harness engineering automation tool** — it gener
 
 The critical flow: `/init-project` scaffolds the structure, then the 4-layer auto-sync workflow keeps documentation current as code evolves.
 
-```mermaid
-flowchart LR
-  User --> INIT["/init-project"] --> Scaffold[Generate Structure] --> Hooks[Install Hooks] --> Sync[4-Layer Auto-Sync] --> Docs[Docs Updated]
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/architecture/build/01-critical-path-en_16x9_dark.png">
+  <img src="docs/images/architecture/build/01-critical-path-en_16x9_light.png" alt="Critical path of project-init: the user runs /init-project, which generates the structure by tier and installs the hooks, and the 4-layer auto-sync keeps the docs updated">
+</picture>
 
 See [docs/architecture.md](docs/architecture.md) for the full architecture document.
 
@@ -597,10 +597,10 @@ Core 구성 요소는 항상, Default 구성 요소는 해제하지 않는 한, 
 
 핵심 흐름: `/init-project`가 구조를 스캐폴딩하고, 이후 4단계 자동 동기화 워크플로우가 코드 변경에 맞춰 문서를 최신 상태로 유지합니다.
 
-```mermaid
-flowchart LR
-  User --> INIT["/init-project"] --> Scaffold[Generate Structure] --> Hooks[Install Hooks] --> Sync[4-Layer Auto-Sync] --> Docs[Docs Updated]
-```
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/architecture/build/01-critical-path-ko_16x9_dark.png">
+  <img src="docs/images/architecture/build/01-critical-path-ko_16x9_light.png" alt="project-init의 핵심 경로: 사용자가 /init-project를 실행하면 티어별로 구조를 생성하고 훅을 설치하며, 이후 4계층 자동 동기화가 문서를 최신으로 유지">
+</picture>
 
 전체 아키텍처 문서는 [docs/architecture.md](docs/architecture.md)를 참조합니다.
 

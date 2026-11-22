@@ -96,7 +96,7 @@ The skill is available when the session's skill list has `aws-infographic`, with
 - One page per figure, 16:9 only, in the dark and light themes; no 4:5 version and no PowerPoint deck.
 - Two versions of each page with the same sections, components, and layout: English, with every text in English, and Korean, with technical terms in English and descriptions in Korean. Their slugs end in `-en` and `-ko` (`01-critical-path-en`, `01-critical-path-ko`).
 - Content comes from the code and `docs/architecture.md` only: component names as the code spells them, and no number, service, or claim the repository does not show.
-- Work folder `docs/images/architecture/`. Keep the page modules and the final SVG and PNG files there so the figure can be rebuilt, and add `.aws-icon-bundle`, `__pycache__/`, and the `@1x` review images under it to `.gitignore`.
+- Work folder `docs/images/architecture/`. Keep the page modules and the final SVG and PNG files there so the figure can be rebuilt, and add the skill's `infokit.py` and `buildkit.py` copies, `.aws-icon-bundle`, `__pycache__/`, and the `@1x` review images under it to `.gitignore`.
 
 Embed the 2x PNG of each language in its own half: the English figure in the English half and the Korean figure in the Korean half, light by default and dark for a dark color scheme, with an `alt` text that names the components in order. Use the PNG, because the SVG needs fonts the reader may not have. Paths are relative to the document.
 

@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="NanumSquareOTF, '나눔스퀘어OTF', NanumSquare, '나눔스퀘어', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', Arial, sans-serif">
+<defs><marker id="ah-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#232F3E"/></marker></defs>
+<rect x="0.0" y="0.0" width="1920.0" height="1080.0" fill="#FFFFFF"/>
+<text x="48.0" y="76.0" font-size="42" font-weight="800" fill="#232F3E" letter-spacing="0.2">초기화와 문서 동기화 흐름</text>
+<text x="48.0" y="115.0"><tspan font-size="21" font-weight="800" fill="#E8710A">project-init Data Flow</tspan><tspan font-size="18" font-weight="700" fill="#5F6B7A" dx="16">한 번의 실행과 4개 계층</tspan></text>
+<rect x="48.0" y="140.0" width="1824.0" height="350.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="82.0" cy="173.0" r="15.0" fill="#232F3E"/>
+<text x="82.0" y="178.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">1</text>
+<text x="106.0" y="180.0" data-box="48,140,1824,350"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">/init-project 실행 한 번</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">감지, 질문 한 번, 생성, 검사</tspan></text>
+<rect x="72.0" y="214.0" width="323.2" height="252.0" rx="12.0" fill="#FFFFFF" stroke="#0972D3" stroke-width="1.4"/>
+<text x="90.0" y="244.0" font-size="13" font-weight="800" fill="#0972D3" letter-spacing="1.0" data-box="72,214,323,252">01</text>
+<text x="90.0" y="276.0" font-size="18" font-weight="700" fill="#232F3E" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="72,214,323,252">/init-project</text>
+<line x1="90.0" y1="292.0" x2="377.2" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="90.0" y="320.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,214,323,252">사용자가 프로젝트 루트에서 실행,</text>
+<text x="90.0" y="341.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,214,323,252">기존 파일이 우선이라 다시 실행해도 안전</text>
+<rect x="90.0" y="424.0" width="88.5" height="24.0" rx="12.0" fill="#2E8CF0" fill-opacity="0.140" stroke="#0972D3" stroke-width="1.1"/>
+<text x="134.3" y="440.3" font-size="12" font-weight="800" fill="#0972D3" text-anchor="middle" data-box="72,214,323,252">사용자만 실행</text>
+<path d="M402.2,340.0 L428.2,340.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="435.2" y="214.0" width="323.2" height="252.0" rx="12.0" fill="#FFFFFF" stroke="#0972D3" stroke-width="1.4"/>
+<text x="453.2" y="244.0" font-size="13" font-weight="800" fill="#0972D3" letter-spacing="1.0" data-box="435,214,323,252">02</text>
+<text x="453.2" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="435,214,323,252">프로젝트 감지</text>
+<line x1="453.2" y1="292.0" x2="740.4" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="453.2" y="320.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="435,214,323,252">매니페스트와 디렉터리에서 언어, 명령,</text>
+<text x="453.2" y="341.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="435,214,323,252">구조, git 상태를 확인, 빌드와 설치 없음</text>
+<rect x="453.2" y="424.0" width="120.5" height="24.0" rx="12.0" fill="#2E8CF0" fill-opacity="0.140" stroke="#0972D3" stroke-width="1.1"/>
+<text x="513.4" y="440.3" font-size="12" font-weight="800" fill="#0972D3" text-anchor="middle" data-box="435,214,323,252">빌드 없음, 설치 없음</text>
+<path d="M765.4,340.0 L791.4,340.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="798.4" y="214.0" width="323.2" height="252.0" rx="12.0" fill="#FFFFFF" stroke="#7D3FE0" stroke-width="1.4"/>
+<text x="816.4" y="244.0" font-size="13" font-weight="800" fill="#7D3FE0" letter-spacing="1.0" data-box="798,214,323,252">03</text>
+<text x="816.4" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="798,214,323,252">질문 한 번</text>
+<line x1="816.4" y1="292.0" x2="1103.6" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="816.4" y="320.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="798,214,323,252">참조 계층, 티어별 구성 요소, README 항목,</text>
+<text x="816.4" y="341.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="798,214,323,252">git을 한 번에 질문, 모르는 값은 TODO로 표시</text>
+<rect x="816.4" y="424.0" width="70.8" height="24.0" rx="12.0" fill="#8C4FFF" fill-opacity="0.140" stroke="#7D3FE0" stroke-width="1.1"/>
+<text x="851.8" y="440.3" font-size="12" font-weight="800" fill="#7D3FE0" text-anchor="middle" data-box="798,214,323,252">계층, 티어</text>
+<path d="M1128.6,340.0 L1154.6,340.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1161.6" y="214.0" width="323.2" height="252.0" rx="12.0" fill="#FFFFFF" stroke="#A87900" stroke-width="1.4"/>
+<text x="1179.6" y="244.0" font-size="13" font-weight="800" fill="#A87900" letter-spacing="1.0" data-box="1162,214,323,252">04</text>
+<text x="1179.6" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="1162,214,323,252">티어별 생성</text>
+<line x1="1179.6" y1="292.0" x2="1466.8" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1179.6" y="320.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="1162,214,323,252">Core는 항상, Default는 해제하지 않으면,</text>
+<text x="1179.6" y="341.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="1162,214,323,252">Optional은 선택한 경우만 생성, 템플릿 코드는</text>
+<text x="1179.6" y="362.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="1162,214,323,252">그대로 복사</text>
+<rect x="1179.6" y="424.0" width="153.6" height="24.0" rx="12.0" fill="#F5C518" fill-opacity="0.140" stroke="#A87900" stroke-width="1.1"/>
+<text x="1256.4" y="440.3" font-size="12" font-weight="800" fill="#A87900" text-anchor="middle" data-box="1162,214,323,252">Core, Default, Optional</text>
+<path d="M1491.8,340.0 L1517.8,340.0" fill="none" stroke="#232F3E" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1524.8" y="214.0" width="323.2" height="252.0" rx="12.0" fill="#FFFFFF" stroke="#4F8A10" stroke-width="1.4"/>
+<text x="1542.8" y="244.0" font-size="13" font-weight="800" fill="#4F8A10" letter-spacing="1.0" data-box="1525,214,323,252">05</text>
+<text x="1542.8" y="276.0" font-size="19" font-weight="800" fill="#232F3E" data-box="1525,214,323,252">검사 실행</text>
+<line x1="1542.8" y1="292.0" x2="1830.0" y2="292.0" stroke="#DFE4EA" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1542.8" y="320.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="1525,214,323,252">생성된 테스트, JSON 유효성, 훅 계약,</text>
+<text x="1542.8" y="341.0" font-size="14" font-weight="700" fill="#2E3A4A" data-box="1525,214,323,252">이중 언어 구조를 요약 전에 확인</text>
+<rect x="1542.8" y="424.0" width="238.2" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1661.9" y="440.3" font-size="12" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="1525,214,323,252">tests, harness-check, check-bilingual</text>
+<rect x="48.0" y="510.0" width="1180.0" height="534.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="82.0" cy="543.0" r="15.0" fill="#232F3E"/>
+<text x="82.0" y="548.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">2</text>
+<text x="106.0" y="550.0" data-box="48,510,1180,534"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">4계층 자동 동기화</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">계층별 실행 시점과 동작</tspan></text>
+<text x="92.0" y="590.0" font-size="12" font-weight="800" fill="#8A94A2" letter-spacing="0.6" data-box="48,510,1180,534">계층</text>
+<text x="402.0" y="590.0" font-size="12" font-weight="800" fill="#8A94A2" letter-spacing="0.6" data-box="48,510,1180,534">실행 시점</text>
+<text x="642.0" y="590.0" font-size="12" font-weight="800" fill="#8A94A2" letter-spacing="0.6" data-box="48,510,1180,534">동작</text>
+<text x="1186.0" y="590.0" font-size="12" font-weight="800" fill="#8A94A2" text-anchor="end" letter-spacing="0.6" data-box="48,510,1180,534">유형</text>
+<rect x="72.0" y="602.0" width="1132.0" height="98.5" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="614.0" width="4.0" height="74.5" rx="2.0" fill="#8C4FFF"/>
+<text x="92.0" y="648.2" font-size="16" font-weight="800" fill="#232F3E" data-box="72,602,1132,98">Auto-Sync Rules</text>
+<text x="92.0" y="668.2" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="72,602,1132,98">CLAUDE.md</text>
+<text x="402.0" y="656.3" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,602,1132,98">코드 변경 시, Claude 작업 중</text>
+<text x="642.0" y="646.3" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,602,1132,98">architecture 문서, ADR, 모듈 CLAUDE.md,</text>
+<text x="642.0" y="666.3" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,602,1132,98">런북을 같은 변경에서 Claude가 갱신</text>
+<rect x="1139.2" y="639.2" width="46.8" height="24.0" rx="12.0" fill="#8C4FFF" fill-opacity="0.140" stroke="#7D3FE0" stroke-width="1.1"/>
+<text x="1162.6" y="655.8" font-size="12.5" font-weight="800" fill="#7D3FE0" text-anchor="middle" data-box="72,602,1132,98">안내</text>
+<rect x="72.0" y="708.5" width="1132.0" height="98.5" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="720.5" width="4.0" height="74.5" rx="2.0" fill="#5FA82A"/>
+<text x="92.0" y="754.8" font-size="16" font-weight="800" fill="#232F3E" data-box="72,708,1132,98">PostToolUse 훅</text>
+<text x="92.0" y="774.8" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="72,708,1132,98">.claude/hooks/check-doc-sync.sh</text>
+<text x="402.0" y="762.8" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,708,1132,98">Write, Edit 직후</text>
+<text x="642.0" y="762.8" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,708,1132,98">CLAUDE.md가 없는 모듈을 세션당 한 번 알림</text>
+<rect x="1139.2" y="745.8" width="46.8" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1162.6" y="762.2" font-size="12.5" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="72,708,1132,98">자동</text>
+<rect x="72.0" y="815.0" width="1132.0" height="98.5" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="827.0" width="4.0" height="74.5" rx="2.0" fill="#2E8CF0"/>
+<text x="92.0" y="861.2" font-size="16" font-weight="700" fill="#232F3E" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="72,815,1132,98">/sync-docs</text>
+<text x="92.0" y="881.2" font-size="12" font-weight="700" fill="#5F6B7A" data-box="72,815,1132,98">플러그인 커맨드</text>
+<text x="402.0" y="869.3" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,815,1132,98">사용자가 실행할 때</text>
+<text x="642.0" y="869.3" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,815,1132,98">한 번 감사하고 결과를 반영한 뒤 이중 언어 검사 실행</text>
+<rect x="1139.2" y="852.2" width="46.8" height="24.0" rx="12.0" fill="#2E8CF0" fill-opacity="0.140" stroke="#0972D3" stroke-width="1.1"/>
+<text x="1162.6" y="868.8" font-size="12.5" font-weight="800" fill="#0972D3" text-anchor="middle" data-box="72,815,1132,98">수동</text>
+<rect x="72.0" y="921.5" width="1132.0" height="98.5" rx="10.0" fill="#FFFFFF" stroke="#DFE4EA" stroke-width="1.1"/>
+<rect x="80.0" y="933.5" width="4.0" height="74.5" rx="2.0" fill="#5FA82A"/>
+<text x="92.0" y="967.8" font-size="16" font-weight="800" fill="#232F3E" data-box="72,922,1132,98">commit-msg 훅</text>
+<text x="92.0" y="987.8" font-size="12" font-weight="300" fill="#5F6B7A" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="72,922,1132,98">.git/hooks/commit-msg</text>
+<text x="402.0" y="975.8" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,922,1132,98">git commit 시점</text>
+<text x="642.0" y="975.8" font-size="14" font-weight="700" fill="#2E3A4A" data-box="72,922,1132,98">커밋 메시지에서 Co-Authored-By 줄 제거</text>
+<rect x="1139.2" y="958.8" width="46.8" height="24.0" rx="12.0" fill="#5FA82A" fill-opacity="0.140" stroke="#4F8A10" stroke-width="1.1"/>
+<text x="1162.6" y="975.2" font-size="12.5" font-weight="800" fill="#4F8A10" text-anchor="middle" data-box="72,922,1132,98">자동</text>
+<rect x="1248.0" y="510.0" width="624.0" height="534.0" rx="14.0" fill="#F5F7F9" stroke="#DFE4EA" stroke-width="1.2"/>
+<circle cx="1282.0" cy="543.0" r="15.0" fill="#232F3E"/>
+<text x="1282.0" y="548.6" font-size="16" font-weight="800" fill="#FFFFFF" text-anchor="middle">3</text>
+<text x="1306.0" y="550.0" data-box="1248,510,624,534"><tspan font-size="21" font-weight="800" fill="#232F3E" letter-spacing="0.2">최신으로 유지되는 문서</tspan><tspan font-size="15" font-weight="700" fill="#5F6B7A" dx="14">갱신 또는 제안</tspan></text>
+<text x="1272.0" y="598.0" font-size="14" font-weight="800" fill="#4F8A10" data-box="1248,510,624,534">갱신</text>
+<circle cx="1276.0" cy="625.0" r="2.8" fill="#4F8A10"/>
+<text x="1288.0" y="630.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">루트와 모듈 CLAUDE.md</text>
+<circle cx="1276.0" cy="662.0" r="2.8" fill="#4F8A10"/>
+<text x="1288.0" y="667.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">docs/architecture.md</text>
+<circle cx="1276.0" cy="699.0" r="2.8" fill="#4F8A10"/>
+<text x="1288.0" y="704.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">README.md와 CHANGELOG.md</text>
+<circle cx="1276.0" cy="736.0" r="2.8" fill="#4F8A10"/>
+<text x="1288.0" y="741.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">docs/reference/INDEX.md 표</text>
+<text x="1272.0" y="797.0" font-size="14" font-weight="800" fill="#7D3FE0" data-box="1248,510,624,534">제안만 하고 작성하지 않음</text>
+<circle cx="1276.0" cy="824.0" r="2.8" fill="#7D3FE0"/>
+<text x="1288.0" y="829.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">결정 기록이 없는 변경의 ADR</text>
+<circle cx="1276.0" cy="861.0" r="2.8" fill="#7D3FE0"/>
+<text x="1288.0" y="866.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">빠진 런북</text>
+<circle cx="1276.0" cy="898.0" r="2.8" fill="#7D3FE0"/>
+<text x="1288.0" y="903.0" font-size="15" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">빠진 참조 문서</text>
+<rect x="1272.0" y="964.0" width="576.0" height="58.0" rx="10.0" fill="#FF9900" fill-opacity="0.080" stroke="#E8710A" stroke-width="1.2"/>
+<text x="1288.0" y="989.0" font-size="15" font-weight="800" fill="#232F3E" data-box="1248,510,624,534">규칙은 안내, 훅은 강제</text>
+<text x="1288.0" y="1010.0" font-size="13" font-weight="700" fill="#2E3A4A" data-box="1248,510,624,534">규칙은 Claude가 적용하는 안내, 훅은 매번 같은 방식으로 실행</text>
+<text x="1872.0" y="1064.0" font-size="13" font-weight="700" fill="#8A94A2" text-anchor="end">출처: docs/architecture.md, plugins/project-init/commands</text>
+</svg>
