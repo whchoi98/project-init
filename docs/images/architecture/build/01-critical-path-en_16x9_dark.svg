@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1920 1080" width="1920" height="1080" font-family="NanumSquareOTF, '나눔스퀘어OTF', NanumSquare, '나눔스퀘어', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', 'Noto Sans CJK KR', Arial, sans-serif">
+<defs><marker id="ah-arrow" viewBox="0 0 10 10" refX="8.6" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0.6 L10,5 L0,9.4 z" fill="#A6ABBE"/></marker></defs>
+<rect x="0.0" y="0.0" width="1920.0" height="1080.0" fill="#161D26"/>
+<text x="48.0" y="76.0" font-size="42" font-weight="800" fill="#F3F3F7" letter-spacing="0.2">From Initialization to Synced Docs</text>
+<text x="48.0" y="115.0"><tspan font-size="21" font-weight="800" fill="#FF9900">project-init Critical Path</tspan><tspan font-size="18" font-weight="700" fill="#A6ABBE" dx="16">the flow at a glance</tspan></text>
+<rect x="48.0" y="140.0" width="1824.0" height="370.0" rx="14.0" fill="#1C2430" stroke="#2E3947" stroke-width="1.2"/>
+<circle cx="82.0" cy="173.0" r="15.0" fill="#E2E4EC"/>
+<text x="82.0" y="178.6" font-size="16" font-weight="800" fill="#161D26" text-anchor="middle">1</text>
+<text x="106.0" y="180.0" data-box="48,140,1824,370"><tspan font-size="21" font-weight="800" fill="#F3F3F7" letter-spacing="0.2">Critical path</tspan><tspan font-size="15" font-weight="700" fill="#A6ABBE" dx="14">one command builds the harness, then four layers keep docs current</tspan></text>
+<rect x="72.0" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#3B4757" stroke-width="1.4"/>
+<text x="90.0" y="244.0" font-size="13" font-weight="800" fill="#A6ABBE" letter-spacing="1.0" data-box="72,214,263,272">01</text>
+<text x="90.0" y="276.0" font-size="19" font-weight="800" fill="#F3F3F7" data-box="72,214,263,272">User</text>
+<line x1="90.0" y1="292.0" x2="316.7" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="90.0" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="72,214,263,272">Runs the command in a</text>
+<text x="90.0" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="72,214,263,272">new or existing project</text>
+<rect x="90.0" y="444.0" width="115.5" height="24.0" rx="12.0" fill="#232D3A" stroke="#5A667A" stroke-width="1.1"/>
+<text x="147.8" y="460.3" font-size="12" font-weight="800" fill="#A6ABBE" text-anchor="middle" data-box="72,214,263,272">once per project</text>
+<path d="M341.7,350.0 L367.7,350.0" fill="none" stroke="#A6ABBE" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="374.7" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#41B3FF" stroke-width="1.4"/>
+<text x="392.7" y="244.0" font-size="13" font-weight="800" fill="#41B3FF" letter-spacing="1.0" data-box="375,214,263,272">02</text>
+<text x="392.7" y="276.0" font-size="18" font-weight="700" fill="#F3F3F7" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="375,214,263,272">/init-project</text>
+<line x1="392.7" y1="292.0" x2="619.3" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="392.7" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="375,214,263,272">Detects the language,</text>
+<text x="392.7" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="375,214,263,272">commands, and layout, then</text>
+<text x="392.7" y="364.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="375,214,263,272">asks only what the repository</text>
+<text x="392.7" y="386.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="375,214,263,272">cannot answer</text>
+<rect x="392.7" y="444.0" width="133.5" height="24.0" rx="12.0" fill="#41B3FF" fill-opacity="0.140" stroke="#41B3FF" stroke-width="1.1"/>
+<text x="459.4" y="460.3" font-size="12" font-weight="800" fill="#41B3FF" text-anchor="middle" data-box="375,214,263,272">one question round</text>
+<path d="M644.3,350.0 L670.3,350.0" fill="none" stroke="#A6ABBE" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="677.3" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#FBD332" stroke-width="1.4"/>
+<text x="695.3" y="244.0" font-size="13" font-weight="800" fill="#FBD332" letter-spacing="1.0" data-box="677,214,263,272">03</text>
+<text x="695.3" y="276.0" font-size="19" font-weight="800" fill="#F3F3F7" data-box="677,214,263,272">Generate Structure</text>
+<line x1="695.3" y1="292.0" x2="922.0" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="695.3" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="677,214,263,272">Writes CLAUDE.md, settings,</text>
+<text x="695.3" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="677,214,263,272">docs, tests, and scripts by tier;</text>
+<text x="695.3" y="364.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="677,214,263,272">existing files are kept</text>
+<rect x="695.3" y="444.0" width="153.6" height="24.0" rx="12.0" fill="#FBD332" fill-opacity="0.140" stroke="#FBD332" stroke-width="1.1"/>
+<text x="772.1" y="460.3" font-size="12" font-weight="800" fill="#FBD332" text-anchor="middle" data-box="677,214,263,272">Core, Default, Optional</text>
+<path d="M947.0,350.0 L973.0,350.0" fill="none" stroke="#A6ABBE" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="980.0" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#8CC63F" stroke-width="1.4"/>
+<text x="998.0" y="244.0" font-size="13" font-weight="800" fill="#8CC63F" letter-spacing="1.0" data-box="980,214,263,272">04</text>
+<text x="998.0" y="276.0" font-size="19" font-weight="800" fill="#F3F3F7" data-box="980,214,263,272">Install Hooks</text>
+<line x1="998.0" y1="292.0" x2="1224.7" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="998.0" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="980,214,263,272">Registers the secret-scan gate</text>
+<text x="998.0" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="980,214,263,272">and the doc-sync reminder, and</text>
+<text x="998.0" y="364.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="980,214,263,272">installs the commit-msg hook</text>
+<rect x="998.0" y="444.0" width="92.7" height="24.0" rx="12.0" fill="#8CC63F" fill-opacity="0.140" stroke="#8CC63F" stroke-width="1.1"/>
+<text x="1044.3" y="460.3" font-size="12" font-weight="800" fill="#8CC63F" text-anchor="middle" data-box="980,214,263,272">exit 2 blocks</text>
+<path d="M1249.7,350.0 L1275.7,350.0" fill="none" stroke="#A6ABBE" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1282.7" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#FF9900" stroke-width="1.4"/>
+<text x="1300.7" y="244.0" font-size="13" font-weight="800" fill="#FF9900" letter-spacing="1.0" data-box="1283,214,263,272">05</text>
+<text x="1300.7" y="276.0" font-size="19" font-weight="800" fill="#F3F3F7" data-box="1283,214,263,272">4-Layer Auto-Sync</text>
+<line x1="1300.7" y1="292.0" x2="1527.3" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1300.7" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1283,214,263,272">Auto-Sync Rules, the</text>
+<text x="1300.7" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1283,214,263,272">PostToolUse hook, /sync-docs,</text>
+<text x="1300.7" y="364.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1283,214,263,272">and the commit-msg hook act</text>
+<text x="1300.7" y="386.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1283,214,263,272">as the code changes</text>
+<rect x="1300.7" y="444.0" width="156.1" height="24.0" rx="12.0" fill="#FF9900" fill-opacity="0.140" stroke="#FF9900" stroke-width="1.1"/>
+<text x="1378.7" y="460.3" font-size="12" font-weight="800" fill="#FF9900" text-anchor="middle" data-box="1283,214,263,272">rules, hooks, command</text>
+<path d="M1552.3,350.0 L1578.3,350.0" fill="none" stroke="#A6ABBE" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-arrow)"/>
+<rect x="1585.3" y="214.0" width="262.7" height="272.0" rx="12.0" fill="#232D3A" stroke="#FBD332" stroke-width="1.4"/>
+<text x="1603.3" y="244.0" font-size="13" font-weight="800" fill="#FBD332" letter-spacing="1.0" data-box="1585,214,263,272">06</text>
+<text x="1603.3" y="276.0" font-size="19" font-weight="800" fill="#F3F3F7" data-box="1585,214,263,272">Docs Updated</text>
+<line x1="1603.3" y1="292.0" x2="1830.0" y2="292.0" stroke="#2E3947" stroke-width="1.2" stroke-linecap="round"/>
+<text x="1603.3" y="320.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1585,214,263,272">CLAUDE.md, architecture,</text>
+<text x="1603.3" y="342.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1585,214,263,272">README, and CHANGELOG</text>
+<text x="1603.3" y="364.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1585,214,263,272">follow the code; ADRs and</text>
+<text x="1603.3" y="386.0" font-size="15" font-weight="700" fill="#E2E4EC" data-box="1585,214,263,272">runbooks are suggested</text>
+<rect x="1603.3" y="444.0" width="140.2" height="24.0" rx="12.0" fill="#FBD332" fill-opacity="0.140" stroke="#FBD332" stroke-width="1.1"/>
+<text x="1673.4" y="460.3" font-size="12" font-weight="800" fill="#FBD332" text-anchor="middle" data-box="1585,214,263,272">docs match the code</text>
+<rect x="48.0" y="530.0" width="902.0" height="514.0" rx="14.0" fill="#1C2430" stroke="#2E3947" stroke-width="1.2"/>
+<circle cx="82.0" cy="563.0" r="15.0" fill="#E2E4EC"/>
+<text x="82.0" y="568.6" font-size="16" font-weight="800" fill="#161D26" text-anchor="middle">2</text>
+<text x="106.0" y="570.0" data-box="48,530,902,514"><tspan font-size="21" font-weight="800" fill="#F3F3F7" letter-spacing="0.2">Generated by tier</tspan><tspan font-size="15" font-weight="700" fill="#A6ABBE" dx="14">Core always, the rest by choice</tspan></text>
+<rect x="72.0" y="600.0" width="854.0" height="133.3" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<rect x="80.0" y="612.0" width="4.0" height="109.3" rx="2.0" fill="#FF9900"/>
+<text x="98.0" y="663.7" font-size="19" font-weight="800" fill="#FF9900" data-box="72,600,854,133">Core</text>
+<text x="98.0" y="685.7" font-size="12.5" font-weight="700" fill="#A6ABBE" data-box="72,600,854,133">always generated</text>
+<text x="262.0" y="661.2" font-size="14" font-weight="700" fill="#E2E4EC" data-box="72,600,854,133">CLAUDE.md, settings.json, the secret-scan and check-doc-sync hooks,</text>
+<text x="262.0" y="682.2" font-size="14" font-weight="700" fill="#E2E4EC" data-box="72,600,854,133">setup and install-hooks scripts, docs/, tests/, README, and CHANGELOG</text>
+<rect x="72.0" y="743.3" width="854.0" height="133.3" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<rect x="80.0" y="755.3" width="4.0" height="109.3" rx="2.0" fill="#41B3FF"/>
+<text x="98.0" y="807.0" font-size="19" font-weight="800" fill="#41B3FF" data-box="72,743,854,133">Default</text>
+<text x="98.0" y="829.0" font-size="12.5" font-weight="700" fill="#A6ABBE" data-box="72,743,854,133">unless unchecked</text>
+<text x="262.0" y="815.0" font-size="14" font-weight="700" fill="#E2E4EC" data-box="72,743,854,133">/test-all, and /review with the code-reviewer agent</text>
+<rect x="72.0" y="886.7" width="854.0" height="133.3" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<rect x="80.0" y="898.7" width="4.0" height="109.3" rx="2.0" fill="#3B4757"/>
+<text x="98.0" y="950.3" font-size="19" font-weight="800" fill="#F3F3F7" data-box="72,887,854,133">Optional</text>
+<text x="98.0" y="972.3" font-size="12.5" font-weight="700" fill="#A6ABBE" data-box="72,887,854,133">only when checked</text>
+<text x="262.0" y="947.9" font-size="14" font-weight="700" fill="#E2E4EC" data-box="72,887,854,133">/deploy, the security-auditor agent, the code-review, refactor, and</text>
+<text x="262.0" y="968.9" font-size="14" font-weight="700" fill="#E2E4EC" data-box="72,887,854,133">release skills, and the session-context, notify, and verify-on-stop hooks</text>
+<rect x="970.0" y="530.0" width="902.0" height="514.0" rx="14.0" fill="#1C2430" stroke="#2E3947" stroke-width="1.2"/>
+<circle cx="1004.0" cy="563.0" r="15.0" fill="#E2E4EC"/>
+<text x="1004.0" y="568.6" font-size="16" font-weight="800" fill="#161D26" text-anchor="middle">3</text>
+<text x="1028.0" y="570.0" data-box="970,530,902,514"><tspan font-size="21" font-weight="800" fill="#F3F3F7" letter-spacing="0.2">4-layer auto-sync</tspan><tspan font-size="15" font-weight="700" fill="#A6ABBE" dx="14">guidance, two hooks, and one command</tspan></text>
+<rect x="994.0" y="600.0" width="854.0" height="99.0" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<text x="1014.0" y="646.5" font-size="16" font-weight="800" fill="#F3F3F7" data-box="994,600,854,99">Auto-Sync Rules</text>
+<text x="1014.0" y="666.5" font-size="12" font-weight="300" fill="#A6ABBE" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,600,854,99">CLAUDE.md</text>
+<text x="1324.0" y="654.5" font-size="14" font-weight="700" fill="#E2E4EC" data-box="994,600,854,99">when code changes, while Claude works</text>
+<rect x="1749.7" y="637.5" width="80.3" height="24.0" rx="12.0" fill="#AD5CFF" fill-opacity="0.140" stroke="#AD5CFF" stroke-width="1.1"/>
+<text x="1789.9" y="654.0" font-size="12.5" font-weight="800" fill="#AD5CFF" text-anchor="middle" data-box="994,600,854,99">Guidance</text>
+<rect x="994.0" y="707.0" width="854.0" height="99.0" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<text x="1014.0" y="753.5" font-size="16" font-weight="800" fill="#F3F3F7" data-box="994,707,854,99">PostToolUse hook</text>
+<text x="1014.0" y="773.5" font-size="12" font-weight="300" fill="#A6ABBE" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,707,854,99">.claude/hooks/check-doc-sync.sh</text>
+<text x="1324.0" y="761.5" font-size="14" font-weight="700" fill="#E2E4EC" data-box="994,707,854,99">after Write or Edit</text>
+<rect x="1776.9" y="744.5" width="53.1" height="24.0" rx="12.0" fill="#8CC63F" fill-opacity="0.140" stroke="#8CC63F" stroke-width="1.1"/>
+<text x="1803.4" y="761.0" font-size="12.5" font-weight="800" fill="#8CC63F" text-anchor="middle" data-box="994,707,854,99">Auto</text>
+<rect x="994.0" y="814.0" width="854.0" height="99.0" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<text x="1014.0" y="860.5" font-size="16" font-weight="700" fill="#F3F3F7" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,814,854,99">/sync-docs</text>
+<text x="1014.0" y="880.5" font-size="12" font-weight="700" fill="#A6ABBE" data-box="994,814,854,99">plugin command</text>
+<text x="1324.0" y="868.5" font-size="14" font-weight="700" fill="#E2E4EC" data-box="994,814,854,99">when the user runs it</text>
+<rect x="1761.8" y="851.5" width="68.2" height="24.0" rx="12.0" fill="#41B3FF" fill-opacity="0.140" stroke="#41B3FF" stroke-width="1.1"/>
+<text x="1795.9" y="868.0" font-size="12.5" font-weight="800" fill="#41B3FF" text-anchor="middle" data-box="994,814,854,99">Manual</text>
+<rect x="994.0" y="921.0" width="854.0" height="99.0" rx="10.0" fill="#232D3A" stroke="#2E3947" stroke-width="1.1"/>
+<text x="1014.0" y="967.5" font-size="16" font-weight="800" fill="#F3F3F7" data-box="994,921,854,99">commit-msg hook</text>
+<text x="1014.0" y="987.5" font-size="12" font-weight="300" fill="#A6ABBE" font-family="D2Coding, 'D2Coding ligature', Menlo, Consolas, monospace" data-box="994,921,854,99">.git/hooks/commit-msg</text>
+<text x="1324.0" y="975.5" font-size="14" font-weight="700" fill="#E2E4EC" data-box="994,921,854,99">at git commit</text>
+<rect x="1776.9" y="958.5" width="53.1" height="24.0" rx="12.0" fill="#8CC63F" fill-opacity="0.140" stroke="#8CC63F" stroke-width="1.1"/>
+<text x="1803.4" y="975.0" font-size="12.5" font-weight="800" fill="#8CC63F" text-anchor="middle" data-box="994,921,854,99">Auto</text>
+<text x="1872.0" y="1064.0" font-size="13" font-weight="700" fill="#7B8198" text-anchor="end">Source: docs/architecture.md, README.md (Auto-Sync Mechanisms)</text>
+</svg>

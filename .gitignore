@@ -26,3 +26,10 @@ __pycache__/
 
 # Logs
 *.log
+
+# Architecture infographics: the aws-infographic skill's script copies, its icon pointer, and review images
+docs/images/architecture/infokit.py
+docs/images/architecture/buildkit.py
+docs/images/architecture/.aws-icon-bundle
+docs/images/architecture/__pycache__/
+docs/images/architecture/build/*@1x.png

@@ -19,7 +19,7 @@ When users run `/init-project`, it detects the existing project and generates a 
 
 ### Plugin Layer
 - **plugins/project-init/commands/** -- Slash commands (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, add-reference-doc, health-check, migrate-hooks). Each `.md` file defines one command as a goal, inputs, rules, an output contract, a runnable check, and a report (ADR-009).
-- **plugins/project-init/agents/** -- doc-sync-checker agent. A read-only documentation audit that `/sync-docs` launches once for larger projects; it inherits the session model, runs at `effort: medium`, and reports every finding with severity and confidence.
+- **plugins/project-init/agents/** -- doc-sync-checker agent. A read-only documentation audit that `/sync-docs` launches once for larger projects; it runs on `model: sonnet` at `effort: medium`, the model `/sync-docs` pins too, and reports every finding with severity and confidence.
 - **plugins/project-init/scripts/** -- Deterministic checks the commands run, referenced as `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`: `harness-check.sh` (harness checks and score for `/health-check`, hook-contract detection with `--contract-only` for `/migrate-hooks` and `/init-project`) and `check-bilingual.py` (ADR-001/002 structure of bilingual documents).
 - **plugins/project-init/skills/** -- project-scaffolder skill. `SKILL.md` holds the tiered layout and the single-source sections `## CLAUDE.md Quality Criteria`, `## CLAUDE.md Anti-Patterns`, and `## Module CLAUDE.md Coverage`; `references/` holds the templates, including the shared writing-style-guide.
 
@@ -29,7 +29,7 @@ When users run `/init-project`, it detects the existing project and generates a 
 - **tests/** -- `run-all.sh` sources every `tests/**/test-*.sh`: hook contract and registration, secret patterns read from the hook's `PATTERNS`, plugin structure (version sync across manifests, README, and CHANGELOG; template copies identical to the repository files), reference-doc skeletons, `harness-check.sh` against fixture projects, the bilingual structure of the repository's bilingual docs, and cross-file prompt contracts (rules one plugin file states and others must not contradict).
 
 ### Generated Project Layer
-- **Core** -- Root CLAUDE.md, `.claude/settings.json` (deny list and hook registrations), `secret-scan.sh` and `check-doc-sync.sh`, `scripts/setup.sh` and `scripts/install-hooks.sh`, docs and `docs/reference/`, `tests/`, README, CHANGELOG, `.editorconfig`, `.gitignore`, `.env.example`, and `.mcp.json` with no servers. Module CLAUDE.md files only for modules with rules the code does not show.
+- **Core** -- Root CLAUDE.md, `.claude/settings.json` (deny and ask rules, hook registrations), `secret-scan.sh` and `check-doc-sync.sh`, `scripts/setup.sh` and `scripts/install-hooks.sh`, docs and `docs/reference/`, `tests/`, README, CHANGELOG, `.editorconfig`, `.gitignore`, `.env.example`, and `.mcp.json` with no servers. Module CLAUDE.md files only for modules with rules the code does not show.
 - **Default** -- `/test-all`, and `/review` with the code-reviewer agent.
 - **Optional** -- `/deploy`, the security-auditor agent, the code-review, refactor, and release skills, and the session-context, notify, and verify-on-stop hooks.
 
@@ -45,38 +45,21 @@ When users run `/init-project`, it detects the existing project and generates a 
 
 ## Full Architecture Diagram
 
-```mermaid
-flowchart TB
-  subgraph marketplace[Plugin Marketplace]
-    MJ[marketplace.json] --> PLUGIN[plugins/project-init/]
-    PLUGIN --> CMDS["commands/"]
-    PLUGIN --> AGENTS["agents/ (doc-sync-checker)"]
-    PLUGIN --> SKILLS["skills/project-scaffolder/ (SKILL.md, references/)"]
-    PLUGIN --> CHECKS["scripts/ (harness-check.sh, check-bilingual.py)"]
-  end
-  subgraph generated[Generated Project Structure]
-    CORE["Core: CLAUDE.md, settings.json, secret-scan and check-doc-sync hooks, docs/, tests/, scripts/"]
-    DEFAULT["Default: /test-all, /review and code-reviewer"]
-    OPTIONAL["Optional: /deploy, security-auditor, skills, session-context, notify, verify-on-stop hooks"]
-  end
-  PLUGIN -- /init-project --> generated
-  CMDS --> CHECKS
-  CHECKS -- /health-check --> generated
-```
+The marketplace repository ships one plugin with commands, an agent, a skill, and scripts. `/init-project` generates a project harness in three tiers, `/health-check` scores it, and `/sync-docs` keeps its documents current.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/architecture/build/02-full-architecture-en_16x9_dark.png">
+  <img src="images/architecture/build/02-full-architecture-en_16x9_light.png" alt="Full architecture: the marketplace repository ships the project-init plugin (commands, the doc-sync-checker agent, the project-scaffolder skill, and scripts), and /init-project generates a project harness in the Core, Default, and Optional tiers">
+</picture>
 
 ## Data Flow Summary
 
-```mermaid
-flowchart LR
-  User --> INIT["/init-project"] --> Detect[Detect Project] --> Ask["Ask Once (layers, tiers)"] --> Generate[Generate by Tier] --> Checks["Run Checks (tests, harness-check, check-bilingual)"]
-  Checks --> Sync[4-Layer Auto-Sync]
-  Sync --> Rules["CLAUDE.md Rules (while working)"]
-  Sync --> Post["PostToolUse Hook (Write/Edit)"]
-  Sync --> Manual["/sync-docs (Manual)"]
-  Rules --> Updated[Docs Updated]
-  Post --> Updated
-  Manual --> Updated
-```
+One `/init-project` run detects the project, asks once, generates by tier, and runs its checks. After that, four layers keep the documents in step with the code.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/architecture/build/03-data-flow-en_16x9_dark.png">
+  <img src="images/architecture/build/03-data-flow-en_16x9_light.png" alt="Data flow: /init-project detects the project, asks once, generates by tier, and runs checks; then the Auto-Sync Rules, the PostToolUse hook, /sync-docs, and the commit-msg hook keep the docs current">
+</picture>
 
 ## Key Design Decisions
 
@@ -110,7 +93,7 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 
 ### 플러그인 계층
 - **plugins/project-init/commands/** -- 슬래시 커맨드 (init-project, sync-docs, generate-readme, generate-changelog, add-adr, add-module, add-runbook, add-reference-doc, health-check, migrate-hooks). 각 `.md` 파일이 하나의 커맨드를 목표, 입력, 규칙, 출력 계약, 실행 가능한 검사, 보고로 정의합니다(ADR-009).
-- **plugins/project-init/agents/** -- doc-sync-checker 에이전트. 규모가 큰 프로젝트에서 `/sync-docs`가 한 번 실행하는 읽기 전용 문서 감사입니다. 세션 모델을 상속하고 `effort: medium`으로 실행되며, 모든 finding을 심각도와 확신도와 함께 보고합니다.
+- **plugins/project-init/agents/** -- doc-sync-checker 에이전트. 규모가 큰 프로젝트에서 `/sync-docs`가 한 번 실행하는 읽기 전용 문서 감사입니다. `/sync-docs`와 같은 `model: sonnet`에서 `effort: medium`으로 실행되며, 모든 finding을 심각도와 확신도와 함께 보고합니다.
 - **plugins/project-init/scripts/** -- 커맨드가 실행하는 결정론적 검사로, `${CLAUDE_PLUGIN_ROOT}/scripts/<name>`으로 참조합니다: `harness-check.sh`(`/health-check`용 하네스 검사와 점수, `--contract-only`로 `/migrate-hooks`와 `/init-project`가 쓰는 훅 계약 감지)와 `check-bilingual.py`(이중 언어 문서의 ADR-001/002 구조 검사).
 - **plugins/project-init/skills/** -- project-scaffolder 스킬. `SKILL.md`에는 티어별 구조와 단일 출처 섹션 `## CLAUDE.md Quality Criteria`, `## CLAUDE.md Anti-Patterns`, `## Module CLAUDE.md Coverage`가 있고, `references/`에는 공통 writing-style-guide를 포함한 템플릿이 있습니다.
 
@@ -120,7 +103,7 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 - **tests/** -- `run-all.sh`가 모든 `tests/**/test-*.sh`를 source합니다: 훅 계약과 등록, 훅의 `PATTERNS`에서 읽은 시크릿 패턴, 플러그인 구조(매니페스트·README·CHANGELOG 버전 동기화, 저장소 파일과 동일한 템플릿 사본), 참조 문서 스켈레톤, 픽스처 프로젝트에 대한 `harness-check.sh`, 저장소 이중 언어 문서의 구조, 파일 사이의 프롬프트 계약(한 플러그인 파일이 정한 규칙과 다른 파일이 어긋나지 않는지).
 
 ### 생성 프로젝트 계층
-- **Core** -- 루트 CLAUDE.md, `.claude/settings.json`(deny 목록과 훅 등록), `secret-scan.sh`와 `check-doc-sync.sh`, `scripts/setup.sh`와 `scripts/install-hooks.sh`, 문서와 `docs/reference/`, `tests/`, README, CHANGELOG, `.editorconfig`, `.gitignore`, `.env.example`, 서버가 없는 `.mcp.json`. 모듈 CLAUDE.md는 코드가 보여 주지 않는 규칙이 있는 모듈에만 생성합니다.
+- **Core** -- 루트 CLAUDE.md, `.claude/settings.json`(deny 규칙, ask 규칙, 훅 등록), `secret-scan.sh`와 `check-doc-sync.sh`, `scripts/setup.sh`와 `scripts/install-hooks.sh`, 문서와 `docs/reference/`, `tests/`, README, CHANGELOG, `.editorconfig`, `.gitignore`, `.env.example`, 서버가 없는 `.mcp.json`. 모듈 CLAUDE.md는 코드가 보여 주지 않는 규칙이 있는 모듈에만 생성합니다.
 - **Default** -- `/test-all`, 그리고 code-reviewer 에이전트와 함께하는 `/review`.
 - **Optional** -- `/deploy`, security-auditor 에이전트, code-review·refactor·release 스킬, session-context·notify·verify-on-stop 훅.
 
@@ -136,38 +119,21 @@ project-init은 Claude Code 플러그인으로, 프로젝트 구조 초기화와
 
 ## 전체 아키텍처 다이어그램
 
-```mermaid
-flowchart TB
-  subgraph marketplace[Plugin Marketplace]
-    MJ[marketplace.json] --> PLUGIN[plugins/project-init/]
-    PLUGIN --> CMDS["commands/"]
-    PLUGIN --> AGENTS["agents/ (doc-sync-checker)"]
-    PLUGIN --> SKILLS["skills/project-scaffolder/ (SKILL.md, references/)"]
-    PLUGIN --> CHECKS["scripts/ (harness-check.sh, check-bilingual.py)"]
-  end
-  subgraph generated[Generated Project Structure]
-    CORE["Core: CLAUDE.md, settings.json, secret-scan and check-doc-sync hooks, docs/, tests/, scripts/"]
-    DEFAULT["Default: /test-all, /review and code-reviewer"]
-    OPTIONAL["Optional: /deploy, security-auditor, skills, session-context, notify, verify-on-stop hooks"]
-  end
-  PLUGIN -- /init-project --> generated
-  CMDS --> CHECKS
-  CHECKS -- /health-check --> generated
-```
+마켓플레이스 저장소는 커맨드, 에이전트, 스킬, 스크립트로 이루어진 플러그인 하나를 배포합니다. `/init-project`가 세 개 티어의 프로젝트 하네스를 생성하고, `/health-check`가 점수를 매기며, `/sync-docs`가 문서를 최신으로 유지합니다.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/architecture/build/02-full-architecture-ko_16x9_dark.png">
+  <img src="images/architecture/build/02-full-architecture-ko_16x9_light.png" alt="전체 아키텍처: 마켓플레이스 저장소가 project-init 플러그인(커맨드, doc-sync-checker 에이전트, project-scaffolder 스킬, 스크립트)을 배포하고, /init-project가 Core, Default, Optional 티어의 프로젝트 하네스를 생성">
+</picture>
 
 ## 데이터 흐름 요약
 
-```mermaid
-flowchart LR
-  User --> INIT["/init-project"] --> Detect[Detect Project] --> Ask["Ask Once (layers, tiers)"] --> Generate[Generate by Tier] --> Checks["Run Checks (tests, harness-check, check-bilingual)"]
-  Checks --> Sync[4-Layer Auto-Sync]
-  Sync --> Rules["CLAUDE.md Rules (while working)"]
-  Sync --> Post["PostToolUse Hook (Write/Edit)"]
-  Sync --> Manual["/sync-docs (Manual)"]
-  Rules --> Updated[Docs Updated]
-  Post --> Updated
-  Manual --> Updated
-```
+`/init-project`는 한 번 실행으로 프로젝트를 감지하고, 한 번 질문하고, 티어별로 생성한 뒤 검사를 실행합니다. 그 뒤에는 네 개 계층이 문서를 코드에 맞춰 유지합니다.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/architecture/build/03-data-flow-ko_16x9_dark.png">
+  <img src="images/architecture/build/03-data-flow-ko_16x9_light.png" alt="데이터 흐름: /init-project가 프로젝트를 감지하고, 한 번 질문하고, 티어별로 생성한 뒤 검사를 실행. 이후 Auto-Sync Rules, PostToolUse 훅, /sync-docs, commit-msg 훅이 문서를 최신으로 유지">
+</picture>
 
 ## 주요 설계 결정
 
