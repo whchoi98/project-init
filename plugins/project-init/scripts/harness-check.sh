@@ -1051,8 +1051,9 @@ check_compat() {
 
     while IFS="$US" read -r f v; do
         [ -n "$v" ] || continue
-        # 4.x and earlier, and the 5.0 IDs that Opus 5.5, Sonnet 5.5, and Fable 5.1 superseded
-        if printf '%s' "$v" | grep -qE 'claude-3([-.]|$)|claude-[a-z]+-4([-.@]|$)|claude-(opus|sonnet|fable)-5($|\[|@|:|-v[0-9]|-[0-9]{8})'; then
+        # 4.x and earlier, the 5.0 IDs that Opus 5.5, Sonnet 5.5, and Fable 5.1 superseded, and
+        # Fable 5.1, which Fable 5.2 superseded
+        if printf '%s' "$v" | grep -qE 'claude-3([-.]|$)|claude-[a-z]+-4([-.@]|$)|claude-(opus|sonnet|fable)-5($|\[|@|:|-v[0-9]|-[0-9]{8})|claude-fable-5-1($|\[|@|:|-v[0-9]|-[0-9]{8})'; then
             old="$old$f ($v)$NL"
             continue
         fi

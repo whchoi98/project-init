@@ -44,14 +44,14 @@ In short, project-init is a **harness engineering automation tool** — it gener
 - **Plan Mode Integration** -- Run `/init-project` after a `/plan` session and the generated structure reflects the architectural decisions discussed, including a pre-filled `architecture.md`.
 - **Report-All Code Review** -- The generated `/review` command and code-reviewer agent report every finding with a severity (critical, important, minor) and a confidence score (0-100) and leave the filtering to you, because a confidence cutoff at review time drops real findings.
 - **Security-First Hooks** -- The PreToolUse secret scan gates `git commit` and blocks with exit 2. It scans what the commit will contain: staged files including renames, modified tracked files for `commit -a`, `-am`, or a pathspec, and untracked files when the same command line runs `git add`; `git -C <dir>` and `-c` options with quoted values, a `cd` earlier on the line, and chained commands are covered. Patterns (AWS, Stripe, Google, Azure, GitHub, Slack, OpenAI, Anthropic, private keys, and quoted password, secret, and API key values) match with Python `re`, so the gate also works on macOS. Markdown files other than CLAUDE.md, `.env.example`, and lock files are skipped by path, so a key pasted into a README or other doc is not caught; CLAUDE.md files are always scanned. When it cannot scan, for example without a working python3, it lets the commit through and tells you and Claude so. The commit-msg hook removes AI Co-Authored-By lines automatically.
-- **Tool Scoping & Deny List** -- Generated `settings.json` denies destructive commands (`rm -rf`, `git push --force`, `eval`, `curl|bash`) with rules like `Bash(rm -rf *)`, keeps `.env` out of Claude's context with `Read(./.env)` rules, and registers every hook as `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`, so a gate keeps working after Claude changes directory. It sets neither `model` nor `effortLevel`; the template documents an optional `maxEffortLevel` team cap.
+- **Tool Scoping & Deny List** -- Generated `settings.json` denies destructive commands (`git push --force`, `git reset --hard`, `eval`, `curl|bash`) with rules like `Bash(git push --force *)`, asks before a recursive `rm` so you can approve a routine cleanup, keeps `.env` out of Claude's context with `Read(./.env)` rules, and registers every hook as `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`, so a gate keeps working after Claude changes directory. It sets neither `model` nor `effortLevel`; the template documents an optional `maxEffortLevel` team cap.
 - **Optional Stop Gate** -- `verify-on-stop.sh` runs your fast check (lint, typecheck, or unit tests) when a turn ends on a tree that changed since its last run, and hands failures back to Claude. A tree unchanged since the last run, green or red, is skipped, so a failure comes back once per change instead of on every turn. A run the hook `timeout` kills is reported once in a `systemMessage` instead of counting as checked.
 - **Automated Test Framework** -- Generated projects include tests for the hook contract (stdin input, exit 2, gate registration, chained commits), secret scan patterns (TP/FP), and project structure. The tests assert only the components you selected, and the runner sources only its own test directories, so your existing shell tests are left as they are.
 - **Structured Agent Output** -- Generated agents are Markdown subagents (`.claude/agents/*.md` with YAML frontmatter). They omit `model`, so they run on your session's model and your team can steer them with `CLAUDE_CODE_SUBAGENT_MODEL`, and they return defined Markdown reports with a Verdict (PASS/WARN/FAIL), a Summary table, and recommendations.
 - **Runbook-Driven Operations** -- The optional `/deploy` command follows `docs/runbooks/deploy-*.md` and refuses to deploy without one. `/add-runbook` takes commands from your scripts, Makefile, package scripts, and CI, and marks anything it cannot confirm with `TODO(verify)`.
 - **Bilingual Structure Check** -- The document commands run the bundled `check-bilingual.py` on each README, CHANGELOG, architecture doc, ADR, and runbook they write. It checks the language badges, anchors, and identical structure of the English and Korean halves.
 - **Implementation reference docs** -- Per-layer skeletons under `docs/reference/` with shared 5-section structure (Overview / Components / Key Decisions / Code Pointers / Cross-references). Auto-detected at init, drift-checked by `/sync-docs`.
-- **Mermaid Architecture Diagrams** -- Generated README and architecture docs represent all architecture flows as Mermaid flowcharts that GitHub renders natively: `flowchart TB` with per-layer subgraphs for the full diagram, `flowchart LR` for the critical path.
+- **Architecture Figures** -- Generated README and architecture docs show the architecture as infographics built with the `aws-infographic` skill, one English and one Korean version, when your session has that skill. Otherwise they use Mermaid flowcharts that GitHub renders natively: `flowchart TB` with per-layer subgraphs for the full diagram, `flowchart LR` for the critical path.
 
 ## Architecture
 
@@ -66,7 +66,7 @@ See [docs/architecture.md](docs/architecture.md) for the full architecture docum
 
 ## Prerequisites
 
-- Claude Code CLI (latest version; Opus 5.5 needs Claude Code 2.1.280 or later, Sonnet 5.5 2.1.284, Haiku 5.5 2.1.293, and the optional `maxEffortLevel` setting 2.1.267)
+- Claude Code CLI (latest version; Opus 5.5 needs Claude Code 2.1.280 or later, Sonnet 5.5 2.1.284, Haiku 5.5 2.1.293, Fable 5.2 2.1.321, the optional `maxEffortLevel` setting 2.1.267, and the optional `CLAUDE_CODE_SUBAGENT_EFFORT` variable 2.1.315)
 - Git
 - Python 3 (the generated hooks and the bundled checks use it; without it the secret gate lets commits through with a warning)
 
@@ -142,7 +142,7 @@ cd project-init
 bash scripts/setup.sh
 ```
 
-> **Note:** After installation, restart your Claude Code session. `/init-project .` keeps existing files, creates only what is missing, and merges missing deny rules and hook registrations into an existing `settings.json`. For a project set up by an older version, run `/project-init:migrate-hooks` — see [Troubleshooting](#troubleshooting-en).
+> **Note:** After installation, restart your Claude Code session. `/init-project .` keeps existing files, creates only what is missing, and merges missing deny and ask rules and hook registrations into an existing `settings.json`. For a project set up by an older version, run `/project-init:migrate-hooks` — see [Troubleshooting](#troubleshooting-en).
 
 ## Usage
 
@@ -271,15 +271,15 @@ Detects the project type (Node.js, Python, Go, Rust, Java/Kotlin), its commands,
 
 **`/project-init:sync-docs`** -- Audit, apply, check, report
 
-Audits once: inline for a small project, otherwise through one run of the doc-sync-checker agent. It then applies the findings per document type (root and module CLAUDE.md, `docs/architecture.md` with Mermaid diagrams, the `docs/reference/INDEX.md` table, README.md, CHANGELOG.md), suggests ADRs and runbooks instead of writing them, runs `check-bilingual.py` on what it wrote, and reports Before/After quality scores with the remaining gaps.
+Audits once: inline for a small project, otherwise through one run of the doc-sync-checker agent. It then applies the findings per document type (root and module CLAUDE.md, `docs/architecture.md` with its architecture figures, the `docs/reference/INDEX.md` table, README.md, CHANGELOG.md), suggests ADRs and runbooks instead of writing them, runs `check-bilingual.py` on what it wrote, and reports Before/After quality scores with the remaining gaps.
 
 **`/project-init:generate-readme`** -- Bilingual README.md generation
 
-Auto-detects project metadata from manifest files, git remote, and CLAUDE.md. Generates a bilingual (English/Korean) README with shields.io badges, standardized sections (Overview, Features, Architecture, Prerequisites, Installation, Usage, Project Structure, Contributing, License, Contact, plus Configuration, Testing, and API Documentation when the project has environment variables, tests, or an API). Updates existing README by preserving user content and syncing both language sections. Asks only for the fields detection cannot fill, and runs the bilingual check on the result.
+Auto-detects project metadata from manifest files, git remote, and CLAUDE.md. Generates a bilingual (English/Korean) README with shields.io badges and standardized sections (Overview, Features, Prerequisites, Installation, Usage, and Contributing, plus Architecture, Configuration, Project Structure, Testing, API Documentation, License, and Contact when the project has what each one describes). Updates an existing README in place: it keeps the user's content, section order, and badge labels, syncs both language sections, and asks before converting a single-language README to the bilingual layout. Asks only for the fields detection cannot fill, and runs the bilingual check on the result.
 
 **`/project-init:generate-changelog`** -- Bilingual CHANGELOG.md generation
 
-Analyzes git tags and commit history to generate a bilingual (English/Korean) CHANGELOG following Keep a Changelog and Semantic Versioning conventions. Modes: new (full generation), update (add commits to [Unreleased]), and release (move [Unreleased] to a new version). It refuses to release a version that already exists and ends with the `git tag -a` command to run. Category headings (Added, Changed, Fixed, etc.) stay in English per convention.
+Analyzes git tags and commit history to generate a bilingual (English/Korean) CHANGELOG following Keep a Changelog and Semantic Versioning conventions. Modes: new (full generation), update (add commits to [Unreleased]), and release (move [Unreleased] to a new version). It compares the local tags with the remote first and stops when a release tag is missing locally, refuses to release a version that already exists, asks for a major version when `[Unreleased]` has a breaking entry, and ends with the `git tag -a` command to run. Category headings (Added, Changed, Fixed, etc.) stay in English per convention.
 
 **`/project-init:add-runbook <name>`** -- Operational runbook creation
 
@@ -439,6 +439,18 @@ Grades: A (90-100), B (70-89), C (50-69), D (30-49), F (0-29)
 
 Anti-pattern deductions are subtracted from the total: restating what the code or config shows, hardcoded counts, versions, or dates, emphasis inflation or rules without reasons, verification scaffolding, vague instructions, secrets, stale commands, and sections that fail the prune test. Length alone is not a deduction.
 
+## Testing
+
+```bash
+# Run the full harness test suite
+bash tests/run-all.sh
+
+# Run only the test files whose name matches a pattern
+bash tests/run-all.sh hooks
+```
+
+The suite needs bash, git, and python3. [CONTRIBUTING.md](CONTRIBUTING.md) lists it among the checks a pull request must pass.
+
 <a id="troubleshooting-en"></a>
 
 ## Troubleshooting
@@ -450,7 +462,7 @@ Anti-pattern deductions are subtracted from the total: restating what the code o
 
 **`/init-project` overwrites existing files**
 - It does not: an existing file is kept and listed as `(existing, kept)` in the summary
-- `README.md`, `CHANGELOG.md`, `settings.json` (missing deny rules and hook registrations), `.gitignore`, and the AUTO-MANAGED regions are updated in place
+- `README.md`, `CHANGELOG.md`, `settings.json` (missing deny and ask rules and hook registrations), `.gitignore`, and the AUTO-MANAGED regions are updated in place
 - Use on a clean directory if you want a fresh structure
 
 **`/sync-docs` quality scores seem low**
@@ -503,7 +515,7 @@ Anti-pattern deductions are subtracted from the total: restating what the code o
 
 **`doc-sync-checker` agent timeout**
 - `/sync-docs` launches the agent only for projects with more than about ten CLAUDE.md and documentation files; smaller projects are audited inline
-- The agent inherits the session's model and runs at `effort: medium`; to run it on another model, set `CLAUDE_CODE_SUBAGENT_MODEL` (for example `haiku` for a lower-cost audit; on Amazon Bedrock, Google Cloud, and Microsoft Foundry `haiku` resolves to Haiku 4.5)
+- `/sync-docs` and the agent both pin `model: sonnet`, and the agent runs at `effort: medium`, so a sync runs on Sonnet whatever the session uses. On Amazon Bedrock, Google Cloud's Agent Platform, Microsoft Foundry, and Claude Platform on AWS, `sonnet` resolves to an older Sonnet; set `ANTHROPIC_DEFAULT_SONNET_MODEL` there to run Sonnet 5.5. The pin overrides `CLAUDE_CODE_SUBAGENT_MODEL` unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is `1`
 
 ## Contributing
 
@@ -572,14 +584,14 @@ Core 구성 요소는 항상, Default 구성 요소는 해제하지 않는 한, 
 - **Plan 모드 연동** -- `/plan` 세션 이후 `/init-project`를 실행하면 논의한 아키텍처 결정이 반영된 구조가 생성되며, `architecture.md`가 사전 작성됩니다.
 - **모든 finding을 보고하는 코드 리뷰** -- 생성되는 `/review` 커맨드와 code-reviewer 에이전트는 모든 finding을 심각도(critical, important, minor)와 확신도(0-100)와 함께 보고하고 필터링은 사용자에게 맡깁니다. 리뷰 시점에 확신도로 거르면 실제 finding이 누락되기 때문입니다.
 - **보안 우선 훅** -- PreToolUse 시크릿 스캔이 `git commit`을 게이트하고 exit 2로 차단합니다. 커밋에 들어갈 내용을 검사합니다: 이름을 바꾼 파일을 포함한 stage된 파일, `commit -a`·`-am`·pathspec이면 수정된 tracked 파일, 같은 명령줄에 `git add`가 있으면 untracked 파일까지 검사하며, 따옴표로 감싼 값을 쓴 `git -C <dir>`·`-c` 옵션, 같은 줄 앞쪽의 `cd`, 체인 명령도 잡습니다. 패턴(AWS, Stripe, Google, Azure, GitHub, Slack, OpenAI, Anthropic, 개인 키, 따옴표로 감싼 password·secret·API key 값)은 Python `re`로 매칭하므로 macOS에서도 동작합니다. CLAUDE.md를 제외한 Markdown 파일, `.env.example`, lock 파일은 경로 기준으로 건너뛰므로 README 같은 문서에 붙여 넣은 키는 잡지 못하며, CLAUDE.md 파일은 항상 검사합니다. 동작하는 python3가 없는 경우처럼 검사할 수 없으면 커밋을 통과시키고 사용자와 Claude에게 그 사실을 알립니다. commit-msg 훅이 AI Co-Authored-By 라인을 자동 제거합니다.
-- **도구 범위 제한 및 Deny 목록** -- 생성되는 `settings.json`은 `Bash(rm -rf *)` 같은 규칙으로 위험한 명령어(`rm -rf`, `git push --force`, `eval`, `curl|bash`)를 차단하고, `Read(./.env)` 규칙으로 `.env`를 Claude의 컨텍스트에서 제외하며, 모든 훅을 `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`로 등록해 Claude가 디렉터리를 옮겨도 게이트가 계속 동작합니다. `model`과 `effortLevel`은 설정하지 않으며, 템플릿에 선택 사항인 팀 상한 `maxEffortLevel`을 문서화합니다.
+- **도구 범위 제한 및 Deny 목록** -- 생성되는 `settings.json`은 `Bash(git push --force *)` 같은 규칙으로 위험한 명령어(`git push --force`, `git reset --hard`, `eval`, `curl|bash`)를 차단하고, 재귀 `rm`은 실행 전에 확인을 물어 일상적인 정리를 승인할 수 있게 하며, `Read(./.env)` 규칙으로 `.env`를 Claude의 컨텍스트에서 제외하며, 모든 훅을 `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`로 등록해 Claude가 디렉터리를 옮겨도 게이트가 계속 동작합니다. `model`과 `effortLevel`은 설정하지 않으며, 템플릿에 선택 사항인 팀 상한 `maxEffortLevel`을 문서화합니다.
 - **선택형 Stop 게이트** -- `verify-on-stop.sh`는 마지막 실행 이후 바뀐 트리에서 턴이 끝나면 빠른 검사(lint, typecheck, 단위 테스트)를 실행하고 실패를 Claude에 돌려줍니다. 통과든 실패든 마지막 실행 이후 바뀌지 않은 트리는 건너뛰므로, 실패는 턴마다가 아니라 변경마다 한 번 돌아옵니다. 훅 `timeout`으로 중단된 실행은 검사된 것으로 치지 않고 `systemMessage`로 한 번 알립니다.
 - **자동화된 테스트 프레임워크** -- 생성 프로젝트에 훅 계약(stdin 입력, exit 2, 게이트 등록, 체인 커밋), 시크릿 스캔 패턴(TP/FP), 프로젝트 구조를 검증하는 테스트가 포함됩니다. 테스트는 선택한 구성 요소만 검사하고, 러너는 자신의 테스트 디렉터리만 source하므로 기존 셸 테스트는 그대로 둡니다.
 - **구조화된 에이전트 출력** -- 생성되는 에이전트는 YAML frontmatter를 가진 Markdown 서브에이전트(`.claude/agents/*.md`)입니다. `model`을 생략하므로 세션 모델로 실행되고 팀은 `CLAUDE_CODE_SUBAGENT_MODEL`로 모델을 지정할 수 있으며, Verdict (PASS/WARN/FAIL), Summary 테이블, 권장 사항을 담은 정의된 Markdown 보고서를 반환합니다.
 - **런북 기반 운영** -- 선택형 `/deploy` 커맨드는 `docs/runbooks/deploy-*.md`를 따르고, 런북이 없으면 배포하지 않습니다. `/add-runbook`은 스크립트, Makefile, 패키지 스크립트, CI에서 명령을 가져오고, 확인할 수 없는 부분은 `TODO(verify)`로 표시합니다.
 - **이중 언어 구조 검사** -- 문서 커맨드는 작성한 README, CHANGELOG, 아키텍처 문서, ADR, 런북마다 번들된 `check-bilingual.py`를 실행합니다. 언어 배지, 앵커, 영어·한국어 절반의 동일한 구조를 검사합니다.
 - **구현 참조 문서** -- `docs/reference/` 하위에 5-섹션 공유 구조(Overview / Components / Key Decisions / Code Pointers / Cross-references)의 계층별 스켈레톤. init 시 자동 감지, `/sync-docs`로 드리프트 점검.
-- **Mermaid 아키텍처 다이어그램** -- 생성되는 README와 아키텍처 문서의 모든 아키텍처 흐름을 GitHub이 네이티브로 렌더링하는 Mermaid flowchart로 표현합니다: 전체 다이어그램은 계층별 subgraph를 가진 `flowchart TB`, 핵심 경로는 `flowchart LR`을 사용합니다.
+- **아키텍처 그림** -- 세션에 `aws-infographic` 스킬이 있으면 생성되는 README와 아키텍처 문서의 아키텍처를 그 스킬로 만든 영어판과 한국어판 인포그래픽으로 보여 줍니다. 없으면 GitHub이 네이티브로 렌더링하는 Mermaid flowchart를 씁니다: 전체 다이어그램은 계층별 subgraph를 가진 `flowchart TB`, 핵심 경로는 `flowchart LR`을 사용합니다.
 
 ## 아키텍처
 
@@ -594,7 +606,7 @@ flowchart LR
 
 ## 사전 요구 사항
 
-- Claude Code CLI (최신 버전. Opus 5.5는 Claude Code 2.1.280 이상, Sonnet 5.5는 2.1.284 이상, Haiku 5.5는 2.1.293 이상, 선택 설정 `maxEffortLevel`은 2.1.267 이상 필요)
+- Claude Code CLI (최신 버전. Opus 5.5는 Claude Code 2.1.280 이상, Sonnet 5.5는 2.1.284 이상, Haiku 5.5는 2.1.293 이상, Fable 5.2는 2.1.321 이상, 선택 설정 `maxEffortLevel`은 2.1.267 이상, 선택 변수 `CLAUDE_CODE_SUBAGENT_EFFORT`는 2.1.315 이상 필요)
 - Git
 - Python 3 (생성되는 훅과 번들 검사가 사용합니다. 없으면 시크릿 게이트가 경고와 함께 커밋을 통과시킵니다)
 
@@ -670,7 +682,7 @@ cd project-init
 bash scripts/setup.sh
 ```
 
-> **참고:** 설치 후 Claude Code 세션을 재시작합니다. `/init-project .`은 기존 파일을 유지하고 없는 것만 생성하며, 기존 `settings.json`에는 없는 deny 규칙과 훅 등록만 병합합니다. 이전 버전으로 설정한 프로젝트는 `/project-init:migrate-hooks`를 실행합니다 — [문제 해결](#troubleshooting-ko) 섹션을 참고합니다.
+> **참고:** 설치 후 Claude Code 세션을 재시작합니다. `/init-project .`은 기존 파일을 유지하고 없는 것만 생성하며, 기존 `settings.json`에는 없는 deny 규칙, ask 규칙, 훅 등록만 병합합니다. 이전 버전으로 설정한 프로젝트는 `/project-init:migrate-hooks`를 실행합니다 — [문제 해결](#troubleshooting-ko) 섹션을 참고합니다.
 
 ## 사용법
 
@@ -799,15 +811,15 @@ $ /sync-docs
 
 **`/project-init:sync-docs`** -- 감사, 적용, 검사, 보고
 
-한 번만 감사합니다: 작은 프로젝트는 직접, 그 외에는 doc-sync-checker 에이전트를 한 번 실행합니다. 이어서 문서 유형별(루트·모듈 CLAUDE.md, Mermaid 다이어그램을 포함한 `docs/architecture.md`, `docs/reference/INDEX.md` 표, README.md, CHANGELOG.md)로 감사 결과를 반영하고, ADR과 런북은 직접 쓰지 않고 제안하며, 작성한 문서에 `check-bilingual.py`를 실행하고, 남은 공백과 함께 Before/After 품질 점수를 보고합니다.
+한 번만 감사합니다: 작은 프로젝트는 직접, 그 외에는 doc-sync-checker 에이전트를 한 번 실행합니다. 이어서 문서 유형별(루트·모듈 CLAUDE.md, 아키텍처 그림을 포함한 `docs/architecture.md`, `docs/reference/INDEX.md` 표, README.md, CHANGELOG.md)로 감사 결과를 반영하고, ADR과 런북은 직접 쓰지 않고 제안하며, 작성한 문서에 `check-bilingual.py`를 실행하고, 남은 공백과 함께 Before/After 품질 점수를 보고합니다.
 
 **`/project-init:generate-readme`** -- 이중 언어 README.md 생성
 
-매니페스트 파일, git remote, CLAUDE.md에서 프로젝트 메타데이터를 자동 감지합니다. shields.io 뱃지와 표준화된 섹션(개요, 주요 기능, 아키텍처, 사전 요구 사항, 설치 방법, 사용법, 프로젝트 구조, 기여 방법, 라이선스, 연락처, 그리고 환경 변수·테스트·API가 있을 때의 환경 설정·테스트·API 문서)을 포함한 이중 언어(영어/한국어) README를 생성합니다. 기존 README가 있으면 사용자 콘텐츠를 보존하면서 양쪽 언어 섹션을 동기화합니다. 감지로 채울 수 없는 필드만 묻고, 결과에 이중 언어 검사를 실행합니다.
+매니페스트 파일, git remote, CLAUDE.md에서 프로젝트 메타데이터를 자동 감지합니다. shields.io 뱃지와 표준화된 섹션(개요, 주요 기능, 사전 요구 사항, 설치 방법, 사용법, 기여 방법, 그리고 프로젝트에 해당 내용이 있을 때의 아키텍처, 환경 설정, 프로젝트 구조, 테스트, API 문서, 라이선스, 연락처)을 포함한 이중 언어(영어/한국어) README를 생성합니다. 기존 README는 제자리에서 갱신합니다. 사용자 콘텐츠, 섹션 순서, 배지 라벨을 유지하고 양쪽 언어 섹션을 동기화하며, 단일 언어 README를 이중 언어 구성으로 바꾸기 전에 묻습니다. 감지로 채울 수 없는 필드만 묻고, 결과에 이중 언어 검사를 실행합니다.
 
 **`/project-init:generate-changelog`** -- 이중 언어 CHANGELOG.md 생성
 
-git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic Versioning 규약을 따르는 이중 언어(영어/한국어) CHANGELOG를 생성합니다. 모드: new (전체 생성), update (미릴리스에 커밋 추가), release (미릴리스를 새 버전으로 이동). 이미 존재하는 버전의 릴리스는 거부하고, 마지막에 실행할 `git tag -a` 명령을 제시합니다. 변경 유형 헤딩(Added, Changed, Fixed 등)은 규약에 따라 영어를 유지합니다.
+git 태그와 커밋 히스토리를 분석하여 Keep a Changelog 및 Semantic Versioning 규약을 따르는 이중 언어(영어/한국어) CHANGELOG를 생성합니다. 모드: new (전체 생성), update (미릴리스에 커밋 추가), release (미릴리스를 새 버전으로 이동). 먼저 로컬 태그를 원격과 비교해 로컬에 없는 릴리스 태그가 있으면 중단하고, 이미 존재하는 버전의 릴리스는 거부하며, `[Unreleased]`에 호환성을 깨는 항목이 있으면 major 버전을 요구하고, 마지막에 실행할 `git tag -a` 명령을 제시합니다. 변경 유형 헤딩(Added, Changed, Fixed 등)은 규약에 따라 영어를 유지합니다.
 
 **`/project-init:add-runbook <name>`** -- 운영 런북 생성
 
@@ -967,6 +979,18 @@ project/
 
 합계에서 안티패턴 감점을 뺍니다: 코드나 설정이 보여 주는 내용 반복, 하드코딩된 개수·버전·날짜, 강조 남용이나 이유 없는 규칙, 검증 발판 문구, 모호한 지시, 시크릿, 오래된 명령어, prune test를 통과하지 못하는 섹션. 길이만으로는 감점하지 않습니다.
 
+## 테스트
+
+```bash
+# 전체 하네스 테스트 스위트 실행
+bash tests/run-all.sh
+
+# 이름이 패턴과 일치하는 테스트 파일만 실행
+bash tests/run-all.sh hooks
+```
+
+스위트에는 bash, git, python3가 필요합니다. [CONTRIBUTING.md](CONTRIBUTING.md)는 이 스위트를 pull request가 통과해야 하는 검사 중 하나로 안내합니다.
+
 <a id="troubleshooting-ko"></a>
 
 ## 문제 해결
@@ -978,7 +1002,7 @@ project/
 
 **`/init-project`가 기존 파일을 덮어쓰는 경우**
 - 덮어쓰지 않습니다: 기존 파일은 유지되고 요약에 `(existing, kept)`로 표시됩니다
-- `README.md`, `CHANGELOG.md`, `settings.json`(없는 deny 규칙과 훅 등록), `.gitignore`, AUTO-MANAGED 영역은 제자리에서 갱신됩니다
+- `README.md`, `CHANGELOG.md`, `settings.json`(없는 deny 규칙, ask 규칙, 훅 등록), `.gitignore`, AUTO-MANAGED 영역은 제자리에서 갱신됩니다
 - 새 구조가 필요하면 빈 디렉토리에서 실행합니다
 
 **`/sync-docs` 품질 점수가 낮게 나오는 경우**
@@ -1031,7 +1055,7 @@ project/
 
 **`doc-sync-checker` 에이전트 타임아웃**
 - `/sync-docs`는 CLAUDE.md와 문서 파일이 대략 10개를 넘는 프로젝트에서만 에이전트를 실행하고, 더 작은 프로젝트는 직접 감사합니다
-- 에이전트는 세션 모델을 상속하고 `effort: medium`으로 실행됩니다. 다른 모델로 실행하려면 `CLAUDE_CODE_SUBAGENT_MODEL`을 설정합니다(예: 비용을 낮추려면 `haiku`. Amazon Bedrock, Google Cloud, Microsoft Foundry에서는 `haiku`가 Haiku 4.5로 해석됨)
+- `/sync-docs`와 에이전트는 모두 `model: sonnet`을 고정하고 에이전트는 `effort: medium`으로 실행되므로, 세션 모델과 무관하게 동기화는 Sonnet으로 실행됩니다. Amazon Bedrock, Google Cloud의 Agent Platform, Microsoft Foundry, Claude Platform on AWS에서는 `sonnet`이 이전 Sonnet으로 해석되므로, Sonnet 5.5로 실행하려면 `ANTHROPIC_DEFAULT_SONNET_MODEL`을 설정합니다. 이 고정 값은 `CLAUDE_CODE_SUBAGENT_MODEL_FORCE`가 `1`이 아니면 `CLAUDE_CODE_SUBAGENT_MODEL`보다 우선합니다
 
 ## 기여 방법
 

@@ -1,6 +1,6 @@
 # Documentation Templates
 
-Templates for `docs/` files. Bilingual layout, tone, formatting, and Mermaid diagram rules come from `writing-style-guide.md` in this directory; each template below adds only the structure specific to its document.
+Templates for `docs/` files. Bilingual layout, tone, formatting, and the Diagram Rules for figures come from `writing-style-guide.md` in this directory; each template below adds only the structure specific to its document.
 
 ---
 
@@ -8,7 +8,7 @@ Templates for `docs/` files. Bilingual layout, tone, formatting, and Mermaid dia
 
 Path: `docs/architecture.md`
 
-`docs/architecture.md` describes components that exist in the repo, grouped by the Layer Categories below (only the layers that apply), with a full `flowchart TB` diagram, a `flowchart LR` Data Flow Summary of the critical path, infrastructure resources in tables when IaC is present, and Key Design Decisions that say why. Omit a section whose condition is not met, such as Infrastructure without IaC or Operations without runbooks, instead of leaving placeholders in it.
+`docs/architecture.md` describes components that exist in the repo, grouped by the Layer Categories below (only the layers that apply), with a full architecture figure and a Data Flow Summary figure of the critical path (infographics, or Mermaid `flowchart TB` and `flowchart LR`, as the Diagram Rules give this session), infrastructure resources in tables when IaC is present, and Key Design Decisions that say why. Omit a section whose condition is not met, such as Infrastructure without IaC or Operations without runbooks, instead of leaving placeholders in it.
 
 ### Template Structure
 
@@ -147,11 +147,11 @@ Organize components into these standard layers (use only the layers that apply):
 
 ### Diagrams
 
-Direction, subgraphs, node shapes, English labels, and identical diagrams in both halves follow the writing-style-guide Diagram Rules. What an architecture document adds:
+The two figures follow the writing-style-guide Diagram Rules. With the `aws-infographic` skill, each ```mermaid block in the template above becomes that section's `<picture>` figure, the English version in the English half and the Korean version in the Korean half; without the skill the blocks stay Mermaid, with the direction, subgraphs, node shapes, English labels, and identical copies those rules describe. What an architecture document adds, in either form:
 
-- The full diagram has one `subgraph` per layer from the Layer Categories table, with the same names as the Components section.
-- Put key details in node labels where they matter: ports, protocols, formats (for example `APIGW[API Gateway HTTPS 443]`).
-- The Data Flow Summary is the critical path only, as one left-to-right chain with branches where the path forks:
+- The full figure has one group per layer from the Layer Categories table (a Mermaid `subgraph`, or an infographic section), with the same names as the Components section.
+- Put key details in component labels where they matter: ports, protocols, formats (for example `APIGW[API Gateway HTTPS 443]`).
+- The Data Flow Summary is the critical path only, as one left-to-right chain with branches where the path forks. In Mermaid:
 
 ```mermaid
 flowchart LR

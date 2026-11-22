@@ -9,7 +9,7 @@ Exit status: 0 no issues, 1 issues found, 2 usage or read error.
 The rules come from the project-init writing-style-guide
 (skills/project-scaffolder/references/writing-style-guide.md) and
 ADR-001 (identical structure), ADR-002 (HTML badges, ASCII anchors),
-and ADR-007 (Mermaid diagrams):
+ADR-007 (Mermaid diagrams), and ADR-010 (infographic figures):
 
 1. The language badges are HTML ``<a href="#english"><img ... alt="English"></a>``
    and ``<a href="#korean"><img ... alt="Korean"></a>`` above the English half;
@@ -22,9 +22,10 @@ and ADR-007 (Mermaid diagrams):
    a ``===`` or ``---`` line is a setext h1 or h2, as GitHub renders it, so
    that ``---`` is not a horizontal rule.
 4. Both halves have the same fenced blocks (count and language tags), the same
-   tables (count and rows per table), and byte-identical Mermaid blocks.
-   Other code blocks and table cells are compared by count only, because
-   comments and descriptive cells are translated.
+   tables (count and rows per table), byte-identical Mermaid blocks, and the
+   same number of ``<picture>`` figures, one per language. Other code blocks
+   and table cells are compared by count only, because comments and
+   descriptive cells are translated.
 5. Every opening code fence has a language tag and a closing fence.
 6. No emoji anywhere, code blocks included. Text symbols such as the check
    mark U+2713, arrows, and box drawing characters are not emoji.
@@ -67,6 +68,7 @@ LANG_HEADING = {"english": "English", "korean": "한국어"}
 MD_BADGE_RE = re.compile(r"\[!\[[^\]]*\]\([^)]*\)\]\(#(english|korean|한국어)\)")
 UNICODE_ANCHOR_RE = re.compile(r'href="#(한국어|%ED%95%9C%EA%B5%AD%EC%96%B4)"', re.IGNORECASE)
 INLINE_CODE_RE = re.compile(r"(`+)(.+?)\1")
+PICTURE_RE = re.compile(r"<picture\b", re.IGNORECASE)
 RELEASE_RE = re.compile(
     r"^\[(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?)\] - (\d{4}-\d{2}-\d{2})(?: \[YANKED\])?$"
 )
@@ -400,6 +402,16 @@ class Checker:
                           min(len(e.body), len(k.body)))
             self.add(k.line + 1 + offset, "mermaid block %d differs from the English copy (line %d); diagrams are byte-identical in both halves with English labels (writing-style-guide Diagram Rules)"
                      % (n, e.line + 1 + offset + 1))
+
+        def figures(half):
+            return [i for i in range(half[0], half[1])
+                    if doc.prose[i] and PICTURE_RE.search(INLINE_CODE_RE.sub("", doc.lines[i]))]
+
+        en_figures, ko_figures = figures(en), figures(ko)
+        if len(en_figures) != len(ko_figures):
+            where = ko_figures[-1] if len(ko_figures) > len(en_figures) else ko[1] - 1
+            self.add(where, "the English half has %d <picture> figure(s) and the Korean half has %d; every figure appears in both halves, one version per language (writing-style-guide Diagram Rules)"
+                     % (len(en_figures), len(ko_figures)))
 
         en_tables = [t for t in doc.tables if en[0] <= t[0] < en[1]]
         ko_tables = [t for t in doc.tables if ko[0] <= t[0] < ko[1]]

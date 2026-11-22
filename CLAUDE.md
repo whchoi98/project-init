@@ -34,7 +34,7 @@ scripts/                  - Setup and Git hook install scripts
 - **Versioning**: Semantic versioning; a bump follows `docs/runbooks/release.md`, which lists every file that carries the version
 - **Commit messages**: Co-Authored-By lines auto-removed by commit-msg hook
 - **Hooks**: read the event JSON from stdin only when `$# -eq 0` (tests pass `$1`; a blocking read hangs the runner), block with exit 2 (any other exit lets the action through), and resolve the root as `${CLAUDE_PROJECT_DIR:-$PWD}`. Register them as `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/<name>.sh`, since a relative path fails once Claude `cd`s: gates with nothing after `.sh`, observational hooks with `2>/dev/null || true`. A hook that acts on the working tree uses the event's `cwd` when it is in this repository (ADR-009 decision 9)
-- **Test gate**: a Stop hook runs `bash tests/run-all.sh` on a changed tree and blocks on failure; fix the cause, or tell the user in one line why the suite should stay red
+- **Test gate**: a Stop hook runs `bash tests/run-all.sh` on a changed tree and blocks on failure, leaving out the hook, secret-pattern, and harness-check tests when only `docs/` and root `*.md` files changed; fix the cause, or tell the user in one line why the suite should stay red
 - **Counts**: no hardcoded counts of tests, files, steps, or commands in docs or prompts, because they drift (ADR-008); structural constants that are the contract (8 reference layers, 6 CLAUDE.md criteria, 100-point scale) are fine
 - **Indentation**: 2 spaces; 4 for shell and Python (`.editorconfig`)
 - **Line endings**: LF
@@ -44,6 +44,7 @@ scripts/                  - Setup and Git hook install scripts
 # Tests
 bash tests/run-all.sh              # Run full test suite
 bash tests/run-all.sh <filter>     # Test files whose basename matches: hooks, secret, structure, reference, harness, bilingual, prompt
+TEST_SKIP="hooks harness" bash tests/run-all.sh   # Leave out the test files whose basename matches a pattern
 
 # Bundled checks (the plugin commands run these in consumer projects)
 bash plugins/project-init/scripts/harness-check.sh [--contract-only] [PROJECT_DIR]
@@ -90,9 +91,10 @@ Format: `ADR-NNN-concise-title.md`
 - [ADR-004](docs/decisions/ADR-004-hook-non-blocking-failure.md) -- Hook failure policy: gates block with exit 2 and are registered without `|| true` (amended by ADR-008); observational hooks end with `2>/dev/null || true`
 - [ADR-005](docs/decisions/ADR-005-implementation-reference-docs.md) -- Implementation reference docs structure (8 layers, shared 5-section skeleton, AUTO-MANAGED INDEX)
 - [ADR-006](docs/decisions/ADR-006-hybrid-detection-confirmation.md) -- Hybrid detection + user confirmation for the /init-project Implementation Reference Detection
-- [ADR-007](docs/decisions/ADR-007-mermaid-architecture-diagrams.md) -- Mermaid flowchart replaces ASCII box diagrams for all architecture flows; README gains an Architecture section
+- [ADR-007](docs/decisions/ADR-007-mermaid-architecture-diagrams.md) -- Mermaid flowchart replaces ASCII box diagrams for all architecture flows; README gains an Architecture section (superseded in part by ADR-010)
 - [ADR-008](docs/decisions/ADR-008-right-sized-harness.md) -- Right-sized harness: stdin JSON / exit 2 hook contract, dead or duplicated components removed, repo commands reduced to repo-specific checks (extended by ADR-009)
 - [ADR-009](docs/decisions/ADR-009-opus-5-5-harness-alignment.md) -- Opus 5.5 harness alignment: tiered generation (Core/Default/Optional), model/effort policy, report-all reviewers, deterministic script checks, Stop test gate, commit-scope secret gate
+- [ADR-010](docs/decisions/ADR-010-infographic-architecture-figures.md) -- Architecture figures are infographics from the `aws-infographic` skill, in an English and a Korean version, where the session has the skill, and Mermaid flowcharts otherwise
 
 ### Current Runbooks
 - [release.md](docs/runbooks/release.md) -- Maintainer-side release: version bump in every file that carries it, tag, clean-install check

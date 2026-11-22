@@ -64,7 +64,7 @@ Agents omit `model`, so they inherit the user's main model (a team can still ste
 
 1. Create `plugins/project-init/commands/<command-name>.md`.
 2. Include YAML frontmatter with `description`, `allowed-tools`, and optionally `argument-hint` and `disable-model-invocation` (see the policy above).
-3. Write the body as a brief to a capable colleague: the goal, inputs, rules with their reasons, the output contract (paths, headings, frontmatter keys, report format), a check the model can run, and the final report. Number steps only where order matters or a step is hard to undo. Ask up-front questions with the AskUserQuestion tool when it is available, because a chat reply starts a new turn and the command's `allowed-tools` no longer apply. Commands also run on smaller consumer models (Sonnet 5.5, Haiku 5.5, and the 4.5 models that `sonnet` and `haiku` resolve to on some providers), so keep every output contract explicit. The full rules are in `plugins/project-init/CLAUDE.md` under `## Rules`.
+3. Write the body as a brief to a capable colleague: the goal, inputs, rules with their reasons, the output contract (paths, headings, frontmatter keys, report format), a check the model can run, and the final report. Number steps only where order matters or a step is hard to undo. Ask up-front questions with the AskUserQuestion tool when it is available, because a chat reply starts a new turn and the command's `allowed-tools` no longer apply. Commands run on whichever model the consumer picked: Opus 5.5 by default, Fable 5.2, or a smaller one (Sonnet 5.5, Haiku 5.5, and the 4.5 models that `sonnet` and `haiku` resolve to on some providers). The smaller models do not infer a contract, so keep every output contract explicit. The full rules are in `plugins/project-init/CLAUDE.md` under `## Rules`.
 4. Reference templates and scripts as `${CLAUDE_PLUGIN_ROOT}/...`; relative paths do not resolve in a consumer project.
 5. Update `README.md` (both English and Korean sections).
 6. Add an entry to `CHANGELOG.md` under `[Unreleased]`.
@@ -147,7 +147,7 @@ plugins/project-init/
 
 1. `plugins/project-init/commands/<command-name>.md` 파일을 생성합니다.
 2. YAML frontmatter에 `description`, `allowed-tools`, 선택적으로 `argument-hint`와 `disable-model-invocation`을 포함합니다 (위 정책 참조).
-3. 유능한 동료에게 건네는 브리프처럼 본문을 작성합니다: 목표, 입력, 이유를 붙인 규칙, 출력 계약(경로, 헤딩, frontmatter 키, 보고 형식), 모델이 실행할 수 있는 검사, 최종 보고. 번호는 순서가 중요하거나 되돌리기 어려운 단계에만 붙입니다. 사전 질문은 AskUserQuestion 도구가 있으면 그 도구로 묻습니다. 채팅 답장은 새 턴을 시작해 커맨드의 `allowed-tools`가 더는 적용되지 않기 때문입니다. 커맨드는 더 작은 소비자 모델(Sonnet 5.5, Haiku 5.5, 그리고 일부 제공자에서 `sonnet`과 `haiku`가 해석되는 4.5 모델)에서도 실행되므로 모든 출력 계약을 명시합니다. 전체 규칙은 `plugins/project-init/CLAUDE.md`의 `## Rules`에 있습니다.
+3. 유능한 동료에게 건네는 브리프처럼 본문을 작성합니다: 목표, 입력, 이유를 붙인 규칙, 출력 계약(경로, 헤딩, frontmatter 키, 보고 형식), 모델이 실행할 수 있는 검사, 최종 보고. 번호는 순서가 중요하거나 되돌리기 어려운 단계에만 붙입니다. 사전 질문은 AskUserQuestion 도구가 있으면 그 도구로 묻습니다. 채팅 답장은 새 턴을 시작해 커맨드의 `allowed-tools`가 더는 적용되지 않기 때문입니다. 커맨드는 소비자가 고른 모델에서 실행됩니다. 기본값은 Opus 5.5이고, Fable 5.2나 더 작은 모델(Sonnet 5.5, Haiku 5.5, 그리고 일부 제공자에서 `sonnet`과 `haiku`가 해석되는 4.5 모델)일 수도 있습니다. 작은 모델은 계약을 추론하지 못하므로 모든 출력 계약을 명시합니다. 전체 규칙은 `plugins/project-init/CLAUDE.md`의 `## Rules`에 있습니다.
 4. 템플릿과 스크립트는 `${CLAUDE_PLUGIN_ROOT}/...`로 참조합니다. 상대 경로는 소비자 프로젝트에서 해석되지 않습니다.
 5. `README.md`를 업데이트합니다 (영어와 한국어 섹션 모두).
 6. `CHANGELOG.md`의 `[Unreleased]`에 항목을 추가합니다.

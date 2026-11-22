@@ -184,3 +184,23 @@ for section in "${CLAUDE_SECTIONS[@]}"; do
         fail "CLAUDE.md: has $section" "section '## $section' not found in CLAUDE.md"
     fi
 done
+
+# --- Test runner: TEST_SKIP leaves out the test files whose name matches one of its patterns ---
+# The Stop gate sets it for a change limited to docs. The fixture lives in mktemp, because
+# run-all.sh sources every test-*.sh below its own directory.
+
+PS_RUN=$(mktemp -d)
+mkdir -p "$PS_RUN/tests/unit" || true
+cp tests/run-all.sh "$PS_RUN/tests/run-all.sh" 2>/dev/null || true
+printf 'pass "alpha ran"\n' > "$PS_RUN/tests/unit/test-alpha.sh" || true
+printf 'pass "beta ran"\n' > "$PS_RUN/tests/unit/test-beta.sh" || true
+PS_OUT=$(TEST_SKIP="test-beta" bash "$PS_RUN/tests/run-all.sh" 2>&1 || true)
+assert_contains "runner: TEST_SKIP still runs a file that no pattern matches" "$PS_OUT" "alpha ran"
+if [[ "$PS_OUT" == *"beta ran"* ]]; then
+    fail "runner: TEST_SKIP leaves out a matching test file" "test-beta ran with TEST_SKIP=test-beta"
+else
+    pass "runner: TEST_SKIP leaves out a matching test file"
+fi
+PS_OUT=$(TEST_SKIP="" bash "$PS_RUN/tests/run-all.sh" 2>&1 || true)
+assert_contains "runner: an empty TEST_SKIP runs every test file" "$PS_OUT" "beta ran"
+rm -rf -- "$PS_RUN"
