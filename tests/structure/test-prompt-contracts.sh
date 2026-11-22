@@ -240,3 +240,45 @@ assert_contains "changelog template: lists the command that compares local tags 
 assert_contains "generate-changelog: pre-approves the remote tag check" "$(sed -n '1,6p' "$PC_PLUGIN/commands/generate-changelog.md" 2>/dev/null)" "Bash(git ls-remote --tags *)"
 assert_contains "generate-changelog: stops when the remote has a release tag the local repository lacks" "$PC_CL_CMD" "git fetch --tags"
 assert_contains "generate-changelog: a breaking entry needs a major version" "$PC_CL_CMD" "**BREAKING:**"
+
+# --- Prose rules: the style guide is the one source for readable writing and AI-slop removal in
+# English and Korean (ADR-003); it covers a document kept in one language, and every command that
+# writes a document runs its Prose Check on the text it wrote ---
+
+PC_GUIDE_FILE="$PC_REFS/writing-style-guide.md"
+PC_STYLE=$(sed -n '/^## Writing Style$/,/^## Formatting Rules$/p' "$PC_GUIDE_FILE" 2>/dev/null || true)
+assert_contains "prose rules: the guide has a Readability section for both languages" "$PC_STYLE" "### Readability (Both Languages)"
+assert_contains "prose rules: the guide has a No AI Slop section for both languages" "$PC_STYLE" "### No AI Slop (Both Languages)"
+assert_contains "prose rules: the English rules name the words to avoid" "$PC_STYLE" "leverage"
+assert_contains "prose rules: the Korean rules cover translationese" "$PC_STYLE" "번역투"
+assert_contains "prose rules: a rewrite for style keeps every fact" "$PC_STYLE" "never remove a fact"
+assert_contains "prose rules: the guide covers a document kept in one language" \
+    "$(sed -n '1,4p' "$PC_GUIDE_FILE" 2>/dev/null)" "one language"
+
+# The Prose Check holds two marker patterns in one text block, English first and Korean second.
+# Each line of a slop fixture carries one marker, and the plain fixtures carry none.
+PC_PROSE=$(sed -n '/^## Prose Check$/,$p' "$PC_GUIDE_FILE" 2>/dev/null || true)
+PC_PATTERNS=$(awk '/^```text$/ { f = 1; next } /^```$/ { f = 0 } f' <<< "$PC_PROSE")
+PC_PAT_EN=$(sed -n '1p' <<< "$PC_PATTERNS")
+PC_PAT_KO=$(sed -n '2p' <<< "$PC_PATTERNS")
+# pc_hits <pattern> <file>: the number of lines the pattern matches, ignoring case
+pc_hits() { grep -c -i -E -- "$1" "$2" 2>/dev/null || true; }
+pc_lines() { grep -c '' "$1" 2>/dev/null || true; }
+PC_FIX="tests/fixtures/prose"
+if [[ -n "$PC_PAT_EN" && -n "$PC_PAT_KO" ]]; then
+    pass "prose check: the guide gives an English and a Korean marker pattern"
+    assert_eq "prose check: the English pattern finds every line of the slop fixture" \
+        "$(pc_lines "$PC_FIX/slop-en.txt")" "$(pc_hits "$PC_PAT_EN" "$PC_FIX/slop-en.txt")"
+    assert_eq "prose check: the English pattern leaves plain sentences alone" "0" "$(pc_hits "$PC_PAT_EN" "$PC_FIX/plain-en.txt")"
+    assert_eq "prose check: the Korean pattern finds every line of the slop fixture" \
+        "$(pc_lines "$PC_FIX/slop-ko.txt")" "$(pc_hits "$PC_PAT_KO" "$PC_FIX/slop-ko.txt")"
+    assert_eq "prose check: the Korean pattern leaves plain sentences alone" "0" "$(pc_hits "$PC_PAT_KO" "$PC_FIX/plain-ko.txt")"
+else
+    fail "prose check: the guide gives an English and a Korean marker pattern" \
+        "writing-style-guide.md needs a '## Prose Check' section whose text block has the English pattern on line 1 and the Korean pattern on line 2"
+fi
+for PC_CMD in generate-readme generate-changelog add-adr add-runbook add-reference-doc sync-docs init-project; do
+    assert_contains "prose check: $PC_CMD runs the style guide's Prose Check" \
+        "$(cat "$PC_PLUGIN/commands/$PC_CMD.md" 2>/dev/null)" "Prose Check"
+done
+assert_contains "prose rules: the plugin rules name the guide as their source" "$(cat "$PC_PLUGIN/CLAUDE.md" 2>/dev/null)" "Prose Check"

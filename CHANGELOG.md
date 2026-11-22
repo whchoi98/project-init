@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add readability rules and AI-slop patterns for English and Korean to the shared `writing-style-guide.md` (`### Readability`, `### No AI Slop`, and fixes for 번역투); a document kept in one language follows them too
+- Add a `## Prose Check` to the style guide, with an English and a Korean marker pattern, that every document command runs on the text it wrote; existing prose keeps its wording unless the user asks for a rewrite
+
 ### Changed
 
 - Keep the `aws-infographic` skill's script copies (`infokit.py`, `buildkit.py`) out of version control in the Diagram Rules, next to its icon pointer and review images
@@ -329,6 +334,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+
+- 공유 `writing-style-guide.md`에 영어와 한국어의 가독성 규칙과 AI 슬롭 패턴 추가(`### Readability`, `### No AI Slop`, 번역투 교정). 한 언어로 유지하는 문서에도 적용
+- 스타일 가이드에 영어와 한국어 표지 패턴을 담은 `## Prose Check` 추가. 모든 문서 커맨드가 자신이 쓴 글에 실행. 기존 문장은 사용자가 다시 써 달라고 요청하지 않는 한 그대로 유지
 
 ### Changed
 
