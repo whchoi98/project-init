@@ -188,6 +188,8 @@ Run these in order.
 
    The bilingual files are `README.md`, `CHANGELOG.md`, `docs/architecture.md`, `docs/decisions/.template.md`, `docs/runbooks/.template.md`, `docs/reference/INDEX.md`, and each `docs/reference/<layer>.md`. Name each one this run created or updated, leaving out any `(existing, kept)` and a README kept single-language; do not pass a glob, because one that matches nothing reaches the checker as a literal path and it exits 2. Without python3, skip the JSON and bilingual checks and report them `unavailable`.
 
+   Then run the writing-style-guide's `## Prose Check` on each document this run created (`README.md`, `CHANGELOG.md`, and the files under `docs/`) and on the sentences it added to an existing one: search for the guide's English and Korean marker patterns and reread each hit. Prose that was there before this run keeps its wording.
+
    If a check fails on a file this run created or updated, fix that file and run the check again. Report these failures instead of fixing them:
    - A bilingual-check issue in content that existed before this run (a released CHANGELOG section, the user's own README prose): report it as pre-existing, because the templates' Update Rules keep that content unchanged.
    - A test or contract failure caused by a kept pre-v2.3 hook or an older settings.json registration: leave the generated tests and those registrations as they are, because `/project-init:migrate-hooks` migrates them with a backup. Put it first in Next.

@@ -102,6 +102,8 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py README.md CHANGELOG.md 
 
 It prints one `FILE:LINE: message` line per issue and exits 0 when clean, 1 when issues remain, and 2 on a usage or read error. Fix the issues and run it again. Leave an issue that predates this sync in user content (a released CHANGELOG section, the user's own README prose) and list it under Remaining Gaps as pre-existing. If python3 is unavailable, say in the report that the check did not run.
 
+Then run the writing-style-guide's `## Prose Check` on the sentences this sync wrote, in a README kept single-language as well: search them for the guide's marker patterns and reread each hit. Existing prose keeps its wording, because a sync fixes drift, not style.
+
 ## Report
 
 Take the Before scores from the audit report. For After, re-score only the files you changed, with the same SKILL.md rubric; an unchanged file shows its Before score once. Keep the report to these sections, one line per item; the values are illustrative.

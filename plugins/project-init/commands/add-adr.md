@@ -44,6 +44,8 @@ Ask with the AskUserQuestion tool when it is available: its answers arrive in th
 
 Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py <new ADR file>` (add `docs/architecture.md` if you edited it) and fix what it reports until it exits 0. The script checks layout, not meaning, so also confirm that each Korean paragraph says what its English counterpart says. If python3 or the script is unavailable, say "checker unavailable" in the report.
 
+Then run the writing-style-guide's `## Prose Check` on the new ADR: search it for the guide's English and Korean marker patterns and reread each hit.
+
 ## Report
 
 The file path and status, the other files you changed, and anything you inferred rather than were told, including each TODO left in the file.

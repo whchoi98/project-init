@@ -34,6 +34,8 @@ If a plugin file cannot be read (for example because `${CLAUDE_PLUGIN_ROOT}` was
 
 Skip this check for a README kept single-language, because the checker would only report the missing layout. Otherwise run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py <target>/README.md` and fix what it reports in the text this run wrote until the only remaining issues, if any, are in the user's own prose that existed before this run. Leave such an issue as it is and list it in the report as pre-existing, with its line, because rewriting the user's prose to satisfy a layout check is not what an update is for. The script checks layout, not meaning, so also confirm that each Korean paragraph says what its English counterpart says. If python3 or the script is unavailable, say "checker unavailable" in the report.
 
+Then run the writing-style-guide's `## Prose Check` on the text this run wrote, for a README kept single-language as well: search it for the guide's marker patterns and reread each hit. The user's own prose keeps its wording unless they asked for a rewrite.
+
 ## Report
 
 The path, whether it was created or updated, whether an existing single-language README was converted or kept, which fields were detected and which the user supplied, what an update changed in existing prose, every TODO left in the file, and each pre-existing checker issue left in place (or "checker unavailable").

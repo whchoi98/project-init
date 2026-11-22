@@ -52,6 +52,8 @@ Do not create the git tag yourself; tagging is the user's release step.
 
 Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py CHANGELOG.md`; it also checks that release headings match `## [x.y.z] - YYYY-MM-DD`. Fix every issue in what this run wrote (`[Unreleased]`, the link blocks, and any section or half you added) and run it again until only pre-existing issues remain. An issue inside a released section, such as an existing heading `## v1.2.0 (2024-01-01)` or an emoji in a released entry, stays as it is, because released sections never change; list each one in the report with its line as pre-existing. The script checks layout, not meaning, so also confirm that each Korean entry says what its English counterpart says. If python3 or the script is unavailable, say "checker unavailable" in the report.
 
+Then run the writing-style-guide's `## Prose Check` on the entries this run wrote: search them for the guide's English and Korean marker patterns and reread each hit. A released section keeps its wording.
+
 ## Report
 
 The path, the mode, whether the remote tags were checked, the number of entries added per category, any commits you skipped or asked about, each pre-existing checker issue left in a released section (or "checker unavailable"), and for Release the command for the user to run: `git tag -a vX.Y.Z -m "vX.Y.Z"`.

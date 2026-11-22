@@ -141,13 +141,13 @@ plugins/project-init/
         └── references/
 ```
 
-에이전트는 `model`을 생략해 사용자의 메인 모델을 상속하고(팀은 `CLAUDE_CODE_SUBAGENT_MODEL`로 여전히 모델을 지정할 수 있습니다), `effort`는 범위가 정해진 작업이나 기계적인 작업에만 설정합니다. 커맨드는 사용자의 메인 대화에서 실행되므로 `model`과 `effort`를 설정하지 않습니다. 릴리스, 배포, 푸시를 하거나 많은 파일 또는 사용자의 하네스를 다시 쓰는 커맨드(예: `/init-project`, `/migrate-hooks`)는 `disable-model-invocation: true`를 설정해 사용자만 시작할 수 있게 합니다. 스킬은 `allowed-tools`를 사용하며, `tools`는 에이전트 필드입니다.
+에이전트는 `model`을 생략해 사용자의 메인 모델을 상속하고(팀은 `CLAUDE_CODE_SUBAGENT_MODEL`로 여전히 모델을 지정할 수 있습니다), `effort`는 범위가 정해진 작업이나 기계적인 작업에만 설정합니다. 커맨드는 사용자의 메인 대화에서 실행되므로 `model`과 `effort`를 설정하지 않습니다. 릴리스, 배포, 푸시를 하거나 많은 파일 또는 사용자의 하네스를 다시 쓰는 커맨드(예: `/init-project`, `/migrate-hooks`)는 `disable-model-invocation: true`를 설정해 사용자만 시작할 수 있게 합니다. 스킬은 `allowed-tools`를 사용하며 `tools`는 에이전트 필드입니다.
 
 ## 새 커맨드 추가 방법
 
 1. `plugins/project-init/commands/<command-name>.md` 파일을 생성합니다.
 2. YAML frontmatter에 `description`, `allowed-tools`, 선택적으로 `argument-hint`와 `disable-model-invocation`을 포함합니다 (위 정책 참조).
-3. 유능한 동료에게 건네는 브리프처럼 본문을 작성합니다: 목표, 입력, 이유를 붙인 규칙, 출력 계약(경로, 헤딩, frontmatter 키, 보고 형식), 모델이 실행할 수 있는 검사, 최종 보고. 번호는 순서가 중요하거나 되돌리기 어려운 단계에만 붙입니다. 사전 질문은 AskUserQuestion 도구가 있으면 그 도구로 묻습니다. 채팅 답장은 새 턴을 시작해 커맨드의 `allowed-tools`가 더는 적용되지 않기 때문입니다. 커맨드는 소비자가 고른 모델에서 실행됩니다. 기본값은 Opus 5.5이고, Fable 5.2나 더 작은 모델(Sonnet 5.5, Haiku 5.5, 그리고 일부 제공자에서 `sonnet`과 `haiku`가 해석되는 4.5 모델)일 수도 있습니다. 작은 모델은 계약을 추론하지 못하므로 모든 출력 계약을 명시합니다. 전체 규칙은 `plugins/project-init/CLAUDE.md`의 `## Rules`에 있습니다.
+3. 유능한 동료에게 건네는 브리프처럼 본문을 작성합니다: 목표, 입력, 이유를 붙인 규칙, 출력 계약(경로, 헤딩, frontmatter 키, 보고 형식), 모델이 실행할 수 있는 검사, 최종 보고. 번호는 순서가 중요하거나 되돌리기 어려운 단계에만 붙입니다. 사전 질문은 AskUserQuestion 도구가 있으면 그 도구로 묻습니다. 채팅 답장은 새 턴을 시작해 커맨드의 `allowed-tools`가 더는 적용되지 않기 때문입니다. 커맨드는 소비자가 고른 모델에서 실행됩니다. 기본값은 Opus 5.5이고 Fable 5.2나 더 작은 모델(Sonnet 5.5, Haiku 5.5, 그리고 일부 제공자에서 `sonnet`과 `haiku`가 해석되는 4.5 모델)일 수도 있습니다. 작은 모델은 계약을 추론하지 못하므로 모든 출력 계약을 명시합니다. 전체 규칙은 `plugins/project-init/CLAUDE.md`의 `## Rules`에 있습니다.
 4. 템플릿과 스크립트는 `${CLAUDE_PLUGIN_ROOT}/...`로 참조합니다. 상대 경로는 소비자 프로젝트에서 해석되지 않습니다.
 5. `README.md`를 업데이트합니다 (영어와 한국어 섹션 모두).
 6. `CHANGELOG.md`의 `[Unreleased]`에 항목을 추가합니다.
@@ -162,8 +162,8 @@ plugins/project-init/
 
 - YAML frontmatter가 유효하고 지원되는 필드만 사용하는지 확인
 - allowed-tools가 커맨드에서 실제 사용하는 도구와 일치하는지 확인
-- 출력 계약이 명시되어 있고, 테스트·파일·단계·커맨드 개수를 하드코딩하지 않았는지 확인
-- README.md의 영어/한국어 섹션이 모두 업데이트되었고, 이중 언어 문서가 `python3 plugins/project-init/scripts/check-bilingual.py <file>`를 통과하는지 확인
+- 출력 계약이 명시되어 있고 테스트, 파일, 단계, 커맨드 개수를 하드코딩하지 않았는지 확인
+- README.md의 영어/한국어 섹션이 모두 업데이트되었고 이중 언어 문서가 `python3 plugins/project-init/scripts/check-bilingual.py <file>`를 통과하는지 확인
 - CHANGELOG의 `[Unreleased]`에 항목이 추가되었는지 확인
 - 내부 파일 참조가 깨지지 않았는지 확인
 - `bash tests/run-all.sh`가 통과하는지 확인 (Claude Code 세션에서는 마지막 실행 이후 바뀐 트리에서 턴이 끝나면 Stop hook이 실행합니다)

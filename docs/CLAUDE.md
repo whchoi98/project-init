@@ -17,4 +17,4 @@ Project documentation including architecture design, Architecture Decision Recor
 - Architecture figures follow the writing-style-guide `## Diagram Rules` (ADR-010): infographics built with the `aws-infographic` skill, one English and one Korean version, or Mermaid flowcharts where the skill is unavailable; the figures in `architecture.md` and the README are infographics, rebuilt from `images/architecture/` when components change (edit `figtext.py`, both languages); no ASCII box diagrams
 - Runbook commands must be copy-paste ready
 - Bilingual docs use `# English` / `# 한국어` sections with identical structure and information
-- No emojis; code blocks must specify language; English imperative, Korean 경어체
+- No emojis; code blocks must specify language; English imperative, Korean 경어체; prose follows the guide's `### Readability` and `### No AI Slop` rules in both languages, checked with its `## Prose Check`

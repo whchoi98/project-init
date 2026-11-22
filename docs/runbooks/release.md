@@ -180,7 +180,7 @@ Then issue a new patch version `X.Y.(Z+1)` containing the fix and follow this ru
 # 한국어
 
 ## 개요
-project-init 플러그인의 새 버전을 마켓플레이스에 릴리스합니다. 절차는 버전이 나타나는 모든 곳(`plugin.json`, `marketplace.json`의 `metadata.version`과 `plugins[0].version`, 양 언어 README의 버전 배지와 구조 트리 `(vX.Y.Z)` 라벨, `CHANGELOG.md` 영어·한국어 섹션의 새 릴리스)을 갱신하고, 어노테이션 git 태그를 생성하며, 깨끗한 설치를 통해 릴리스를 검증합니다. 이 중 하나라도 `plugin.json`과 다르면 `tests/structure/test-plugin-structure.sh`가 실패하고, 이 저장소의 SessionStart 훅이 드리프트를 보고합니다.
+project-init 플러그인의 새 버전을 마켓플레이스에 릴리스합니다. 절차는 버전이 나타나는 모든 곳(`plugin.json`, `marketplace.json`의 `metadata.version`과 `plugins[0].version`, 양 언어 README의 버전 배지와 구조 트리 `(vX.Y.Z)` 라벨, `CHANGELOG.md` 영어와 한국어 섹션의 새 릴리스)을 갱신하고 어노테이션 git 태그를 생성하며 깨끗한 설치로 릴리스를 검증합니다. 이 중 하나라도 `plugin.json`과 다르면 `tests/structure/test-plugin-structure.sh`가 실패하고 이 저장소의 SessionStart 훅이 드리프트를 보고합니다.
 
 ## 사용 시점
 - 사용자 대면 변경(새 명령, 명령 시그니처 변경, 훅 동작 변경)이 `main`에 반영된 후.
@@ -271,7 +271,7 @@ Claude Code 안에서 `/generate-changelog` 슬래시 명령을 실행하거나,
 
 - 영어와 한국어 섹션 모두에 새 헤딩 `## [X.Y.Z] - YYYY-MM-DD`이 존재합니다.
 - 새 항목이 이전 버전 이후의 모든 사용자 대면 변경을 나열합니다.
-- 새 항목 위의 `[Unreleased]` 섹션은 비어 있고, 그 헤딩은 두 언어 섹션 모두에 남아 있습니다.
+- 새 항목 위의 `[Unreleased]` 섹션은 비어 있고 그 헤딩은 두 언어 섹션 모두에 남아 있습니다.
 
 `git log v<이전>..HEAD --oneline`으로 포함될 변경을 열거합니다. 그런 다음 구조 테스트를 실행합니다:
 
@@ -316,7 +316,7 @@ claude plugin list | grep project-init
 - [ ] `CHANGELOG.md`의 영어와 한국어 섹션 모두에 `[X.Y.Z]` 항목이 존재합니다.
 - [ ] 어노테이션 태그 `vX.Y.Z`가 `main`에 존재하고 원격에 푸시되었습니다.
 - [ ] 깨끗한 디렉터리에서 `claude plugin install project-init@project-init`이 `X.Y.Z` 버전을 설치합니다.
-- [ ] 설치된 플러그인에 대해 `/health-check`가 오류 없이 실행됩니다.
+- [ ] 설치된 플러그인에서 `/health-check`가 오류 없이 실행됩니다.
 
 ## 롤백
 

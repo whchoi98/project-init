@@ -1,0 +1,11 @@
+The plugin offers a seamless setup experience.
+A robust and powerful engine drives the checks.
+You can leverage the hook to speed up a commit.
+The command utilizes the cache on every run.
+Let's delve into the configuration.
+It's worth noting that the cache is optional.
+In order to install the plugin, run the command.
+In conclusion, the plugin saves time.
+It is not just a linter, it is a platform.
+The gate runs first — then the tests start.
+Run the build → run the tests.

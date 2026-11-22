@@ -1,0 +1,4 @@
+Run the installer, then restart the session.
+The hook blocks a commit that contains an AWS key.
+The check finishes in about two seconds on this repository.
+Use the `--dry-run` flag to preview the changes.

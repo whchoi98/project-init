@@ -37,6 +37,8 @@ Write nothing until every argument is valid and every conflict is resolved.
 
 Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py docs/reference/INDEX.md docs/reference/<layer>.md` on every file you wrote and fix what it reports until it exits 0. If python3 or the script is unavailable, say "checker unavailable" in the report.
 
+Then run the `## Prose Check` section of `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/writing-style-guide.md` on the prose you wrote in each file: search it for that section's English and Korean marker patterns and reread each hit.
+
 ## Report
 
 ```text
