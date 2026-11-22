@@ -344,23 +344,25 @@ hc_settings() {
     return 0
 }
 
-# --- Model pins: the superseded 5.0 IDs are older models; the 5.5 family and Fable 5.1 are not ---
+# --- Model pins: the superseded 5.0 IDs and Fable 5.1 are older models; the 5.5 family and Fable 5.2 are not ---
 
 hc_variant pins-old || true
 printf -- '---\nname: a\ndescription: A\nmodel: claude-sonnet-5\n---\n\nA.\n' > "$HC_P/.claude/agents/a.md" || true
 printf -- '---\nname: b\ndescription: B\nmodel: "claude-opus-5[1m]"\n---\n\nB.\n' > "$HC_P/.claude/agents/b.md" || true
 printf -- '---\nname: c\ndescription: C\nmodel: claude-sonnet-5-5\n---\n\nC.\n' > "$HC_P/.claude/agents/c.md" || true
+printf -- '---\nname: d\ndescription: D\nmodel: claude-fable-5-1\n---\n\nD.\n' > "$HC_P/.claude/agents/d.md" || true
 hc_run "$HC_P"
 hc_status "pins: claude-sonnet-5 is an older model" compat-model-ids WARN
 assert_contains "pins: the [1m] form of claude-opus-5 is flagged" "$(hc_line compat-model-ids)" "claude-opus-5[1m]"
+assert_contains "pins: claude-fable-5-1 is flagged, because Fable 5.2 superseded it" "$(hc_line compat-model-ids)" "claude-fable-5-1"
 assert_eq "pins: claude-sonnet-5-5 is not flagged" "" "$(hc_line compat-model-ids | grep -F 'claude-sonnet-5-5' || true)"
 
 hc_variant pins-new || true
 printf -- '---\nname: a\ndescription: A\nmodel: claude-opus-5-5\n---\n\nA.\n' > "$HC_P/.claude/agents/a.md" || true
-printf -- '---\nname: b\ndescription: B\nmodel: claude-fable-5-1\n---\n\nB.\n' > "$HC_P/.claude/agents/b.md" || true
+printf -- '---\nname: b\ndescription: B\nmodel: claude-fable-5-2\n---\n\nB.\n' > "$HC_P/.claude/agents/b.md" || true
 printf -- '---\nname: c\ndescription: C\nmodel: claude-haiku-5-5\n---\n\nC.\n' > "$HC_P/.claude/agents/c.md" || true
 hc_run "$HC_P"
-hc_status "pins: claude-opus-5-5, claude-fable-5-1, and claude-haiku-5-5 are current" compat-model-ids PASS
+hc_status "pins: claude-opus-5-5, claude-fable-5-2, and claude-haiku-5-5 are current" compat-model-ids PASS
 
 hc_variant badjson || true
 sed '$d' "$HC_FIX/current/settings.json" > "$HC_P/.claude/settings.json" 2>/dev/null || true   # drop the closing }

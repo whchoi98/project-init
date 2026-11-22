@@ -9,7 +9,10 @@
 # So when stop_hook_active is true (Claude is already continuing because of this gate), the suite
 # runs again only if Claude changed something since, which bounds re-blocking to turns that
 # attempted a fix; Claude Code also ends the turn after 8 consecutive blocks.
-# TEST_GATE_CMD overrides the command; the tests use it so the suite never runs itself.
+# A change limited to docs/ and the root *.md files runs the suite without the hook, secret-pattern,
+# and harness-check tests, which read none of those files (tests/CLAUDE.md).
+# TEST_GATE_CMD overrides the command, and TEST_GATE_DOCS_CMD the one for a docs-only change; the
+# tests use them so the suite never runs itself.
 
 INPUT=""
 if [ $# -eq 0 ] && [ ! -t 0 ]; then
@@ -43,6 +46,31 @@ if [ -n "$HOOK_CWD" ]; then
 fi
 cd "$ROOT" 2>/dev/null || exit 0
 [ -z "$(git status --porcelain 2>/dev/null)" ] && exit 0
+
+# docs_only: true when every changed path is under docs/ or is a *.md file in the project root.
+# Any other path, a template .md under plugins/ included, makes it false. --no-renames lists both
+# sides of a rename, so a doc moved out of docs/ counts as a change outside it.
+docs_only() {
+    local p none=1
+    while IFS= read -r -d '' p; do
+        none=0
+        case "$p" in
+            docs/*) ;;
+            */*) return 1 ;;
+            *.md) ;;
+            *) return 1 ;;
+        esac
+    done < <(
+        git diff --no-renames --name-only -z --relative 2>/dev/null
+        git diff --cached --no-renames --name-only -z --relative 2>/dev/null
+        git ls-files -z --others --exclude-standard 2>/dev/null
+    )
+    return "$none"
+}
+# With only TEST_GATE_CMD set, that command runs for every change.
+if docs_only; then
+    GATE_CMD="${TEST_GATE_DOCS_CMD:-${TEST_GATE_CMD:-TEST_SKIP='test-hooks test-secret-patterns test-harness-check' bash tests/run-all.sh}}"
+fi
 
 # fingerprint: the command, status, tracked diffs, and the contents of untracked regular files.
 # Only regular files are hashed, because a nested repository or worktree (listed as dir/) or a

@@ -10,7 +10,7 @@
 # English
 
 ## Status
-Accepted
+Superseded in part by [ADR-010](ADR-010-infographic-architecture-figures.md): Mermaid stays the format where the `aws-infographic` skill is unavailable, and ASCII box diagrams stay removed
 
 ## Date
 2026-07-12
@@ -58,7 +58,7 @@ All architecture flows and diagrams use Mermaid flowchart inside fenced ```merma
 # 한국어
 
 ## 상태
-승인됨
+[ADR-010](ADR-010-infographic-architecture-figures.md)으로 일부 대체됨: `aws-infographic` 스킬을 쓸 수 없는 곳에서는 Mermaid가 그대로 형식이며, ASCII 박스 다이어그램은 계속 쓰지 않음
 
 ## 날짜
 2026-07-12

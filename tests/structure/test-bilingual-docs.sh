@@ -56,6 +56,7 @@ bad-setext-separator.md|bad-setext-separator.md:49: no "---" line above <a id="k
 bad-heading-levels.md|bad-heading-levels.md:63: heading "## 구조" is h2
 bad-code-block-missing.md|the Korean half lacks 1 code block(s)
 bad-mermaid-translated.md|bad-mermaid-translated.md:76: mermaid block 1 differs
+bad-figure-missing.md|the English half has 1 <picture> figure(s) and the Korean half has 0
 bad-table-rows.md|table 1 has 3 rows here but 4
 bad-fence-lang.md|bad-fence-lang.md:25: code fence has no language tag
 bad-fence-lang.md|bad-fence-lang.md:65: code fence has no language tag

@@ -530,6 +530,33 @@ assert_eq "test-gate: an untracked file listed after a nested repository still c
     "$(hk_gate_rc "$HK_REPO" '{}' 'grep -q ok zz.py')"
 rm -rf -- "$HK_REPO"   # -f: git objects are read-only, and rm would prompt on a terminal
 
+# a change limited to docs/ and the root *.md files runs the docs subset (TEST_GATE_DOCS_CMD stands
+# in for it); any other changed path, a template .md under plugins/ included, runs the full suite
+HK_REPO=$(hk_repo)
+HK_WHICH="$HK_GATE_TMP/which"
+# hk_gate_which <repo>: the commands the gate ran for the current tree, "docs " or "full "
+hk_gate_which() {
+    : > "$HK_WHICH"
+    ( cd "$1" && printf '{}' | CLAUDE_PROJECT_DIR="$1" TMPDIR="$HK_GATE_TMP" \
+        TEST_GATE_CMD="echo full >> '$HK_WHICH'" TEST_GATE_DOCS_CMD="echo docs >> '$HK_WHICH'" \
+        bash "$HK_ROOT/.claude/hooks/test-gate.sh" >/dev/null 2>&1 ) || true
+    tr '\n' ' ' < "$HK_WHICH" 2>/dev/null || true
+}
+mkdir -p "$HK_REPO/docs/decisions" "$HK_REPO/plugins/p/commands" || true
+printf '# r\n' > "$HK_REPO/README.md" || true
+printf '# a\n' > "$HK_REPO/docs/decisions/ADR-001.md" || true
+assert_eq "test-gate: a change limited to docs/ and the root *.md files runs the docs subset" "docs " "$(hk_gate_which "$HK_REPO")"
+printf '# c\n' > "$HK_REPO/plugins/p/commands/c.md" || true
+assert_eq "test-gate: a .md file outside docs/ and the root runs the full suite" "full " "$(hk_gate_which "$HK_REPO")"
+rm -f "$HK_REPO/plugins/p/commands/c.md"
+printf 'y = 2\n' >> "$HK_REPO/cfg.py" || true
+assert_eq "test-gate: a docs change beside a code change runs the full suite" "full " "$(hk_gate_which "$HK_REPO")"
+git -C "$HK_REPO" checkout -q -- cfg.py 2>/dev/null || true
+: > "$HK_WHICH"
+hk_gate_rc "$HK_REPO" '{}' "echo only >> '$HK_WHICH'" >/dev/null
+assert_eq "test-gate: TEST_GATE_CMD alone also stands in for the docs subset" "only" "$(tr -d '\n' < "$HK_WHICH" 2>/dev/null || true)"
+rm -rf -- "$HK_REPO"   # -f: git objects are read-only, and rm would prompt on a terminal
+
 # the event's cwd follows Claude into a linked worktree, while CLAUDE_PROJECT_DIR stays at the main
 # checkout; a cwd in another repository is ignored
 HK_REPO=$(hk_repo)

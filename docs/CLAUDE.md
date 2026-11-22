@@ -13,7 +13,7 @@ Project documentation including architecture design, Architecture Decision Recor
 - All documents follow `plugins/project-init/skills/project-scaffolder/references/writing-style-guide.md`
 
 ## Rules
-- Architecture flows use Mermaid flowchart in ```mermaid blocks (ADR-007); no ASCII box diagrams
+- Architecture figures follow the writing-style-guide `## Diagram Rules` (ADR-010): infographics built with the `aws-infographic` skill, one English and one Korean version, or Mermaid flowcharts where the skill is unavailable; the Mermaid diagrams now in `architecture.md` stay until they are rebuilt; no ASCII box diagrams
 - Runbook commands must be copy-paste ready
 - Bilingual docs use `# English` / `# 한국어` sections with identical structure and information
 - No emojis; code blocks must specify language; English imperative, Korean 경어체

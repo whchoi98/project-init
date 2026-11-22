@@ -1,5 +1,6 @@
 ---
 description: Synchronize all project documentation with current code state
+model: sonnet
 allowed-tools: Read, Write, Edit, Glob, Grep, Agent, Bash(find *), Bash(ls *), Bash(git log *), Bash(git diff *), Bash(git tag *), Bash(git describe *), Bash(git remote *), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py *)
 ---
 
@@ -56,7 +57,7 @@ For each directory the report names, create a CLAUDE.md only where `## Module CL
 Follow `## Architecture Document` in `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/docs-templates.md` and the style guide's Diagram Rules. For each finding:
 
 - Components: add or remove them under their architectural layer.
-- Diagrams: when components changed, regenerate the Mermaid `flowchart TB` (one `subgraph` per layer) and the Data Flow Summary `flowchart LR`. Replace any legacy ASCII box diagram with a Mermaid flowchart.
+- Figures: when components changed, rebuild the full architecture figure and the Data Flow Summary in the form each already has: an infographic through the `aws-infographic` skill, in its English and Korean versions, or the Mermaid `flowchart TB` (one `subgraph` per layer) and `flowchart LR`. If an infographic is stale and this session has no `aws-infographic` skill, leave it and list it under Remaining Gaps instead of replacing it with Mermaid. Replace any legacy ASCII box diagram with a figure in the form the Diagram Rules give this session.
 - Infrastructure tables: match the IaC.
 - Key Design Decisions: add decisions from new ADRs and mark outdated ones.
 - Operations: update the runbook links.
@@ -81,7 +82,7 @@ Consume the report's `### Implementation References` section without re-running 
 
 The audit does not cover this file; check it here against `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/readme-template.md` (section order and conditions, badge format, `## Update Rules`).
 
-- If README.md exists, apply `## Update Rules` and sync with the code: the version badge (latest tag or manifest version), the license badge, Overview (from CLAUDE.md), Features, Prerequisites (manifest `engines` or `.tool-versions`), Installation and Testing commands that exist, and the Project Structure tree.
+- If README.md exists, apply `## Update Rules`, which keep its section order and keep a single-language README single-language (converting one is `/project-init:generate-readme`'s job), and sync with the code: the version badge (latest tag or manifest version), the license badge, Overview (from CLAUDE.md), Features, Prerequisites (manifest `engines` or `.tool-versions`), Installation and Testing commands that exist, and the Project Structure tree.
 - If it does not exist, generate it from the template with the detected information.
 
 ### CHANGELOG.md
@@ -93,7 +94,7 @@ The audit does not cover this file; check it here against `${CLAUDE_PLUGIN_ROOT}
 
 ## Check
 
-Run the bundled checker on every bilingual document you created or edited (README.md, CHANGELOG.md, docs/architecture.md, and any other document with `# English` and `# 한국어` halves) except `docs/reference/INDEX.md`, where you rewrote only the table:
+Run the bundled checker on every bilingual document you created or edited (README.md, CHANGELOG.md, docs/architecture.md, and any other document with `# English` and `# 한국어` halves) except `docs/reference/INDEX.md`, where you rewrote only the table, and a README kept single-language, which has no halves to compare:
 
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py README.md CHANGELOG.md docs/architecture.md

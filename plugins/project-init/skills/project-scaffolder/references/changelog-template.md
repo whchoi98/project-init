@@ -17,6 +17,9 @@ Format for bilingual (English/Korean) `CHANGELOG.md` files following [Keep a Cha
 ### Git Log Analysis
 
 ```bash
+# Tags on the remote, to compare with the local list before reading history
+git ls-remote --tags origin
+
 # Version tags, newest first
 git tag --list --sort=-v:refname
 
@@ -35,6 +38,8 @@ git log --oneline
 # Release date of a tag as YYYY-MM-DD (tag date for annotated tags, commit date for lightweight ones)
 git for-each-ref --format='%(creatordate:short)' refs/tags/v1.0.0
 ```
+
+Compare the remote tags with the local ones first. A release cut from another machine leaves the local repository without its tag, and every command above then counts released commits as unreleased. If the remote has a version tag that `git tag --list` does not, stop and ask the user to run `git fetch --tags` and update the branch.
 
 Use two dots in `git log` ranges: `a..b` lists the commits reachable from `b` but not from `a`, while three dots would also pull in commits from the other side when release lines have diverged. GitHub compare URLs in the link block keep their own `a...b` form.
 
@@ -125,6 +130,9 @@ Always present at the top of the version list, even when empty; it collects chan
 
 `[Unreleased]` compares the latest version with `HEAD`, each version compares with the one before it, and the oldest version links to its release tag.
 
+- Link only tags that exist (`git tag --list`). A version without a tag gets no link line, and the version after it links to its own release tag instead of a compare URL, because a URL that names a missing tag is a 404.
+- The forms above are GitHub's. For a GitLab remote, use `https://<host>/<group>/<repo>/-/compare/v1.1.0...v1.2.0` and `https://<host>/<group>/<repo>/-/tags/v1.0.0`. For any other host, or without a remote, leave the link block out and say so in the report instead of inventing a URL.
+
 ---
 
 ## Version Heading Format
@@ -137,7 +145,7 @@ Always present at the top of the version list, even when empty; it collects chan
 
 ## Change Type Categories
 
-Categorize changes under these h3 headings, in this order, and omit a category that has no items. Category names stay in English in both halves (Keep a Changelog convention). When commit messages do not follow these prefixes, categorize by what the diff does for users.
+Categorize changes under these h3 headings, in this order, and omit a category that has no items. Category names stay in English in both halves (Keep a Changelog convention). When commit messages do not follow these prefixes, categorize by what the diff does for users. A commit whose type carries `!` (`feat!:`, `fix!:`) or whose message has a `BREAKING CHANGE:` footer is a breaking change in whichever category it belongs to.
 
 | Category | Usage | Commit prefixes |
 |----------|-------|-----------------|
@@ -154,7 +162,7 @@ Categorize changes under these h3 headings, in this order, and omit a category t
 
 - Each item is one bullet (`-`) and one sentence describing what changed, from the user's point of view
 - Link related issues or PRs at the end: `([#42](https://github.com/user/repo/pull/42))`
-- Breaking changes get the `**BREAKING:**` prefix
+- Breaking changes get the `**BREAKING:**` prefix, and the release that carries one raises the major version (the minor version while the major is 0)
 
 ### English Style
 - Start with an imperative verb: "Add plugin system", "Fix symlink error"

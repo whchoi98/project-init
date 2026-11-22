@@ -12,10 +12,13 @@ Do not add `model` or top-level `effortLevel`, because project settings apply to
 {
   "permissions": {
     "allow": [],
-    "deny": [
+    "ask": [
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
       "Bash(rm -r *)",
+      "Bash(python3 -c*import os*)"
+    ],
+    "deny": [
       "Bash(git push --force *)",
       "Bash(git push -f *)",
       "Bash(git reset --hard *)",
@@ -24,7 +27,6 @@ Do not add `model` or top-level `effortLevel`, because project settings apply to
       "Bash(curl*| bash*)",
       "Bash(wget*| bash*)",
       "Bash(eval *)",
-      "Bash(python3 -c*import os*)",
       "Read(./.env)",
       "Read(./.env.*)",
       "Read(!.env.example)"
@@ -58,7 +60,8 @@ Do not add `model` or top-level `effortLevel`, because project settings apply to
 ```
 
 - **allow**: /init-project adds the detected test and lint commands (for example `"Bash(npm test *)"`), so `/test-all` runs without permission prompts.
-- **deny**: `Bash(command *)` form (a trailing ` *` also matches the bare command); deny wins over allow. It guards against common destructive commands and is not a sandbox.
+- **ask**: recursive `rm` and a `python3 -c` one-liner that imports `os` prompt in every permission mode, auto and bypass included, so the user can approve a routine cleanup such as `rm -rf dist`; a run that cannot answer the prompt denies them. Under `deny` Claude could not run them at all and would retry in another form.
+- **deny**: `Bash(command *)` form (a trailing ` *` also matches the bare command). Rules are evaluated deny, then ask, then allow, so a rule belongs in one list only. Deny holds what should not run even with approval in the moment (force pushes, `git reset --hard`, `git clean -f`, `chmod 777`, a download piped into a shell, `eval`); it guards against common destructive commands and is not a sandbox.
 - **Read(./.env)**, **Read(./.env.\*)**: keep secrets out of Claude's context, and also cover Edit, Write, and Bash `cat`/`head`/`tail`/`sed` on those paths. `Read(!.env.example)` keeps `.env.example` readable and editable.
 
 ## Hook Registration
@@ -152,7 +155,7 @@ Add `maxEffortLevel` only when the team wants a cost or latency ceiling. It caps
 
 ## Optional: Subagent Model
 
-Add `CLAUDE_CODE_SUBAGENT_MODEL` only when the team wants subagents on a lower-cost model than the session, for example read-heavy audits on Haiku 5.5 while sessions run Opus 5.5. It applies to every subagent without a `model` field, the generated agents included; a frontmatter `model`, or a model Claude passes for one run, still wins. The built-in Explore and Plan subagents keep their own model unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is also `"1"` (Claude Code 2.1.257 or later), which also overrides frontmatter `model`. On the Anthropic API, `haiku` resolves to Haiku 5.5 (Claude Code 2.1.293 or later). On Amazon Bedrock, Google Cloud, Microsoft Foundry, and Claude Platform on AWS it resolves to Haiku 4.5, which has no effort levels, so there also set `ANTHROPIC_DEFAULT_HAIKU_MODEL` to the provider's Haiku 5.5 model ID; that variable also sets the model for background tasks. A developer can set the variable in their own environment instead.
+Add `CLAUDE_CODE_SUBAGENT_MODEL` only when the team wants subagents on a lower-cost model than the session, for example read-heavy audits on Haiku 5.5 while sessions run Opus 5.5, or reviews on Opus 5.5 (`opus`) while sessions run Fable 5.2, where a subagent without a `model` otherwise runs on Fable 5.2 too. It applies to every subagent without a `model` field, the generated agents included; a frontmatter `model`, or a model Claude passes for one run, still wins. The built-in Explore and Plan subagents keep their own model unless `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` is also `"1"` (Claude Code 2.1.257 or later), which also overrides frontmatter `model`. On the Anthropic API, `haiku` resolves to Haiku 5.5 (Claude Code 2.1.293 or later). On Amazon Bedrock, Google Cloud, Microsoft Foundry, and Claude Platform on AWS it resolves to Haiku 4.5, which has no effort levels, so there also set `ANTHROPIC_DEFAULT_HAIKU_MODEL` to the provider's Haiku 5.5 model ID; that variable also sets the model for background tasks. A developer can set the variable in their own environment instead.
 
 ```json
 {
@@ -161,3 +164,5 @@ Add `CLAUDE_CODE_SUBAGENT_MODEL` only when the team wants subagents on a lower-c
   }
 }
 ```
+
+A subagent on another model than the session does not take the session's effort level, so `/effort high` no longer reaches the generated reviewers. To choose their level, add `CLAUDE_CODE_SUBAGENT_EFFORT` (`low` to `max`; Claude Code 2.1.315 or later) to the same `env` block. It sets the level of every subagent without an `effort` field, and `CLAUDE_CODE_EFFORT_LEVEL` still overrides it.

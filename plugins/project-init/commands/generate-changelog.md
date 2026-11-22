@@ -1,6 +1,6 @@
 ---
 description: Generate or update a bilingual (English/Korean) CHANGELOG.md following Keep a Changelog and Semantic Versioning
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git log *), Bash(git show *), Bash(git diff *), Bash(git remote get-url *), Bash(git describe --tags *), Bash(git tag --list *), Bash(git for-each-ref *), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py *)
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash(git log *), Bash(git show *), Bash(git diff *), Bash(git remote get-url *), Bash(git describe --tags *), Bash(git tag --list *), Bash(git ls-remote --tags *), Bash(git for-each-ref *), Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py *)
 argument-hint: "Optional: version to release (e.g. 1.2.0) or 'unreleased' to add to unreleased section"
 ---
 
@@ -25,12 +25,13 @@ Read before writing:
 
 - `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/changelog-template.md`: the layout, intro statement, version heading, and reference link formats; the Change Type Categories table (commit prefix to category); Entry Writing Guidelines; What to Leave Out; the git commands in Git Log Analysis; Update Rules; and the Complete Template Example.
 - `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/writing-style-guide.md`: bilingual layout, tone, and formatting.
-- The existing `CHANGELOG.md`, and `git remote get-url origin` for compare links. Convert an SSH remote such as `git@github.com:user/repo.git` to `https://github.com/user/repo`.
+- The existing `CHANGELOG.md`, and `git remote get-url origin` for compare links. Convert an SSH remote such as `git@github.com:user/repo.git` to `https://github.com/user/repo`. The template's Reference Links section gives the link form per host, and what to write for a version without a tag or a project without a remote.
 
 If a plugin file cannot be read (for example because `${CLAUDE_PLUGIN_ROOT}` was not substituted), stop and say so instead of writing from memory; a document written from memory is the drift ADR-003 exists to prevent.
 
 ## Rules
 
+- Before reading history, check that the local tags are current: when the repository has a remote, run `git ls-remote --tags origin` and compare with `git tag --list`. If the remote has a version tag the local repository lacks, stop and tell the user to run `git fetch --tags` and update the branch, because entries written against a stale tag put released changes under `[Unreleased]`. If the remote cannot be reached, continue and say in the report that the tags were not checked.
 - Follow the template's Update Rules: released version sections never change, because readers and compare links depend on them. Only `[Unreleased]` and the link block change, and every change is applied to both language halves.
 - Categorize commits with the template's Change Type Categories table. Skip internal-only changes (tests, CI, docs, refactors with no user impact) and group related commits into one entry, because the changelog is written for users, not as a commit log.
 - When a commit's user impact is unclear from its message, read its diff (`git show <sha>`). If it is still unclear, ask the user, collecting all such questions into one round.
@@ -41,7 +42,7 @@ If a plugin file cannot be read (for example because `${CLAUDE_PLUGIN_ROOT}` was
 
 Order matters, and a mistake here rewrites history readers rely on:
 
-1. If `## [X.Y.Z]` already exists, stop and report it: that version is released and immutable. If `[Unreleased]` is empty, collect the commits since the latest tag into it first, as in Update mode.
+1. If `## [X.Y.Z]` already exists, stop and report it: that version is released and immutable. If `[Unreleased]` is empty, collect the commits since the latest tag into it first, as in Update mode. If `[Unreleased]` has a `**BREAKING:**` entry and X.Y.Z does not raise the major version over the latest release (the minor version while the major is 0), stop and say so, because Semantic Versioning requires it; continue only when the user confirms the version.
 2. In both halves, move every entry under `## [Unreleased]` into a new `## [X.Y.Z] - <today, YYYY-MM-DD>` section directly below it, and keep the `## [Unreleased]` heading, now empty, above it.
 3. In both halves' link blocks, point `[Unreleased]` at `vX.Y.Z...HEAD` and add an `[X.Y.Z]` line comparing the previous version with `vX.Y.Z` (the first release links to its tag instead).
 
@@ -53,4 +54,4 @@ Run `python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py CHANGELOG.md`; it 
 
 ## Report
 
-The path, the mode, the number of entries added per category, any commits you skipped or asked about, each pre-existing checker issue left in a released section (or "checker unavailable"), and for Release the command for the user to run: `git tag -a vX.Y.Z -m "vX.Y.Z"`.
+The path, the mode, whether the remote tags were checked, the number of entries added per category, any commits you skipped or asked about, each pre-existing checker issue left in a released section (or "checker unavailable"), and for Release the command for the user to run: `git tag -a vX.Y.Z -m "vX.Y.Z"`.

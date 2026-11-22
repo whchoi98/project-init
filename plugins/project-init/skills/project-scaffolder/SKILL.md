@@ -27,14 +27,14 @@ project-root/
 ├── .env.example                   # Core: variable names, no real values
 ├── .mcp.json                      # Core: {"mcpServers": {}}
 ├── docs/
-│   ├── architecture.md            # Core: bilingual, Mermaid diagrams
+│   ├── architecture.md            # Core: bilingual, architecture figures
 │   ├── onboarding.md              # Core
 │   ├── api-reference.md           # Core, only when an API is detected
 │   ├── decisions/.template.md     # Core: ADR template
 │   ├── runbooks/.template.md      # Core: runbook template
 │   └── reference/                 # Core: one file per selected implementation layer, plus INDEX.md
 ├── .claude/
-│   ├── settings.json              # Core: deny list and hook registrations
+│   ├── settings.json              # Core: deny and ask rules, hook registrations
 │   ├── hooks/
 │   │   ├── secret-scan.sh         # Core: PreToolUse gate on git commit
 │   │   ├── check-doc-sync.sh      # Core: PostToolUse module CLAUDE.md reminder
@@ -126,7 +126,7 @@ For the secrets deduction, a credential assignment counts only when its value is
 
 Templates in `references/` (plugin path `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/`):
 - [claude-md-template.md](references/claude-md-template.md) - Root and module CLAUDE.md templates
-- [settings-json-template.md](references/settings-json-template.md) - settings.json deny list, hook registrations, and the optional team effort cap and subagent model
+- [settings-json-template.md](references/settings-json-template.md) - settings.json deny and ask rules, hook registrations, and the optional team effort cap and subagent model
 - [hook-scripts.md](references/hook-scripts.md) - Hook scripts and the hook input contract
 - [skills-templates.md](references/skills-templates.md) - Project command and skill templates (/test-all, /review, /deploy, code-review, refactor, release)
 - [agents-templates.md](references/agents-templates.md) - Agent definitions (code-reviewer, security-auditor) and the model/effort policy

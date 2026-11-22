@@ -14,6 +14,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add a `check-bilingual.py` rule that reports a bilingual document whose halves have different numbers of `<picture>` figures
+- Document `CLAUDE_CODE_SUBAGENT_EFFORT` (Claude Code 2.1.315 or later) in `## Optional: Subagent Model` of `settings-json-template.md`, because the session's effort level does not reach a subagent on another model
+- Add a style-guide rule for links inside a bilingual document: they point at explicit ASCII anchors (`<name>-en`, `<name>-ko`), because the anchor of a Korean heading is Unicode
+- Add a remote tag check to `/generate-changelog` (`git ls-remote --tags origin`): it stops when the remote has a release tag the local repository lacks, so released changes are not written under `[Unreleased]`
+
+### Changed
+
+- Build architecture figures with the `aws-infographic` skill, in an English and a Korean version, when the session has that skill, and keep Mermaid flowcharts otherwise; `/init-project` asks which form to build only when the skill is available (ADR-010)
+- Run `/sync-docs` and the doc-sync-checker agent on `model: sonnet`, so a documentation sync uses a fast model whatever the session runs
+- Move the recursive `rm` rules and `python3 -c*import os*` from `permissions.deny` to `permissions.ask` in the generated `settings.json`, so the user can approve a routine cleanup; `/init-project` leaves a rule that an existing file has under `deny`
+- Run the harness tests from the generated `/test-all` only when no argument was given and a harness file (`.claude/`, `tests/`, `scripts/`, `CLAUDE.md`, `.mcp.json`) changed
+- Update an existing README in place: it keeps its section order, custom sections, and badge labels, and a single-language README stays single-language unless `/generate-readme` is asked to convert it
+- Make the README sections Architecture, Project Structure, License, and Contact conditional, write Features as `- **Name** -- Description` without a count limit, and put the two one-line descriptions on separate lines
+- Choose the README's Contributing flow from what the repository shows: a `CONTRIBUTING.md` is summarized and linked, a github.com remote with a `LICENSE` file gets the fork flow, and anything else the same flow without the fork step
+- Name Fable 5.2 as a consumer model in the plugin rules and templates, list its minimum Claude Code version in the README, and flag `claude-fable-5-1` pins in the `harness-check.sh` `compat-model-ids` check
+- Require a major version in `/generate-changelog` release mode when `[Unreleased]` has a `**BREAKING:**` entry, and treat `feat!:` and `BREAKING CHANGE:` commits as breaking
+
+### Fixed
+
+- Fix the README template's static badges rendering `404: badge not found` for a license or version that contains `-`; a value now doubles it (`Apache--2.0`)
+- Fix the README template naming the manifest's `scripts.install` lifecycle script and `make install` as the install command; it now takes the package manager from the lockfile
+- Fix the CHANGELOG template writing compare links for tags that do not exist and assuming a GitHub remote: a version without a tag gets no link, GitLab gets its own URL form, and other hosts get no link block
+
 ## [3.0.0] - 2026-11-03
 
 ### Added
@@ -284,9 +309,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/whchoi98/project-init/compare/v2.1.0...v2.2.0
-[2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
-[1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
+[2.1.0]: https://github.com/whchoi98/project-init/releases/tag/v2.1.0
 
 ---
 
@@ -299,6 +322,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+
+- 양쪽 절반의 `<picture>` 그림 수가 다른 이중 언어 문서를 보고하는 `check-bilingual.py` 규칙 추가
+- `settings-json-template.md`의 `## Optional: Subagent Model`에 `CLAUDE_CODE_SUBAGENT_EFFORT`(Claude Code 2.1.315 이상) 안내 추가: 세션의 effort 수준은 다른 모델에서 실행되는 서브에이전트에 적용되지 않음
+- 이중 언어 문서 안의 링크는 명시적 ASCII 앵커(`<name>-en`, `<name>-ko`)를 가리킨다는 스타일 가이드 규칙 추가: 한국어 헤딩의 앵커는 유니코드임
+- `/generate-changelog`에 원격 태그 확인(`git ls-remote --tags origin`) 추가: 로컬에 없는 릴리스 태그가 원격에 있으면 중단해, 릴리스된 변경이 `[Unreleased]`에 기록되지 않게 함
+
+### Changed
+
+- 세션에 `aws-infographic` 스킬이 있으면 아키텍처 그림을 그 스킬로 영어판과 한국어판으로 만들고, 없으면 Mermaid flowchart를 유지. `/init-project`는 스킬이 있을 때만 어떤 형식으로 만들지 물음 (ADR-010)
+- `/sync-docs`와 doc-sync-checker 에이전트를 `model: sonnet`으로 실행: 세션 모델과 무관하게 문서 동기화에 빠른 모델을 사용
+- 생성 `settings.json`에서 재귀 `rm` 규칙과 `python3 -c*import os*`를 `permissions.deny`에서 `permissions.ask`로 이동: 사용자가 일상적인 정리를 승인할 수 있음. `/init-project`는 기존 파일이 `deny`에 둔 규칙을 그대로 둠
+- 생성 `/test-all`이 인자가 없고 하네스 파일(`.claude/`, `tests/`, `scripts/`, `CLAUDE.md`, `.mcp.json`)이 바뀐 경우에만 하네스 테스트를 실행하도록 변경
+- 기존 README를 제자리에서 갱신하도록 변경: 섹션 순서, 사용자 섹션, 배지 라벨을 유지하고, 단일 언어 README는 `/generate-readme`에 변환을 요청하지 않는 한 단일 언어로 유지
+- README의 Architecture, Project Structure, License, Contact 섹션을 조건부로 바꾸고, Features는 개수 제한 없이 `- **이름** -- 설명` 형식으로 쓰며, 한 줄 설명 두 개를 줄을 나눠 배치
+- README의 Contributing 흐름을 저장소에서 확인되는 내용으로 결정: `CONTRIBUTING.md`가 있으면 요약하고 링크, github.com remote와 `LICENSE` 파일이 있으면 fork 흐름, 그 밖에는 fork 단계를 뺀 같은 흐름
+- 플러그인 규칙과 템플릿에 Fable 5.2를 소비자 모델로 명시하고, README에 최소 Claude Code 버전을 기재하며, `harness-check.sh`의 `compat-model-ids` 검사가 `claude-fable-5-1` 고정을 표시하도록 변경
+- `[Unreleased]`에 `**BREAKING:**` 항목이 있으면 `/generate-changelog` 릴리스 모드가 major 버전을 요구하고, `feat!:`와 `BREAKING CHANGE:` 커밋을 호환성 깨짐으로 취급하도록 변경
+
+### Fixed
+
+- README 템플릿의 정적 배지가 `-`를 포함한 라이선스나 버전에서 `404: badge not found`로 표시되던 문제 수정: 값의 `-`를 두 번 씀(`Apache--2.0`)
+- README 템플릿이 매니페스트의 `scripts.install` 수명주기 스크립트와 `make install`을 설치 명령으로 안내하던 문제 수정: lockfile이 가리키는 패키지 매니저를 사용
+- CHANGELOG 템플릿이 없는 태그로 가는 compare 링크를 쓰고 GitHub remote를 전제하던 문제 수정: 태그가 없는 버전에는 링크를 두지 않고, GitLab은 고유 URL 형식을 쓰며, 그 밖의 호스트에는 링크 블록을 두지 않음
 
 ## [3.0.0] - 2026-11-03
 
@@ -569,6 +617,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [2.4.0]: https://github.com/whchoi98/project-init/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/whchoi98/project-init/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/whchoi98/project-init/compare/v2.1.0...v2.2.0
-[2.1.0]: https://github.com/whchoi98/project-init/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/whchoi98/project-init/compare/v1.0.0...v2.0.0
-[1.0.0]: https://github.com/whchoi98/project-init/releases/tag/v1.0.0
+[2.1.0]: https://github.com/whchoi98/project-init/releases/tag/v2.1.0

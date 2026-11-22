@@ -3,6 +3,8 @@
 # Usage: bash tests/run-all.sh [test-file-pattern]
 # Example: bash tests/run-all.sh          # run all tests
 #          bash tests/run-all.sh hooks     # run only hook tests
+#          TEST_SKIP="hooks harness" bash tests/run-all.sh   # leave out the test files whose
+#                                                            # name matches one of the patterns
 
 set -euo pipefail
 
@@ -146,6 +148,12 @@ while IFS= read -r test_file <&3; do
     if [ -n "$FILTER" ] && ! grep -q -- "$FILTER" <<< "$test_name"; then
         continue
     fi
+    # TEST_SKIP: space-separated patterns; a test file whose name matches one is left out
+    for skip_pattern in ${TEST_SKIP:-}; do
+        if grep -q -- "$skip_pattern" <<< "$test_name"; then
+            continue 2
+        fi
+    done
 
     RUNALL_CURRENT="$test_name"
     echo -e "${CYAN}▸ $test_name${NC}"

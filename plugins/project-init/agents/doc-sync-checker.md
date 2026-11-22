@@ -2,6 +2,7 @@
 name: doc-sync-checker
 description: Read-only documentation audit for /project-init:sync-docs. Returns one report of module CLAUDE.md coverage, stale root CLAUDE.md and architecture.md content, ADR and runbook gaps, implementation reference problems (missing layer docs, broken Code Pointers, INDEX drift), and CLAUDE.md quality scores, with severity and confidence on every finding. Use it for a whole-project documentation audit, not a single-file question.
 tools: Read, Glob, Grep, Bash
+model: sonnet
 effort: medium
 color: cyan
 ---
@@ -44,7 +45,7 @@ Apply `## Module CLAUDE.md Coverage` as written, under each source root. Report 
 ### Architecture doc (`docs/architecture.md`)
 
 - Components: listed in the doc but gone from the code, or in the code but missing from the doc.
-- Diagrams: node names that no longer match modules, and legacy ASCII box diagrams to convert to a Mermaid flowchart per the Diagram Rules.
+- Figures: Mermaid node names that no longer match modules; for an infographic (a `<picture>` figure), component names in its page modules under `docs/images/architecture/` that no longer match modules, and image files it links that do not exist; and legacy ASCII box diagrams to replace per the Diagram Rules.
 - Layer coverage: every major source directory sits under an architectural layer.
 - Infrastructure tables: match the IaC (terraform/, cdk/, and so on) when it exists.
 - Key Design Decisions: consistent with `docs/decisions/`; flag decisions that reference a technology no longer in use.

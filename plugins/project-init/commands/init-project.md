@@ -20,8 +20,8 @@ Templates are in `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/`; 
 ## Rules
 
 - **Existing files win**, because users customize them and a second run must be safe: do not overwrite a file that exists; log it as `(existing, kept)`. These are updated in place instead, and logged as adapted:
-  - `README.md` and `CHANGELOG.md`, per the Update Rules in their templates;
-  - `.claude/settings.json`: add missing deny rules and hook registrations and keep every other key. A hook registered in an older form (a relative `bash .claude/hooks/...` path, or a gate with `|| true`) counts as registered: leave it for `/project-init:migrate-hooks`, which migrates it with a backup, instead of adding a second registration;
+  - `README.md` and `CHANGELOG.md`, per the Update Rules in their templates, which keep an existing single-language README single-language;
+  - `.claude/settings.json`: add missing deny and ask rules and hook registrations and keep every other key. A rule the file already has under `deny` stays there and is not added under `ask`, because deny wins and the user may have put it there on purpose. A hook registered in an older form (a relative `bash .claude/hooks/...` path, or a gate with `|| true`) counts as registered: leave it for `/project-init:migrate-hooks`, which migrates it with a backup, instead of adding a second registration;
   - `.gitignore`: append `.env`, `.claude/settings.local.json`, and `.claude/worktrees/` when missing;
   - the AUTO-MANAGED regions in `CLAUDE.md` and `docs/reference/INDEX.md`.
 - **Copy template code blocks as written**, changing only the adapt points in the Artifacts table and the `<...>` placeholders, because hooks, settings, and tests are contracts that a paraphrase breaks.
@@ -86,7 +86,7 @@ Collect every answer before writing any file, with detected values as defaults.
 Ask with the AskUserQuestion tool when it is available, because its answers arrive in this turn, where `allowed-tools` still cover the writes and commands that follow. Make as many calls as the items need (up to 4 questions of up to 4 options each), in this order:
 
 - The Existing harness question alone, when it applies, because a migrate answer ends the run.
-- One call with the confirmations: layers and components, each as `Accept` / `Edit` with the detected set named in the question text, plus git.
+- One call with the confirmations: layers and components, each as `Accept` / `Edit` with the detected set named in the question text, plus git, plus the architecture figures when the session has the `aws-infographic` skill.
 - Project facts and README fields: one question each, with the detected value or `Leave a TODO` as options and the value typed in "Other".
 - After an `Edit`: that checklist as `multiSelect` questions of up to four items (the eight layers in two, the components in groups of four). Mark each detected or pre-checked item in its option description, because the selection replaces the defaults.
 
@@ -99,7 +99,7 @@ Without the tool, ask everything in one chat message using the blocks below, and
 
    ```text
    Components (Core files are always generated):
-     [x] /test-all: runs `<test command>` and the harness tests (Default)
+     [x] /test-all: runs `<test command>`, and the harness tests when harness files changed (Default)
      [x] /review + code-reviewer agent: reviews the diff before a commit; the one review path (Default)
      [ ] /deploy: follows docs/runbooks/deploy-*.md, user-invoked only, refuses to deploy without a runbook (Optional)
      [ ] security-auditor agent: on-demand audit of secrets, dependencies, and configuration (Optional)
@@ -116,7 +116,8 @@ Without the tool, ask everything in one chat message using the blocks below, and
    With no pinned runtime or needed service detected, write `(nothing detected to report)` as the session-context `Detected:` list. With no git repository yet, append `needs a git repository to detect changes` to the verify-on-stop line.
 
 4. **README fields** detection could not fill: maintainer name, GitHub username, and an optional demo image or GIF path.
-5. **Git**. Without `.git/`: initialize a repository and commit the generated files (files that existed before this run stay untracked for the user to review and add)? With an existing repository: install the commit-msg hook that removes Co-Authored-By lines (it leaves a different existing hook or a hook manager alone and prints the line to add)?
+5. **Architecture figures**, only when the session's skill list has `aws-infographic` (writing-style-guide.md `## Diagram Rules`): build the README and `docs/architecture.md` figures as infographics in English and Korean (the default; it takes several minutes and asks for permission for the skill and its build commands), or write Mermaid flowcharts for this run. Without the skill, do not ask, and write Mermaid.
+6. **Git**. Without `.git/`: initialize a repository and commit the generated files (files that existed before this run stay untracked for the user to review and add)? With an existing repository: install the commit-msg hook that removes Co-Authored-By lines (it leaves a different existing hook or a hook manager alone and prints the line to add)?
 
 ## Artifacts
 
@@ -132,7 +133,8 @@ Create only the directories the selected artifacts need (`mkdir -p`).
 | `.claude/hooks/check-doc-sync.sh` | hook-scripts.md, check-doc-sync.sh | Core | `SOURCE_ROOTS` set to the detected source roots |
 | `scripts/setup.sh` | scripts-templates.md, setup.sh | Core | Detected prerequisites and install commands |
 | `scripts/install-hooks.sh` | scripts-templates.md, install-hooks.sh | Core | None |
-| `docs/architecture.md` | docs-templates.md, Architecture Document; writing-style-guide.md | Core | Components from the source, IaC, Dockerfiles, and dependency files, or for a new project from the answers and Plan-mode context; only the layers that apply |
+| `docs/architecture.md` | docs-templates.md, Architecture Document; writing-style-guide.md | Core | Components from the source, IaC, Dockerfiles, and dependency files, or for a new project from the answers and Plan-mode context; only the layers that apply; figures in the form chosen in question 5 |
+| `docs/images/architecture/` | writing-style-guide.md, Diagram Rules | Core, only when infographics were chosen in question 5 | The page modules and built figures that `README.md` and `docs/architecture.md` embed |
 | `docs/onboarding.md` | docs-templates.md, Onboarding Document | Core | Prerequisites and setup from the detected build system |
 | `docs/decisions/.template.md` | docs-templates.md, ADR Template | Core | None |
 | `docs/runbooks/.template.md` | docs-templates.md, Runbook Template | Core | None |
@@ -155,7 +157,7 @@ Create only the directories the selected artifacts need (`mkdir -p`).
 | `.claude/skills/release/SKILL.md` | skills-templates.md, Release Skill | Optional | Version files and test command |
 | `.claude/hooks/session-context.sh` | hook-scripts.md, session-context.sh | Optional, only with a detected fact to report | Per the template's Customize note |
 | `.claude/hooks/notify.sh` | hook-scripts.md, notify.sh | Optional | None |
-| `.claude/hooks/verify-on-stop.sh` | hook-scripts.md, verify-on-stop.sh (Stop Hook, opt-in) | Optional, only in a git repository (existing, or created per question 5) | Replace only the default `npm run lint` inside `${VERIFY_CMD:-...}` with the fast check, never a slow suite; keep the `${VERIFY_CMD:-...}` form, which the generated tests override |
+| `.claude/hooks/verify-on-stop.sh` | hook-scripts.md, verify-on-stop.sh (Stop Hook, opt-in) | Optional, only in a git repository (existing, or created per question 6) | Replace only the default `npm run lint` inside `${VERIFY_CMD:-...}` with the fast check, never a slow suite; keep the `${VERIFY_CMD:-...}` form, which the generated tests override |
 
 A selected component the Tier column rules out goes under Skipped with the reason.
 
@@ -184,7 +186,7 @@ Run these in order.
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/check-bilingual.py <each bilingual file this run created or updated>
    ```
 
-   The bilingual files are `README.md`, `CHANGELOG.md`, `docs/architecture.md`, `docs/decisions/.template.md`, `docs/runbooks/.template.md`, `docs/reference/INDEX.md`, and each `docs/reference/<layer>.md`. Name each one this run created or updated, leaving out any `(existing, kept)`; do not pass a glob, because one that matches nothing reaches the checker as a literal path and it exits 2. Without python3, skip the JSON and bilingual checks and report them `unavailable`.
+   The bilingual files are `README.md`, `CHANGELOG.md`, `docs/architecture.md`, `docs/decisions/.template.md`, `docs/runbooks/.template.md`, `docs/reference/INDEX.md`, and each `docs/reference/<layer>.md`. Name each one this run created or updated, leaving out any `(existing, kept)` and a README kept single-language; do not pass a glob, because one that matches nothing reaches the checker as a literal path and it exits 2. Without python3, skip the JSON and bilingual checks and report them `unavailable`.
 
    If a check fails on a file this run created or updated, fix that file and run the check again. Report these failures instead of fixing them:
    - A bilingual-check issue in content that existed before this run (a released CHANGELOG section, the user's own README prose): report it as pre-existing, because the templates' Update Rules keep that content unchanged.

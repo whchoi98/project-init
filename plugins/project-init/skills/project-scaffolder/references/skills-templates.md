@@ -25,13 +25,15 @@ Fill `<test command>` with the detected command (for example `npm test`, `pytest
 
 ```markdown
 ---
-description: Run the project's tests and the harness tests, then report failures. Use after a change, or when asked to run the tests.
-allowed-tools: Read, Grep, Bash(<test command> *), Bash(bash tests/run-all.sh *)
+description: Run the project's tests, and the harness tests when harness files changed, then report failures. Use after a change, or when asked to run the tests.
+allowed-tools: Read, Grep, Bash(<test command> *), Bash(bash tests/run-all.sh *), Bash(git status *)
 argument-hint: "[test file or pattern]"
 effort: low
 ---
 
-Run `<test command>` (pass $ARGUMENTS to it if given), then `bash tests/run-all.sh` for the harness tests.
+Run `<test command>` (pass $ARGUMENTS to it if given).
+
+Then run the harness tests, `bash tests/run-all.sh`, when $ARGUMENTS is empty and `git status --short -- .claude tests scripts CLAUDE.md .mcp.json` lists a change, or when the directory is not a git repository. Otherwise report them as `skipped (harness files unchanged)`, because the harness tests exercise those files and `/project-init:health-check` runs them in full.
 
 Report the totals for each suite first (passed, failed, skipped), then each failure with `file:line` and the assertion message. When a suite's command could not start, for example because a tool or the project's dependencies are missing, report it as not run, with the error, never as passed. If the cause is evident from the output, name it in one line. Do not change code unless asked, because the user decides whether a red test is a bug or a stale test.
 ```
