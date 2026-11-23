@@ -288,8 +288,39 @@ assert_eq "secret-scan: a pathspec on a second commit is scanned" "2" \
     "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -m y cfg.py')"
 assert_eq "secret-scan: two plain commits ignore unstaged changes" "0" \
     "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -m y')"
+# a commit's own quoted message is not command text: no commit, flag, pathspec, or cd is read from it
+assert_eq "secret-scan: 'git commit -a' inside a message does not widen the scan" "0" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m "docs: explain git commit -a in the guide"')"
+assert_eq "secret-scan: a file named after 'git commit' inside a message is not a pathspec" "0" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m "fix: make git commit cfg.py handling safer"')"
+assert_eq "secret-scan: a cd inside an earlier commit's message is not followed" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m "wip; cd .. is no longer needed" && git commit -am y')"
+# inside a quoted string the quotes pair the other way round, so nothing after it is skipped
+assert_eq "secret-scan: 'git commit' in an echo string does not hide a commit on the next line" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'echo "a git commit b"
+echo "c" && git commit -am x && echo "d"')"
+assert_eq "secret-scan: a commit inside bash -c does not hide a later one" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'bash -c "git commit --allow-empty -m x" && echo "a" && git commit -am y && echo "b"')"
+# identical commits are scanned once: a python3 on PATH that counts its runs (two per scan)
+HK_COUNT_BIN=$(mktemp -d)
+printf '#!/bin/sh\necho run >> "%s/runs"\nexec "%s" "$@"\n' "$HK_COUNT_BIN" "$(command -v python3)" > "$HK_COUNT_BIN/python3"
+chmod +x "$HK_COUNT_BIN/python3"
+HK_MANY=$(printf 'echo "run git commit when done"\n%.0s' 1 2 3 4 5 6 7 8 9 10 11 12)
+(cd "$HK_REPO" && PATH="$HK_COUNT_BIN:$PATH" CLAUDE_PROJECT_DIR="$HK_REPO" \
+    bash "$HK_ROOT/.claude/hooks/secret-scan.sh" "${HK_MANY}git commit -m x" >/dev/null 2>&1) || true
+assert_eq "secret-scan: commits that would scan the same files are scanned once" "2" \
+    "$( (wc -l < "$HK_COUNT_BIN/runs") 2>/dev/null | tr -d ' ')"
+rm -rf -- "$HK_COUNT_BIN"
+# more different commits than the hook scans on one line: the rest are reported, not passed silently
+HK_MANY=""
+for hk_n in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21; do
+    : > "$HK_REPO/f$hk_n.txt"
+    HK_MANY="${HK_MANY}git commit -m x f$hk_n.txt; "
+done
+assert_contains "secret-scan: commits past the per-line limit are reported as unscanned" \
+    "$(hk_scan_out "$HK_REPO" "$HK_MANY")" "more than 20 different git commit commands"
 (cd "$HK_REPO" && git add cfg.py) || true
-HK_OUT=$( (cd "$HK_REPO" && bash "$HK_ROOT/.claude/hooks/secret-scan.sh" 'git commit -m x && git commit -am y' 2>&1 >/dev/null) || true)
+HK_OUT=$( (cd "$HK_REPO" && CLAUDE_PROJECT_DIR="$HK_REPO" bash "$HK_ROOT/.claude/hooks/secret-scan.sh" 'git commit -m x && git commit -am y' 2>&1 >/dev/null) || true)
 assert_eq "secret-scan: a file that two chained commits would both contain is reported once" "1" \
     "$(grep -c 'Potential secret in cfg.py' <<< "$HK_OUT" || true)"
 rm -rf -- "$HK_REPO"   # -f: git objects are read-only, and rm would prompt on a terminal
@@ -307,6 +338,20 @@ assert_eq "secret-scan: a second commit with its own -C is scanned in that repos
     "$(hk_scan_rc "$HK_WS" 'git -C clean commit --allow-empty -m x && git -C dirty commit -m y')"
 assert_eq "secret-scan: a first commit in the repository with the secret still blocks" "2" \
     "$(hk_scan_rc "$HK_WS" 'git -C dirty commit -m y && git -C clean commit --allow-empty -m x')"
+assert_eq "secret-scan: commits on separate lines are each scanned where they run" "2" \
+    "$(hk_scan_rc "$HK_WS" 'cd clean
+git commit --allow-empty -m x
+cd ../dirty
+git commit -m y')"
+# a cd inside a closed subshell, or undone by popd, does not move a later commit
+assert_eq "secret-scan: a commit after a closed subshell runs in the outer directory" "2" \
+    "$(hk_scan_rc "$HK_WS/dirty" '(cd ../clean && git commit --allow-empty -m x) && git commit -m y')"
+assert_eq "secret-scan: a commit after popd runs in the directory pushd left" "2" \
+    "$(hk_scan_rc "$HK_WS/dirty" 'pushd ../clean && git commit --allow-empty -m x && popd && git commit -m y')"
+assert_eq "secret-scan: two subshells are each scanned in their own directory" "2" \
+    "$(hk_scan_rc "$HK_WS" '(cd clean && git commit --allow-empty -m x) && (cd dirty && git commit -m y)')"
+assert_eq "secret-scan: a commit inside a subshell is scanned where the subshell is" "0" \
+    "$(hk_scan_rc "$HK_WS/dirty" '(cd ../clean && git commit --allow-empty -m x)')"
 if git -C "$HK_WS" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     skip "secret-scan: a second commit in an unknown repo reported as unscanned" "the temp directory is inside a git work tree"
 else
