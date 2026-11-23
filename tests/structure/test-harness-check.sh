@@ -510,12 +510,16 @@ hc_run "$HC_P"
 hc_status "cap: matches in skipped files do not hide a match in source" sec-scan WARN
 assert_contains "cap: the source finding is named" "$(hc_line sec-scan)" "src/app.js:1"
 
-hc_variant capnogit || true
-rm -rf -- "$HC_P/.git" || true
-hc_many .env 650 "k = \"ghp_$HC_Z36\"" || true
-hc_secret src/app.js "const k = \"ghp_$HC_Z36\";" || true
-hc_run "$HC_P"
-assert_contains "cap: outside git, matches in .env do not hide a match in source" "$(hc_line sec-scan)" "src/app.js:1"
+HC_P="$HC_TMP/capnogit"
+hc_nogit "$HC_P" || true
+hc_n=0
+while [ "$hc_n" -lt 650 ]; do printf 'K%s=%s%s\n' "$hc_n" 'ghp_' "$HC_Z36"; hc_n=$((hc_n + 1)); done > "$HC_P/.env" || true
+if git -C "$HC_P" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    skip "cap: outside git, matches in .env do not hide a match in source" "the temp directory is inside a git work tree"
+else
+    hc_run "$HC_P"
+    assert_contains "cap: outside git, matches in .env do not hide a match in source" "$(hc_line sec-scan)" "src/app.py:1"
+fi
 
 hc_variant capfull || true
 hc_many src/a/many.py 650 "k = \"ghp_$HC_Z36\"" || true

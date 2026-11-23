@@ -27,7 +27,7 @@ Each line is `<STATUS> <id> <earned>/<max> <detail>` (PASS, FAIL, WARN, INFO, SK
 - **Tests**: if `tests/run-all.sh` exists, run `bash tests/run-all.sh` once and report the passed and failed counts from its summary plus the names of failing tests.
 - **Status**, first match wins:
   - CRITICAL: any `contract-*` line is FAIL, you judged a committed secret real, or the harness Grade is D or F.
-  - NEEDS ATTENTION: `secret-scan-scope` or `doc-sync-scope` is WARN; `hook-reg-secret-scan`, `hook-reg-verify-on-stop`, `hook-python3`, or `hook-disable-all` is WARN, because then a gate may not run; any other line is FAIL; the test run failed; the harness Grade is B or C; or the CLAUDE.md grade is D or F.
+  - NEEDS ATTENTION: `secret-scan-scope` or `doc-sync-scope` is WARN; `hook-reg-secret-scan`, `hook-reg-verify-on-stop`, `hook-python3`, or `hook-disable-all` is WARN, because then a gate may not run; the `sec-scan` line says matching lines were not examined; any other line is FAIL; the test run failed; the harness Grade is B or C; or the CLAUDE.md grade is D or F.
   - HEALTHY: otherwise.
 
 ## Recommended Actions
@@ -41,6 +41,7 @@ Give an action for every FAIL and WARN line and every CLAUDE.md deduction, one l
 | a real secret | Rotate the credential first, since it is in git history; then move it to `.env` (`.env.example` is the template) |
 | missing Core files, hooks, docs, or tests | Run `/project-init:init-project`, which keeps existing files, or name the one file to add |
 | `hook-reg-*` FAIL or WARN | Register the hook, or rewrite its `command` in `.claude/settings.json`, in the form `${CLAUDE_PLUGIN_ROOT}/skills/project-scaffolder/references/settings-json-template.md` shows |
+| `sec-scan` WARN that says lines were not examined | Judge the listed matches first. The scan stopped at its line limit, so name the files that hold most of the matching lines (often sample data), and run `/project-init:health-check` again once they are reduced |
 | `hook-python3` WARN | Install python3, or replace the `python3` on PATH that does not run (such as the Windows Store alias) |
 | `hook-disable-all` WARN | Remove `"disableAllHooks": true` from the file the detail names, unless the user set it on purpose |
 | `hook-verify-cmd` WARN | Set `VERIFY_CMD=` in `.claude/hooks/verify-on-stop.sh` to the project's fast check, or remove the hook and its Stop registration |

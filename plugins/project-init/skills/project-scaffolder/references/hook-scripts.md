@@ -129,7 +129,7 @@ done
 
 Path: `.claude/hooks/secret-scan.sh`
 
-This hook gates `git commit`, including `git -C <dir> commit`, `git -c k=v commit` (quoted values too), and commits chained with `&&`, `;`, or `|`. It analyses every `git commit` on the line and runs git where each one will run: Claude's working directory, then any `cd` or `pushd` earlier on the line (options such as `-P` or `--` included), `-C`, `--git-dir`, and `--work-tree`. It scans what the commit will contain and blocks with exit 2 when a file matches a pattern. Every other Bash command exits 0 with no output. The `project-init:commit-scope` marker in the header tells `/project-init:health-check` and `/project-init:migrate-hooks` that the script has the commit-scope fix, so keep it.
+This hook gates `git commit`, including `git -C <dir> commit`, `git -c k=v commit` (quoted values too), and commits chained with `&&`, `;`, or `|`. It analyses every `git commit` on the line and runs git where each one will run: Claude's working directory, then any `cd` or `pushd` earlier on the line (options such as `-P` or `--` included, and undone by `popd` or the end of a `( ... )`), `-C`, `--git-dir`, and `--work-tree`. A commit's own arguments, its message included, are not read as commands. It scans what the commit will contain and blocks with exit 2 when a file matches a pattern. Every other Bash command exits 0 with no output. The `project-init:commit-scope` marker in the header tells `/project-init:health-check` and `/project-init:migrate-hooks` that the script has the commit-scope fix, so keep it.
 
 The hook reads the command text, so it cannot see commits that rebase, cherry-pick, am, merge, a git alias, or a script make, and it does not follow a directory given as a variable.
 
@@ -143,11 +143,15 @@ The hook reads the command text, so it cannot see commits that rebase, cherry-pi
 # non-ignored files, and the ignored files that `add -f` names, taken from the directory that add
 # runs in. That last case over-approximates on purpose; the block message names the file.
 # It follows `cd`/`pushd` earlier on the line (with -L, -P, or --), `git -C`, and
-# `--git-dir`/`--work-tree`. Every `git commit` on the line is scanned, each in the directory and
-# repository it runs in, so `git commit -m a && git commit -am b` scans what both would contain.
+# `--git-dir`/`--work-tree`, returns on `popd`, and leaves a closed `( ... )` where it entered it.
+# Every `git commit` on the line is scanned, each in the directory and repository it runs in, so
+# `git commit -m a && git commit -am b` scans what both would contain. A commit's own arguments,
+# its message included, are not read as commands. Commits that would scan the same files are
+# scanned once, and a line with more than MAX_SCANS different commits reports the rest as unscanned.
 # Best effort: it reads the command text, so commits made by rebase, cherry-pick, am, merge, a git
 # alias, or a script are not seen, and a directory given as a variable ($DIR) is not followed. The
-# words `git commit` inside a quoted message count as a commit too, which only widens the scan.
+# words `git commit` in other text, such as an echo string or a heredoc body, count as a commit,
+# which only widens the scan.
 # Input: the command as $1 (tests), else the event JSON on stdin (tool_input.command, cwd).
 # Stdin is read only when no argument is given, so a test passing "" never blocks.
 # Exit 2 blocks the tool call (ADR-008). Any other command exits 0 with no output.
@@ -238,8 +242,14 @@ VALUE_FLAG_RE='^-[^mFCct]*[mFCct]$'   # -m, -am, -F, -C, -c, -t: the value is th
 GIT_OPTS='([[:space:]]+(-[cC][[:space:]]+'"$WORD"'|--(git-dir|work-tree|namespace|config-env|exec-path|super-prefix)[[:space:]]+'"$WORD"'|--?[[:alnum:]]('"$WORD"')?))*'
 COMMIT_RE='(^|[^[:alnum:]_.-])git'"$GIT_OPTS"'[[:space:]]+commit([^[:alnum:]_-]|$)'
 ADD_RE='(^|[^[:alnum:]_.-])git'"$GIT_OPTS"'[[:space:]]+(add|stage)([^[:alnum:]_-]|$)'
-# cd/pushd and its directory (BASH_REMATCH[5]); -L, -P, -e, -@, and -- before it are options
-CD_RE='(^|[;&|(){}'$'\n''])[[:space:]]*(cd|pushd)[[:space:]]+((-[LPe@]+|--)[[:space:]]+)*('"$WORD"')'
+# What moves the directory a later command runs in: a parenthesis (BASH_REMATCH[1]), popd ([4]), or
+# cd/pushd ([6]) and its directory ([9]); -L, -P, -e, -@, and -- before the directory are options
+DIR_RE='([()])|(^|[;&|{}'$'\n''])[[:space:]]*((popd)([^[:alnum:]_-]|$)|(cd|pushd)[[:space:]]+((-[LPe@]+|--)[[:space:]]+)*('"$WORD"'))'
+# One argument word of a command, on the command's own line
+OWN_WORD_RE='^[ '$'\t'']*('"$WORD"')'
+# Text in which every quote is closed, so what follows it is not inside a quoted string
+BALANCED_RE='^([^\"'"$SQ"']|\\.|"([^\"]|\\.)*"|'"$SQ[^$SQ]*$SQ"')*$'
+MAX_SCANS=20   # different commits scanned per command line; more are reported as not scanned
 [[ "$CMD" =~ $COMMIT_RE ]] || exit 0
 
 # split_words <text>: set WORDS to the shell words at the start of <text>, up to the first
@@ -277,12 +287,40 @@ chdir() {
     dir=$(unquote "$1") || { UNRESOLVED=true; return 0; }
     cd "$dir" >/dev/null 2>&1 || true
 }
-# follow_cd <text>: follow every cd or pushd in <text>, in order
+# follow_cd <text>: end in the directory a command after <text> runs in. It follows every cd and
+# pushd in order, returns on popd, and leaves a closed ( ... ) or $( ... ) where it entered it.
 follow_cd() {
-    local text="$1"
-    while [[ "$text" =~ $CD_RE ]]; do
-        chdir "${BASH_REMATCH[5]}"
+    local text="$1" paren verb dir n
+    local entered=() marks=() pushed=()   # per open parenthesis: directory and pushd depth; pushd stack
+    while [[ "$text" =~ $DIR_RE ]]; do
+        paren="${BASH_REMATCH[1]}"; verb="${BASH_REMATCH[4]}${BASH_REMATCH[6]}"; dir="${BASH_REMATCH[9]}"
         text="${text#*"${BASH_REMATCH[0]}"}"
+        case "$paren$verb" in
+            "(") entered+=("$PWD"); marks+=("${#pushed[@]}") ;;
+            ")")
+                n=${#entered[@]}
+                [ "$n" -gt 0 ] || continue
+                cd "${entered[$((n - 1))]}" >/dev/null 2>&1 || true
+                while [ "${#pushed[@]}" -gt "${marks[$((n - 1))]}" ]; do unset "pushed[$((${#pushed[@]} - 1))]"; done
+                unset "entered[$((n - 1))]" "marks[$((n - 1))]" ;;
+            popd)
+                n=${#pushed[@]}
+                [ "$n" -gt 0 ] || continue
+                cd "${pushed[$((n - 1))]}" >/dev/null 2>&1 || true
+                unset "pushed[$((n - 1))]" ;;
+            pushd) pushed+=("$PWD"); chdir "$dir" ;;
+            cd) chdir "$dir" ;;
+        esac
+    done
+}
+# own_args <text after a command name>: set OWN to the command's argument words, which end at an
+# unquoted newline or control operator
+own_args() {
+    local rest="$1"
+    OWN=""
+    while [[ "$rest" =~ $OWN_WORD_RE ]]; do
+        OWN="$OWN${BASH_REMATCH[0]}"
+        rest="${rest:${#BASH_REMATCH[0]}}"
     done
 }
 
@@ -386,9 +424,10 @@ unscanned() {
     exit 3
 }
 
-# scan_commit <text before the commit> <commit match> <text after it>: scan what one `git commit`
+# scan_commit <text before the commit> <commit match> <its arguments>: scan what one `git commit`
 # would contain. It runs in a subshell, because each commit on the line may run in its own directory
-# and repository. Exit status: 0 nothing found, 2 a secret found, 3 the commit could not be scanned.
+# and repository. Exit status: 0 nothing found, 2 a secret found, 3 the commit could not be scanned,
+# 4 an earlier commit on the line already scanned the same files.
 scan_commit() (
     # --- Run git where the commit will run: Claude's cwd, earlier cd/pushd, then -C/--git-dir ---
     [ -n "$HOOK_CWD" ] && cd "$HOOK_CWD" 2>/dev/null
@@ -414,10 +453,6 @@ scan_commit() (
             UNRESOLVED=true
         fi
     done
-    if ! git rev-parse --git-dir >/dev/null 2>&1; then
-        $UNRESOLVED && unscanned "could not find the repository this commit runs in"
-        exit 0
-    fi
 
     # --- Work out what the commit will contain ---
     split_words "$3"
@@ -445,6 +480,18 @@ scan_commit() (
         path=$(unquote "$word") && { [ -e "$path" ] || case "$path" in *[*?[]*) true ;; *) false ;; esac; } &&
             PATHSPECS+=("$path")
     done
+
+    # A commit that would scan the same files as an earlier one on the line is not scanned again.
+    # The first line printed is that key; the caller records it.
+    key="$PWD|${GIT_DIR:-}|${GIT_WORK_TREE:-}|$UNRESOLVED|$SCAN_TRACKED|${PATHSPECS[*]}"
+    key="${key//$'\n'/ }"
+    case "$KEYS" in *$'\n'"$key"$'\n'*) exit 4 ;; esac
+    printf '%s\n' "$key"
+    [ "$SCANS" -lt "$MAX_SCANS" ] || unscanned "more than $MAX_SCANS different git commit commands on one line"
+    if ! git rev-parse --git-dir >/dev/null 2>&1; then
+        $UNRESOLVED && unscanned "could not find the repository this commit runs in"
+        exit 0
+    fi
 
     # Pathspecs are relative to this directory; git diff prints repo-relative paths from anywhere.
     COMMIT_DIR="$PWD"
@@ -528,30 +575,49 @@ sys.exit(2 if found else 0)
 
 # --- Scan every `git commit` on the line ---
 BLOCKED=false
-UNSCANNED=""   # why the first commit that could not be scanned was not
-REPORT=""
+UNSCANNED=""    # why the first commit that could not be scanned was not
+KEYS=$'\n'      # one line per commit scanned so far (scan_commit's key)
+SCANS=0
+SEEN=$'\n'      # report lines printed so far, each with its commit's directory
 rest="$CMD"
+trail=""        # the text before $rest, without the arguments of the commits found in it
 while [[ "$rest" =~ $COMMIT_RE ]]; do
     commit_match="${BASH_REMATCH[0]}"
-    before="${CMD%"$rest"}${rest%%"$commit_match"*}"
-    after=$(args_after "$rest" "$commit_match")
+    lead="${rest%%"$commit_match"*}"
+    quoted="${CMD%"$rest"}$lead${commit_match%%git*}"   # everything up to the word git
     rest="${rest#*"$commit_match"}"
-    report=$(scan_commit "$before" "$commit_match" "$after" 2>&1)
-    case $? in
+    # The commit's flags, message, and pathspecs: the words up to the end of its command. A match
+    # that ends in anything but a blank (an operator, a newline, the end of the text) has none.
+    OWN=""
+    case "$commit_match" in *[[:blank:]]) own_args "$rest" ;; esac
+    # cd and parentheses are followed in $trail, so an earlier commit's message is not read as commands
+    report=$(scan_commit "$trail$lead" "$commit_match" "$OWN" 2>&1)
+    status=$?
+    trail="$trail$lead$commit_match"
+    # The arguments of a commit outside every quoted string are not searched for another commit.
+    # Inside a quoted string the quotes pair the other way round, so nothing is skipped there.
+    [[ "$quoted" =~ $BALANCED_RE ]] && rest="${rest:${#OWN}}"
+    [ "$status" -eq 4 ] && continue
+    key="${report%%$'\n'*}"
+    KEYS="$KEYS$key"$'\n'
+    SCANS=$((SCANS + 1))
+    case "$report" in *$'\n'*) report="${report#*$'\n'}" ;; *) report="" ;; esac
+    case "$status" in
+        0) ;;
         2) BLOCKED=true ;;
         3) [ -n "$UNSCANNED" ] || UNSCANNED="${report##*$'\n'}"
            report="${report%"${report##*$'\n'}"}" ;;
+        *) [ -n "$UNSCANNED" ] || UNSCANNED="the scan stopped (status $status)" ;;
     esac
-    [ -n "$report" ] && REPORT="$REPORT$report"$'\n'
+    # Chained commits share the index, so two of them can report the same file: print a line once
+    # per directory the commits run in
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        case "$SEEN" in *$'\n'"${key%%|*}|$line"$'\n'*) continue ;; esac
+        SEEN="$SEEN${key%%|*}|$line"$'\n'
+        printf '%s\n' "$line" >&2
+    done <<< "$report"
 done
-
-# Chained commits share the index, so two of them can report the same file: print each line once
-SEEN=$'\n'
-while IFS= read -r line; do
-    case "$SEEN" in *$'\n'"$line"$'\n'*) continue ;; esac
-    SEEN="$SEEN$line"$'\n'
-    [ -n "$line" ] && printf '%s\n' "$line" >&2
-done <<< "$REPORT"
 
 if $BLOCKED; then
     echo "[secret-scan] BLOCKED: move the secret to .env (.env.example is the template) and retry. If a match is a false positive (a pattern definition or test fixture), tell the user the file and pattern instead of rewording the commit." >&2
