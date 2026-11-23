@@ -403,6 +403,38 @@ hc_settings '{"permissions": {"deny": ["Bash(rm -rf *)"]}, "hooks": {
 hc_run "$HC_P"
 hc_status "groups: a group without a matcher matches Bash" hook-reg-secret-scan PASS
 
+# JSON key order carries no meaning: a group may list "hooks" before "matcher"
+hc_variant keyorder || true
+hc_settings '{"hooks": {"PreToolUse": [{"hooks": [{"type": "command", "command": '"$HC_GATE"'"}], "matcher": "Write"}]}}' || true
+hc_run "$HC_P"
+hc_status "keyorder: a matcher after hooks still scopes the group" hook-reg-secret-scan FAIL
+assert_contains "keyorder: the finding names the matcher" "$(hc_line hook-reg-secret-scan)" "matcher 'Write' does not cover Bash"
+hc_settings '{"hooks": {"PreToolUse": [
+    {"hooks": [{"type": "command", "command": "echo edit"}], "matcher": "Edit"},
+    {"hooks": [{"type": "command", "command": '"$HC_GATE"'"}], "matcher": "Bash"}]}}' || true
+hc_run "$HC_P"
+hc_status "keyorder: each group keeps its own trailing matcher" hook-reg-secret-scan PASS
+hc_settings '{
+  "statusLine": {"type": "command", "command": "echo {status}"},
+  "hooks":
+  {
+    "PreToolUse":
+    [
+      {
+        "hooks":
+        [
+          {"command": '"$HC_GATE"'", "type": "command", "env": {"NOTE": "a } and a ] in a string"}}
+        ],
+        "matcher"
+          : "Write"
+      }
+    ]
+  }
+}' || true
+hc_run "$HC_P"
+assert_contains "keyorder: line breaks and braces inside strings do not change the reading" "$(hc_line hook-reg-secret-scan)" \
+    "matcher 'Write' does not cover Bash"
+
 hc_variant gatetail || true
 hc_settings '{"hooks": {"PreToolUse": [{"matcher": "Bash", "hooks": [{"type": "command", "command": '"$HC_GATE"' || echo failed"}]}]}}' || true
 hc_run --contract-only "$HC_P"
@@ -460,6 +492,36 @@ hc_run "$HC_P"
 for HC_F in src/a/example.py EXAMPLES/app.py tests/fixtures/other.txt; do
     assert_contains "samples: finds $HC_F" "$(hc_line sec-scan)" "$HC_F:1"
 done
+
+# The cap on examined lines counts only lines that can become findings, and reaching it is reported.
+# hc_many FILE COUNT LINE: write LINE to FILE in HC_P COUNT times and stage it.
+hc_many() {
+    local i=0
+    mkdir -p "$(dirname "$HC_P/$1")"
+    while [ "$i" -lt "$2" ]; do printf '%s\n' "$3"; i=$((i + 1)); done > "$HC_P/$1"
+    ( cd "$HC_P" && git add -- "$1" )
+    return 0
+}
+
+hc_variant capskip || true
+hc_many docs/big.md 650 "k = \"ghp_$HC_Z36\"" || true
+hc_secret src/app.js "const k = \"ghp_$HC_Z36\";" || true
+hc_run "$HC_P"
+hc_status "cap: matches in skipped files do not hide a match in source" sec-scan WARN
+assert_contains "cap: the source finding is named" "$(hc_line sec-scan)" "src/app.js:1"
+
+hc_variant capnogit || true
+rm -rf -- "$HC_P/.git" || true
+hc_many .env 650 "k = \"ghp_$HC_Z36\"" || true
+hc_secret src/app.js "const k = \"ghp_$HC_Z36\";" || true
+hc_run "$HC_P"
+assert_contains "cap: outside git, matches in .env do not hide a match in source" "$(hc_line sec-scan)" "src/app.js:1"
+
+hc_variant capfull || true
+hc_many src/a/many.py 650 "k = \"ghp_$HC_Z36\"" || true
+hc_run "$HC_P"
+hc_status "cap: more matching lines than the cap is a finding" sec-scan WARN
+assert_contains "cap: the finding says the rest were not examined" "$(hc_line sec-scan)" "were not examined"
 
 # --- One project, independent signals: disableAllHooks, .mcp.json literals, .gitignore coverage,
 # and the Optional verify-on-stop gate's VERIFY_CMD ---

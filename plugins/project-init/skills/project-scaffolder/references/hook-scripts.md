@@ -129,7 +129,7 @@ done
 
 Path: `.claude/hooks/secret-scan.sh`
 
-This hook gates `git commit`, including `git -C <dir> commit`, `git -c k=v commit` (quoted values too), and commits chained with `&&`, `;`, or `|`. It runs git where the commit will run: Claude's working directory, then any `cd` or `pushd` earlier on the line (options such as `-P` or `--` included), `-C`, `--git-dir`, and `--work-tree`. It scans what the commit will contain and blocks with exit 2 when a file matches a pattern. Every other Bash command exits 0 with no output. The `project-init:commit-scope` marker in the header tells `/project-init:health-check` and `/project-init:migrate-hooks` that the script has the commit-scope fix, so keep it.
+This hook gates `git commit`, including `git -C <dir> commit`, `git -c k=v commit` (quoted values too), and commits chained with `&&`, `;`, or `|`. It analyses every `git commit` on the line and runs git where each one will run: Claude's working directory, then any `cd` or `pushd` earlier on the line (options such as `-P` or `--` included), `-C`, `--git-dir`, and `--work-tree`. It scans what the commit will contain and blocks with exit 2 when a file matches a pattern. Every other Bash command exits 0 with no output. The `project-init:commit-scope` marker in the header tells `/project-init:health-check` and `/project-init:migrate-hooks` that the script has the commit-scope fix, so keep it.
 
 The hook reads the command text, so it cannot see commits that rebase, cherry-pick, am, merge, a git alias, or a script make, and it does not follow a directory given as a variable.
 
@@ -143,9 +143,11 @@ The hook reads the command text, so it cannot see commits that rebase, cherry-pi
 # non-ignored files, and the ignored files that `add -f` names, taken from the directory that add
 # runs in. That last case over-approximates on purpose; the block message names the file.
 # It follows `cd`/`pushd` earlier on the line (with -L, -P, or --), `git -C`, and
-# `--git-dir`/`--work-tree`.
+# `--git-dir`/`--work-tree`. Every `git commit` on the line is scanned, each in the directory and
+# repository it runs in, so `git commit -m a && git commit -am b` scans what both would contain.
 # Best effort: it reads the command text, so commits made by rebase, cherry-pick, am, merge, a git
-# alias, or a script are not seen, and a directory given as a variable ($DIR) is not followed.
+# alias, or a script are not seen, and a directory given as a variable ($DIR) is not followed. The
+# words `git commit` inside a quoted message count as a commit too, which only widens the scan.
 # Input: the command as $1 (tests), else the event JSON on stdin (tool_input.command, cwd).
 # Stdin is read only when no argument is given, so a test passing "" never blocks.
 # Exit 2 blocks the tool call (ADR-008). Any other command exits 0 with no output.
@@ -239,7 +241,6 @@ ADD_RE='(^|[^[:alnum:]_.-])git'"$GIT_OPTS"'[[:space:]]+(add|stage)([^[:alnum:]_-
 # cd/pushd and its directory (BASH_REMATCH[5]); -L, -P, -e, -@, and -- before it are options
 CD_RE='(^|[;&|(){}'$'\n''])[[:space:]]*(cd|pushd)[[:space:]]+((-[LPe@]+|--)[[:space:]]+)*('"$WORD"')'
 [[ "$CMD" =~ $COMMIT_RE ]] || exit 0
-COMMIT_MATCH="${BASH_REMATCH[0]}"
 
 # split_words <text>: set WORDS to the shell words at the start of <text>, up to the first
 # control operator (; & | < > parentheses) or unbalanced quote
@@ -285,62 +286,6 @@ follow_cd() {
     done
 }
 
-# --- Run git where the commit will run: Claude's cwd, earlier cd/pushd, then -C/--git-dir ---
-[ -n "$HOOK_CWD" ] && cd "$HOOK_CWD" 2>/dev/null
-follow_cd "${CMD%%"$COMMIT_MATCH"*}"
-split_words "${COMMIT_MATCH#*git}"
-LOCATIONS=()   # --git-dir=<dir> and --work-tree=<dir>
-i=0
-while [ "$i" -lt "${#WORDS[@]}" ]; do
-    next="${WORDS[$((i + 1))]:-}"
-    case "${WORDS[$i]}" in
-        -C) chdir "$next"; i=$((i + 1)) ;;
-        --git-dir|--work-tree) LOCATIONS+=("${WORDS[$i]}=$next"); i=$((i + 1)) ;;
-        --git-dir=*|--work-tree=*) LOCATIONS+=("${WORDS[$i]}") ;;
-        -c|--namespace|--config-env|--exec-path|--super-prefix) i=$((i + 1)) ;;
-    esac
-    i=$((i + 1))
-done
-# git resolves them after every -C, so make them absolute from here
-for location in "${LOCATIONS[@]}"; do
-    if dir=$(unquote "${location#*=}") && dir=$(cd "$dir" 2>/dev/null && pwd); then
-        case "$location" in --git-dir=*) export GIT_DIR="$dir" ;; *) export GIT_WORK_TREE="$dir" ;; esac
-    else
-        UNRESOLVED=true
-    fi
-done
-if ! git rev-parse --git-dir >/dev/null 2>&1; then
-    $UNRESOLVED && warn_unscanned "could not find the repository this commit runs in"
-    exit 0
-fi
-
-# --- Work out what the commit will contain ---
-split_words "$(args_after "$CMD" "$COMMIT_MATCH")"
-SCAN_TRACKED=false
-PATHSPECS=()
-value_next=false
-paths_only=false
-for word in "${WORDS[@]}"; do
-    if $value_next; then value_next=false; continue; fi
-    plain="${word//\"/}"; plain="${plain//\'/}"
-    if ! $paths_only; then
-        case "$plain" in
-            --) paths_only=true; continue ;;
-            --all) SCAN_TRACKED=true; continue ;;
-            --message|--file|--reuse-message|--reedit-message|--template|--author|--date|--cleanup|--trailer|--fixup|--squash)
-                value_next=true; continue ;;
-            --*) continue ;;
-            -*)
-                case "$plain" in -*a*) SCAN_TRACKED=true ;; esac
-                [[ "$plain" =~ $VALUE_FLAG_RE ]] && value_next=true
-                continue ;;
-        esac
-    fi
-    # a path that exists, or a glob, quoted or not: as a pathspec it covers what the shell expands
-    path=$(unquote "$word") && { [ -e "$path" ] || case "$path" in *[*?[]*) true ;; *) false ;; esac; } &&
-        PATHSPECS+=("$path")
-done
-
 # add_directory <text before the add> <add match>: print the directory `git add` runs in: Claude's
 # cwd, then the cd/pushd before it on the line, then its own -C. A subshell, so the hook stays put.
 add_directory() (
@@ -366,7 +311,6 @@ FORCE_ALL=false
 rest="$CMD"
 while [[ "$rest" =~ $ADD_RE ]]; do
     ADDS=true
-    SCAN_TRACKED=true
     add_match="${BASH_REMATCH[0]}"
     before="${CMD%"$rest"}${rest%%"$add_match"*}"
     split_words "$(args_after "$rest" "$add_match")"
@@ -393,13 +337,8 @@ while [[ "$rest" =~ $ADD_RE ]]; do
     fi
 done
 
-# Pathspecs are relative to this directory; git diff prints repo-relative paths from anywhere.
-COMMIT_DIR="$PWD"
-cd "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || exit 0
-PREFIX=""   # the project's path inside the repository, when it is a subdirectory
-[ "$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null)" = "$PWD" ] &&
-    PREFIX=$(git -C "$ROOT" rev-parse --show-prefix 2>/dev/null)
-
+# The functions below run inside scan_commit, which sets PREFIX, SCAN_TRACKED, PATHSPECS, and
+# COMMIT_DIR for one commit.
 # skipped <path>: whether SKIP_PATTERNS excludes <path>
 skipped() {
     local pattern
@@ -441,13 +380,86 @@ scan_list() {
     fi
 }
 
-if ! python3 -c '' >/dev/null 2>&1; then
-    [ -n "$(scan_list | tr '\000' '\n')" ] && warn_unscanned "python3 is not available"
-    exit 0
-fi
+# unscanned <reason>: end scan_commit with status 3; the reason is the last line it prints
+unscanned() {
+    echo "$1" >&2
+    exit 3
+}
 
-# --- Scan ---
-scan_list | python3 -c '
+# scan_commit <text before the commit> <commit match> <text after it>: scan what one `git commit`
+# would contain. It runs in a subshell, because each commit on the line may run in its own directory
+# and repository. Exit status: 0 nothing found, 2 a secret found, 3 the commit could not be scanned.
+scan_commit() (
+    # --- Run git where the commit will run: Claude's cwd, earlier cd/pushd, then -C/--git-dir ---
+    [ -n "$HOOK_CWD" ] && cd "$HOOK_CWD" 2>/dev/null
+    follow_cd "$1"
+    split_words "${2#*git}"
+    LOCATIONS=()   # --git-dir=<dir> and --work-tree=<dir>
+    i=0
+    while [ "$i" -lt "${#WORDS[@]}" ]; do
+        next="${WORDS[$((i + 1))]:-}"
+        case "${WORDS[$i]}" in
+            -C) chdir "$next"; i=$((i + 1)) ;;
+            --git-dir|--work-tree) LOCATIONS+=("${WORDS[$i]}=$next"); i=$((i + 1)) ;;
+            --git-dir=*|--work-tree=*) LOCATIONS+=("${WORDS[$i]}") ;;
+            -c|--namespace|--config-env|--exec-path|--super-prefix) i=$((i + 1)) ;;
+        esac
+        i=$((i + 1))
+    done
+    # git resolves them after every -C, so make them absolute from here
+    for location in "${LOCATIONS[@]}"; do
+        if dir=$(unquote "${location#*=}") && dir=$(cd "$dir" 2>/dev/null && pwd); then
+            case "$location" in --git-dir=*) export GIT_DIR="$dir" ;; *) export GIT_WORK_TREE="$dir" ;; esac
+        else
+            UNRESOLVED=true
+        fi
+    done
+    if ! git rev-parse --git-dir >/dev/null 2>&1; then
+        $UNRESOLVED && unscanned "could not find the repository this commit runs in"
+        exit 0
+    fi
+
+    # --- Work out what the commit will contain ---
+    split_words "$3"
+    SCAN_TRACKED=$ADDS
+    PATHSPECS=()
+    value_next=false
+    paths_only=false
+    for word in "${WORDS[@]}"; do
+        if $value_next; then value_next=false; continue; fi
+        plain="${word//\"/}"; plain="${plain//\'/}"
+        if ! $paths_only; then
+            case "$plain" in
+                --) paths_only=true; continue ;;
+                --all) SCAN_TRACKED=true; continue ;;
+                --message|--file|--reuse-message|--reedit-message|--template|--author|--date|--cleanup|--trailer|--fixup|--squash)
+                    value_next=true; continue ;;
+                --*) continue ;;
+                -*)
+                    case "$plain" in -*a*) SCAN_TRACKED=true ;; esac
+                    [[ "$plain" =~ $VALUE_FLAG_RE ]] && value_next=true
+                    continue ;;
+            esac
+        fi
+        # a path that exists, or a glob, quoted or not: as a pathspec it covers what the shell expands
+        path=$(unquote "$word") && { [ -e "$path" ] || case "$path" in *[*?[]*) true ;; *) false ;; esac; } &&
+            PATHSPECS+=("$path")
+    done
+
+    # Pathspecs are relative to this directory; git diff prints repo-relative paths from anywhere.
+    COMMIT_DIR="$PWD"
+    cd "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || exit 0
+    PREFIX=""   # the project's path inside the repository, when it is a subdirectory
+    [ "$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null)" = "$PWD" ] &&
+        PREFIX=$(git -C "$ROOT" rev-parse --show-prefix 2>/dev/null)
+
+    if ! python3 -c '' >/dev/null 2>&1; then
+        [ -n "$(scan_list | tr '\000' '\n')" ] && unscanned "python3 is not available"
+        exit 0
+    fi
+
+    # --- Scan ---
+    scan_list | python3 -c '
 import re, subprocess, sys
 
 rules = []
@@ -509,13 +521,43 @@ for entry in sys.stdin.buffer.read().split(b"\0"):
             found = True
 sys.exit(2 if found else 0)
 ' "${PATTERNS[@]}"
-SCAN_RC=$?
+    rc=$?
+    [ "$rc" -eq 0 ] || [ "$rc" -eq 2 ] || unscanned "the scan failed (rc=$rc)"
+    exit "$rc"
+)
 
-if [ "$SCAN_RC" -eq 2 ]; then
+# --- Scan every `git commit` on the line ---
+BLOCKED=false
+UNSCANNED=""   # why the first commit that could not be scanned was not
+REPORT=""
+rest="$CMD"
+while [[ "$rest" =~ $COMMIT_RE ]]; do
+    commit_match="${BASH_REMATCH[0]}"
+    before="${CMD%"$rest"}${rest%%"$commit_match"*}"
+    after=$(args_after "$rest" "$commit_match")
+    rest="${rest#*"$commit_match"}"
+    report=$(scan_commit "$before" "$commit_match" "$after" 2>&1)
+    case $? in
+        2) BLOCKED=true ;;
+        3) [ -n "$UNSCANNED" ] || UNSCANNED="${report##*$'\n'}"
+           report="${report%"${report##*$'\n'}"}" ;;
+    esac
+    [ -n "$report" ] && REPORT="$REPORT$report"$'\n'
+done
+
+# Chained commits share the index, so two of them can report the same file: print each line once
+SEEN=$'\n'
+while IFS= read -r line; do
+    case "$SEEN" in *$'\n'"$line"$'\n'*) continue ;; esac
+    SEEN="$SEEN$line"$'\n'
+    [ -n "$line" ] && printf '%s\n' "$line" >&2
+done <<< "$REPORT"
+
+if $BLOCKED; then
     echo "[secret-scan] BLOCKED: move the secret to .env (.env.example is the template) and retry. If a match is a false positive (a pattern definition or test fixture), tell the user the file and pattern instead of rewording the commit." >&2
     exit 2
 fi
-[ "$SCAN_RC" -ne 0 ] && warn_unscanned "the scan failed (rc=$SCAN_RC)"
+[ -n "$UNSCANNED" ] && warn_unscanned "$UNSCANNED"
 exit 0
 ```
 

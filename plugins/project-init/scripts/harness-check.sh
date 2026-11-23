@@ -17,8 +17,9 @@
 #   `--` ends the options, so a PROJECT_DIR may start with `-`.
 # Portability: bash 3.2+ (macOS /bin/bash), grep, sed, find, and git when the project is a work
 #   tree. python3 is used only to validate JSON; without it those checks print SKIP.
-# settings.json is read with grep, so pretty-printed and minified JSON both work, and a hook counts
-#   as registered in either form: `bash .claude/hooks/x.sh` or `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/x.sh`.
+# settings.json is read with grep, so pretty-printed and minified JSON both work, in any key order,
+#   and a hook counts as registered in either form: `bash .claude/hooks/x.sh` or
+#   `bash "$CLAUDE_PROJECT_DIR"/.claude/hooks/x.sh`.
 # Findings never echo a matched secret: the secret scan prints file:line only.
 
 # --- Points per check -------------------------------------------------------------------------
@@ -347,26 +348,70 @@ json_string_value() {
     printf '%s' "$1" | sed -E 's/^"[A-Za-z]+"[[:space:]]*:[[:space:]]*"//; s/"$//; s/\\"/"/g; s/\\\\/\\/g'
 }
 
-# A group's "matcher" applies to the handlers in its "hooks" array. A group without one matches
-# every tool, so the matcher resets at each group's "hooks": [ (JSON writers put matcher first).
+# add_group_regs EVENT MATCHER COMMANDS: append one REGS line per newline-separated command.
+add_group_regs() {
+    local c
+    while IFS= read -r c; do
+        [ -n "$c" ] && REGS="$REGS$1$US$2$US$c$NL"
+    done <<EOF
+$3
+EOF
+}
+
+# load_registrations follows the structure of the file, not its layout or key order. The top-level
+# "hooks" object maps each event to an array of groups, and a group's "matcher" applies to every
+# "command" in the group whichever key is written first, so a group's commands are held until the
+# group closes. A group without a matcher matches every tool. A "command" outside a group (such as
+# statusLine) is recorded with no event. The lexer prints each string whole, with its colon when it
+# is a key, so a bracket or brace inside a string is never read as structure.
 load_registrations() {
-    local tok event="" matcher="" pending=""
+    local tok key="" value event="" matcher="" cmds="" depth=0 events=0 group=0
     REGS=""
     [ -f "$SETTINGS" ] || return 0
     while IFS= read -r tok; do
-        [ -n "$tok" ] || continue
         case "$tok" in
-            '"matcher"'*) pending=$(json_string_value "$tok") ;;
-            '"command"'*) REGS="$REGS$event$US$matcher$US$(json_string_value "$tok")$NL" ;;
-            '"hooks"'*'[') matcher=$pending; pending="" ;;   # a group's handler list
-            # Settings objects that hold a "command" but are not hooks, and the hooks object itself.
-            '"statusLine"'*|'"subagentStatusLine"'*|'"fileSuggestion"'*|'"hooks"'*) event=""; matcher=""; pending="" ;;
-            '"'[a-z]*) ;;   # any other object, such as a handler's headers
-            *) event=${tok#\"}; event=${event%%\"*}; matcher=""; pending="" ;;
+            '{'|'[')
+                depth=$((depth + 1))
+                if [ "$events" -eq 0 ]; then
+                    [ "$depth" -eq 2 ] && [ "$tok" = '{' ] && [ "$key" = hooks ] && events=$depth
+                elif [ "$depth" -eq $((events + 1)) ]; then
+                    event=$key
+                elif [ "$depth" -eq $((events + 2)) ]; then
+                    group=$depth; matcher=""; cmds=""
+                fi
+                key="" ;;
+            '}'|']')
+                if [ "$group" -gt 0 ] && [ "$depth" -eq "$group" ]; then
+                    add_group_regs "$event" "$matcher" "$cmds"
+                    group=0
+                elif [ "$events" -gt 0 ] && [ "$depth" -le $((events + 1)) ]; then
+                    event=""
+                    [ "$depth" -eq "$events" ] && events=0
+                fi
+                depth=$((depth - 1))
+                key="" ;;
+            *:) key=${tok#\"}; key=${key%\"*} ;;
+            *)
+                case "$key" in
+                    matcher|command)
+                        value=${tok#\"}; value=${value%\"}
+                        value=${value//\\\"/\"}; value=${value//\\\\/\\}
+                        if [ "$key" = command ] && [ "$group" -gt 0 ]; then
+                            cmds="$cmds$value$NL"
+                        elif [ "$key" = command ]; then
+                            REGS="$REGS$event$US$US$value$NL"
+                        elif [ "$depth" -eq "$group" ]; then
+                            matcher=$value
+                        fi ;;
+                esac
+                key="" ;;
         esac
     done <<EOF
-$(grep -oE '"[A-Z][A-Za-z]*"[[:space:]]*:[[:space:]]*\[|"hooks"[[:space:]]*:[[:space:]]*\[|"[a-z][A-Za-z]*"[[:space:]]*:[[:space:]]*\{|"(matcher|command)"[[:space:]]*:[[:space:]]*"([^"\\]|\\.)*"' "$SETTINGS" 2>/dev/null)
+$(tr '\r\n' '  ' 2>/dev/null < "$SETTINGS" | grep -oE '"([^"\\]|\\.)*"([[:space:]]*:)?|[][{}]')
 EOF
+    # a file cut off inside a group still registers what the group held
+    [ "$group" -gt 0 ] && add_group_regs "$event" "$matcher" "$cmds"
+    return 0
 }
 
 # find_reg NAME EVENT sets REG_CMD/REG_MATCHER for the first registration of .claude/hooks/NAME.sh
@@ -1181,6 +1226,24 @@ scan_skipped() {
     return 1
 }
 
+# The secret scan examines this many matching lines. More than that is reported as not examined,
+# never as clean.
+SEC_SCAN_MAX=600
+
+# scan_candidates: read `path:line:content` matches on stdin and print those whose path is scanned.
+# It runs before the cap, so matches in skipped files never use the cap up.
+scan_candidates() {
+    local line path
+    while IFS= read -r line; do
+        path=${line%%:*}
+        scan_skipped "$path" && continue
+        if [ "$IN_GIT" -eq 0 ]; then   # local-only files are meant to hold secrets
+            case "${path##*/}" in .env|.env.*|settings.local.json) continue ;; esac
+        fi
+        printf '%s\n' "$line"
+    done
+}
+
 # AWS documentation sample keys are not findings. They are removed token by token, so a real secret
 # on the same line, or a path that contains EXAMPLE, still counts.
 strip_samples() {
@@ -1201,7 +1264,7 @@ gitignore_covers() {
 }
 
 check_security() {
-    local line lines envline=0 localline=0 tracked hits="" path rest n re content files
+    local line lines envline=0 localline=0 tracked hits="" path rest n re content files seen=0 more=0 found=""
 
     if [ -f .gitignore ]; then
         while IFS= read -r line; do
@@ -1250,7 +1313,7 @@ $SECRET_RES_I
 EOF
     if [ "$IN_GIT" -eq 1 ]; then
         lines=$({ git grep -I -n -E "${SEC_ARGS[@]}"; git grep -I -n -i -E "${SEC_ARGS_I[@]}"; } 2>/dev/null |
-            sort -t: -k1,1 -k2,2n | head -n 600)
+            sort -t: -k1,1 -k2,2n | scan_candidates 2>/dev/null | head -n $((SEC_SCAN_MAX + 1)))
         rest="committed files"
     else
         # No index to lean on: prune build and vendor trees and skip files over 512 KB, so the scan
@@ -1262,18 +1325,18 @@ EOF
         lines=$({
             printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 grep -I -n -H -E "${SEC_ARGS[@]}" --
             printf '%s\n' "$files" | tr '\n' '\0' | xargs -0 grep -I -n -H -i -E "${SEC_ARGS_I[@]}" --
-        } 2>/dev/null | sed 's|^\./||' | sort -t: -k1,1 -k2,2n | head -n 600)
+        } 2>/dev/null | sed 's|^\./||' | sort -t: -k1,1 -k2,2n | scan_candidates 2>/dev/null |
+            head -n $((SEC_SCAN_MAX + 1)))
         rest="project files (not a git work tree)"
     fi
+    # $lines holds one line more than the cap when there is more to examine
     while IFS= read -r line; do
         [ -n "$line" ] || continue
+        seen=$((seen + 1))
+        if [ "$seen" -gt "$SEC_SCAN_MAX" ]; then more=1; break; fi
         path=${line%%:*}
         n=${line#*:}; n=${n%%:*}
         content=${line#*:}; content=${content#*:}
-        scan_skipped "$path" && continue
-        if [ "$IN_GIT" -eq 0 ]; then   # local-only files are meant to hold secrets
-            case "${path##*/}" in .env|.env.*|settings.local.json) continue ;; esac
-        fi
         case "$content" in
             *EXAMPLE*) secret_match "$(strip_samples "$content")" || continue ;;
         esac
@@ -1281,10 +1344,13 @@ EOF
     done <<EOF
 $lines
 EOF
-    if [ -z "$hits" ]; then
-        emit PASS sec-scan max "no secret-pattern match in $rest (secret-scan template skips applied; CLAUDE.md included)"
+    [ -n "$hits" ] && found="$(count_lines "$hits") secret-pattern match(es) in $rest to review: $(join_list "$hits")"
+    if [ "$more" -eq 1 ]; then   # reaching the cap is a finding with or without a match before it
+        emit WARN sec-scan 0 "${found:-only documentation sample keys in $rest so far}; the matching lines after the first $SEC_SCAN_MAX were not examined"
+    elif [ -n "$found" ]; then
+        emit WARN sec-scan 0 "$found"
     else
-        emit WARN sec-scan 0 "$(count_lines "$hits") secret-pattern match(es) in $rest to review: $(join_list "$hits")"
+        emit PASS sec-scan max "no secret-pattern match in $rest (secret-scan template skips applied; CLAUDE.md included)"
     fi
 
     if [ -f .mcp.json ]; then
