@@ -154,7 +154,7 @@ The runner sources only the directories in `TEST_DIRS`. If the project already h
 
 Path: `tests/hooks/test-hooks.sh`
 
-Checks each hook's existence, permissions, and syntax, and its registration contract: gates have nothing after `.sh`, observational hooks end with `2>/dev/null || true`, and every command resolves through `$CLAUDE_PROJECT_DIR`. It also checks the stdin JSON contract, the exit-2 commit gate in throwaway git repos (staged, chained `git add && git commit`, `commit -am`, `git -C`, a quoted `git -c` value, a staged rename, a glob pathspec, `git add -f` of an ignored file from the directory that add runs in, a `cd --` before the commit, a CLAUDE.md despite the `*.md` skip, a tests/fixtures file other than the two samples) and its visible warning when python3 is missing, check-doc-sync's once-per-session note, hooks in a linked worktree, and the commit-msg hook that `scripts/install-hooks.sh` installs. Core hooks must exist. Tests for Optional hooks run only when their script exists.
+Checks each hook's existence, permissions, and syntax, and its registration contract: gates have nothing after `.sh`, observational hooks end with `2>/dev/null || true`, and every command resolves through `$CLAUDE_PROJECT_DIR`. It also checks the stdin JSON contract, the exit-2 commit gate in throwaway git repos (staged, chained `git add && git commit`, `commit -am`, a second `git commit` on the same line, `git -C`, a quoted `git -c` value, a staged rename, a glob pathspec, `git add -f` of an ignored file from the directory that add runs in, a `cd --` before the commit, a CLAUDE.md despite the `*.md` skip, a tests/fixtures file other than the two samples) and its visible warning when python3 is missing, check-doc-sync's once-per-session note, hooks in a linked worktree, and the commit-msg hook that `scripts/install-hooks.sh` installs. Core hooks must exist. Tests for Optional hooks run only when their script exists.
 
 ```bash
 #!/bin/bash
@@ -289,6 +289,8 @@ assert_eq "secret-scan: chained git add && git commit is scanned" "2" "$(hk_scan
 HK_REPO=$(hk_repo)
 printf 'key = "%s"\n' "$HK_AWS_ID" > "$HK_REPO/cfg.py"
 assert_eq "secret-scan: commit -am scans modified tracked files" "2" "$(hk_scan_rc "$HK_REPO" "git commit -am x")"
+assert_eq "secret-scan: -am on a second commit on the line is scanned too" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -am y')"
 
 HK_REPO=$(hk_repo)
 mkdir -p "$HK_REPO/.claude/hooks"

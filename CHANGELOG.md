@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Keep the `aws-infographic` skill's script copies (`infokit.py`, `buildkit.py`) out of version control in the Diagram Rules, next to its icon pointer and review images
 
+### Fixed
+
+- Fix `secret-scan.sh` (repository and template) analysing only the first `git commit` on a command line, so `git commit -m a && git commit -am b` committed a modified tracked file unscanned; every `git commit` on the line is now scanned in the directory and repository it runs in, and a file that two of them would contain is reported once
+- Fix `harness-check.sh` reading a hooks group that lists `"hooks"` before `"matcher"` as a group without a matcher, so a gate scoped to `Write` passed `hook-reg-secret-scan`; it now follows the structure of `settings.json` in any key order and line layout
+- Fix the `harness-check.sh` secret scan cutting its matches to 600 lines before it dropped the skipped paths, so matches in Markdown or lock files could hide a match in source and print PASS; the cap now counts only lines in scanned paths, and reaching it is a WARN that says the rest were not examined
+
 ## [3.1.0] - 2026-11-22
 
 ### Added
@@ -343,6 +349,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Diagram Rules에서 `aws-infographic` 스킬의 스크립트 사본(`infokit.py`, `buildkit.py`)도 아이콘 경로 파일, 검수용 이미지와 함께 버전 관리에서 제외하도록 변경
+
+### Fixed
+
+- `secret-scan.sh`(저장소와 템플릿)가 명령줄의 첫 번째 `git commit`만 분석해 `git commit -m a && git commit -am b`에서 수정된 tracked 파일이 검사 없이 커밋되던 문제 수정: 줄에 있는 모든 `git commit`을 각자 실행되는 디렉터리와 저장소에서 검사하고, 두 커밋에 함께 들어갈 파일은 한 번만 보고
+- `harness-check.sh`가 `"hooks"`를 `"matcher"`보다 먼저 쓴 hooks 그룹을 matcher 없는 그룹으로 읽어 `Write`로 한정한 게이트가 `hook-reg-secret-scan`을 통과하던 문제 수정: 키 순서와 줄 배치에 상관없이 `settings.json`의 구조를 따라 읽음
+- `harness-check.sh`의 시크릿 검사가 건너뛸 경로를 거르기 전에 일치 줄을 600줄로 잘라 Markdown이나 lock 파일의 일치가 소스의 일치를 가리고 PASS를 출력하던 문제 수정: 상한은 검사 대상 경로의 줄만 세고, 상한에 닿으면 나머지를 검사하지 않았다는 WARN을 출력
 
 ## [3.1.0] - 2026-11-22
 

@@ -277,6 +277,47 @@ assert_eq "secret-scan: git commit -m \"a; b\" -a scans modified tracked files" 
     "$(hk_scan_rc "$HK_REPO" 'git commit -m "Update config; add key" -a')"
 rm -rf -- "$HK_REPO"   # -f: git objects are read-only, and rm would prompt on a terminal
 
+# every git commit on the line is analysed, not only the first one
+HK_REPO=$(hk_repo)
+printf 'key = "%s"\n' "$HK_AWS_ID" > "$HK_REPO/cfg.py"
+assert_eq "secret-scan: -am on a second commit chained with && scans modified tracked files" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -am y')"
+assert_eq "secret-scan: -am on a second commit chained with ; scans modified tracked files" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x; git commit -am y')"
+assert_eq "secret-scan: a pathspec on a second commit is scanned" "2" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -m y cfg.py')"
+assert_eq "secret-scan: two plain commits ignore unstaged changes" "0" \
+    "$(hk_scan_rc "$HK_REPO" 'git commit --allow-empty -m x && git commit -m y')"
+(cd "$HK_REPO" && git add cfg.py) || true
+HK_OUT=$( (cd "$HK_REPO" && bash "$HK_ROOT/.claude/hooks/secret-scan.sh" 'git commit -m x && git commit -am y' 2>&1 >/dev/null) || true)
+assert_eq "secret-scan: a file that two chained commits would both contain is reported once" "1" \
+    "$(grep -c 'Potential secret in cfg.py' <<< "$HK_OUT" || true)"
+rm -rf -- "$HK_REPO"   # -f: git objects are read-only, and rm would prompt on a terminal
+
+# each commit is scanned in the repository it runs in
+HK_WS=$(mktemp -d)
+for hk_dir in clean dirty; do
+    (cd "$HK_WS" && mkdir "$hk_dir" && cd "$hk_dir" && git init -q) >/dev/null 2>&1 || true
+done
+printf 'key = "%s"\n' "$HK_AWS_ID" > "$HK_WS/dirty/cfg.py"
+(cd "$HK_WS/dirty" && git add cfg.py) || true
+assert_eq "secret-scan: a second commit after cd is scanned in that repository" "2" \
+    "$(hk_scan_rc "$HK_WS" 'cd clean && git commit --allow-empty -m x && cd ../dirty && git commit -m y')"
+assert_eq "secret-scan: a second commit with its own -C is scanned in that repository" "2" \
+    "$(hk_scan_rc "$HK_WS" 'git -C clean commit --allow-empty -m x && git -C dirty commit -m y')"
+assert_eq "secret-scan: a first commit in the repository with the secret still blocks" "2" \
+    "$(hk_scan_rc "$HK_WS" 'git -C dirty commit -m y && git -C clean commit --allow-empty -m x')"
+if git -C "$HK_WS" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    skip "secret-scan: a second commit in an unknown repo reported as unscanned" "the temp directory is inside a git work tree"
+else
+    HK_OUT=$(hk_scan_out "$HK_WS" 'git -C clean commit --allow-empty -m x && cd "$REPO" && git commit -m y')
+    assert_contains "secret-scan: a second commit in an unknown repo (\$REPO) is reported as unscanned" "$HK_OUT" "could not find the repository"
+    HK_OUT=$(hk_scan_out "$HK_WS" 'cd "$A" && git commit -m x; cd "$B" && git commit -m y')
+    assert_eq "secret-scan: two unscanned commits produce one JSON warning" "1" \
+        "$(python3 -c 'import json,sys; json.loads(sys.stdin.read()); print(1)' <<< "$HK_OUT" 2>/dev/null || true)"
+fi
+rm -rf -- "$HK_WS"   # -f: git objects are read-only, and rm would prompt on a terminal
+
 # git stage, and git add -f of an ignored file, on the commit's line
 HK_REPO=$(hk_repo)
 printf '.env\n' > "$HK_REPO/.gitignore"
